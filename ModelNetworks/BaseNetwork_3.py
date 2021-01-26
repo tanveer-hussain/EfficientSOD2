@@ -26,7 +26,6 @@ class DenseNetBackbone(nn.Module):
         # ******************** Decoding image ********************
         self.deconv1 = nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=2, padding=1)
         self.deconv2 = nn.ConvTranspose2d(in_channels=64, out_channels=128, kernel_size=(3, 3), stride=2, padding=1)
-        #self.deform = DeformConv2d(256, 128, 3, padding=1, modulation=True)
         self.upsampling1 = nn.Upsample(size=(112, 112), mode='bilinear', align_corners=True)
 
         self.deconv3 = nn.ConvTranspose2d(in_channels=128, out_channels=1, kernel_size=(3, 3), stride=2, padding=1)
@@ -35,17 +34,7 @@ class DenseNetBackbone(nn.Module):
 
 
     def forward(self, x):
-        # ******************** Initializing filters ********************
-        # h_filter = torch.tensor([[-1., 0., 1.],
-        #                 [-2., 1., 2.],
-        #                 [-1., 0., 1.]]).to('cuda')
-        # h_filter = h_filter.view(1, 1, 3, 3).repeat(256, 256, 1, 1) # convolution mask (gx)
-        #
-        # v_filter = torch.tensor([[-1., -2., -1.],
-        #                          [0., 0., 0.],
-        #                          [1., 2., 1.]]).to('cuda')
-        # v_filter = v_filter.view(1, 1, 3, 3).repeat(1, 1, 1, 1) # convolution mask (gy)
-        # ******************** Encoding image ********************
+     
         x = self.custom_model(x)
         x = self.layer1(x)
 
