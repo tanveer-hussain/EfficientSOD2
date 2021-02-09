@@ -7,14 +7,15 @@ import torch.backends.cudnn as cudnn
 import matplotlib.pyplot as plt
 from torch.utils.data import random_split
 import math
+import  os
 
-current_gpu = cuda.current_device()
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def train(model, opt, crit, train_loader, epoch):
     model.train()
     for i, (X, Y) in enumerate(train_loader):
-        X = X.to(current_gpu)
-        Y = Y.to(current_gpu)
+        X = X.to(device)
+        Y = Y.to(device)
     
         output = model(X)
 
@@ -31,40 +32,32 @@ def main():
     print('__Number of CUDA Devices:', cuda.device_count(), ', active device ID:', cuda.current_device())
     print ('Device name: .... ', cuda.get_device_name(cuda.current_device()), ', available >', cuda.is_available())
     model = BaseNetwork_3.DenseNetBackbone()
-    base_dir = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\"
+    base_dir = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\\"
 
     cudnn.benchmark = True
-    model.to(current_gpu)
+    model.to(device)
 
     base_lr = 0.0001
     epochs = 8
     weight_decay = 1e-3
     
     optimizerr = torch.optim.Adam(model.parameters(), lr=base_lr, weight_decay=weight_decay, betas=(0.9, 0.95))
-    criterion = nn.MSELoss().to(current_gpu)
+    criterion = nn.MSELoss().to(device)
     
     print('Model on GPU: ', next(model.parameters()).is_cuda)
 
     dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB\Pascal-S'
-    d_type = ['Train', 'Test']
 
     print ('Loading training data...')
+    X = []
+    Y = []
 
-    train_file = open(os.path.joing(base_dir, "Pascal-S_Train.lst"), "r")
-    train_data = train_file.read().split("\n")
-
-    train_file.close()
-    test_file.close()
-
-    train_data = DatasetLoader(dataset_path)
+    train_data = DatasetLoader(dataset_path, X, Y)
     
     train_loader = DataLoader(train_data, batch_size=48, shuffle=True, num_workers=1, drop_last=True)
-
     # total_training_loss = []
     # total_validation_loss = []
-
     # print ('Training..')
-
     for epoch in range(0, epochs):
 
         model.train()
@@ -72,8 +65,8 @@ def main():
 
         for X , Y in train_loader:
             optimizerr.zero_grad()
-            X = X.to(current_gpu)
-            Y = Y.to(current_gpu)
+            X = X.to(device)
+            Y = Y.to(device)
             output = model(X)
 
             loss = criterion(output, Y)
@@ -87,8 +80,8 @@ def main():
     #     with torch.no_grad():
     #         for X , Y in validation_loader:
 
-    #             X = X.to(current_gpu)
-    #             Y = Y.to(current_gpu)
+    #             X = X.to(device)
+    #             Y = Y.to(device)
     #             output = model(X)
     #             loss = criterion(output, Y)
 
@@ -110,8 +103,8 @@ def main():
     # # plt.savefig('TrainingLoss.png')
     # plt.show()
     
-    torch.save(model, 'TrainedModels\\DDNet_500Model.pt')
-    torch.save(model.state_dict(), 'TrainedModels\\DDNet_500Weights.pt')
+    torch.save(model, os.path.join(base_dir, 'TrainedModels\\PASCAL_DDNet_500Model.pt'))
+    torch.save(model.state_dict(), os.path.join(base_dir,'TrainedModels\\PASCAL_DDNet_500Weights.pt'))
 
 if __name__ == '__main__':
     main()
