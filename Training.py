@@ -31,12 +31,13 @@ def main():
     print('__Number of CUDA Devices:', cuda.device_count(), ', active device ID:', cuda.current_device())
     print ('Device name: .... ', cuda.get_device_name(cuda.current_device()), ', available >', cuda.is_available())
     model = BaseNetwork_3.DenseNetBackbone()
+    base_dir = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\"
 
     cudnn.benchmark = True
     model.to(current_gpu)
 
     base_lr = 0.0001
-    epochs = 12
+    epochs = 8
     weight_decay = 1e-3
     
     optimizerr = torch.optim.Adam(model.parameters(), lr=base_lr, weight_decay=weight_decay, betas=(0.9, 0.95))
@@ -49,22 +50,20 @@ def main():
 
     print ('Loading training data...')
 
-    dataset = DatasetLoader(dataset_path, d_type[0])
-    dataset_len = len(dataset)
-    print ('Length of dataset > ', len(dataset))
+    train_file = open(os.path.joing(base_dir, "Pascal-S_Train.lst"), "r")
+    train_data = train_file.read().split("\n")
 
-    train_set , val_set, test_set = random_split(dataset, [int(math.ceil((dataset_len*60)/100)), int((dataset_len*20)/100), int((dataset_len*20)/100)])
+    train_file.close()
+    test_file.close()
 
-    train_loader = DataLoader(train_set, batch_size=32, shuffle=True, num_workers=1, drop_last=True)
-    test_loader = DataLoader(test_set, batch_size=32, shuffle=True, num_workers=1, drop_last=True)
-    validation_loader = DataLoader(val_set, batch_size=32, shuffle=True, num_workers=1, drop_last=True)
+    train_data = DatasetLoader(dataset_path)
+    
+    train_loader = DataLoader(train_data, batch_size=48, shuffle=True, num_workers=1, drop_last=True)
 
-    print ('Training set: ', len(train_set), ', Validation set: ', len(val_set) , ', Testing set' , len(test_set))
+    # total_training_loss = []
+    # total_validation_loss = []
 
-    total_training_loss = []
-    total_validation_loss = []
-
-    print ('Training..')
+    # print ('Training..')
 
     for epoch in range(0, epochs):
 
@@ -80,32 +79,27 @@ def main():
             loss = criterion(output, Y)
             loss.backward()
             optimizerr.step()
-
             training_loss += loss.item()
-            total_training_loss.append(total_training_loss)
 
-        model.eval()
-        validation_loss = 0
+    #     model.eval()
+    #     validation_loss = 0
 
-        with torch.no_grad():
-            for X , Y in validation_loader:
+    #     with torch.no_grad():
+    #         for X , Y in validation_loader:
 
-                X = X.to(current_gpu)
-                Y = Y.to(current_gpu)
-                output = model(X)
-                loss = criterion(output, Y)
+    #             X = X.to(current_gpu)
+    #             Y = Y.to(current_gpu)
+    #             output = model(X)
+    #             loss = criterion(output, Y)
 
-                validation_loss += loss.item()
-                total_validation_loss.append(total_validation_loss)
+    #             validation_loss += loss.item()
+    #             total_validation_loss.append(total_validation_loss)
 
         training_loss /= len(train_loader)
-        validation_loss /= len(validation_loader)
+    #     validation_loss /= len(validation_loader)
         if epoch%4 == 0:
-            print(f'Epoch: {epoch+1}/{epochs}.. Training loss: {training_loss}.. Validation Loss: {validation_loss}')
-
-
-
-
+            print(f'Epoch: {epoch+1}/{epochs}.. Training loss: {training_loss}')
+            # print(f'Epoch: {epoch+1}/{epochs}.. Training loss: {training_loss}.. Validation Loss: {validation_loss}')
 
     # plt.plot(total_training_loss , marker='*', label='Training Loss', color='darkorange')
     # plt.plot(total_validation_loss , marker='+', label='Validation Loss', color='black')

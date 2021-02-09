@@ -8,15 +8,26 @@ from torch import nn
 class DatasetLoader(Dataset):
 
 
-    def __init__(self, dir, d_type):
+    def __init__(self, dataset_path):
+        
+        main_file = open(r"C:\Users\user02\Documents\GitHub\EfficientSOD2\Pascal-S_Train.lst", "r")
 
-        self.x_path = os.path.join(dir, 'Images')
+        main_data = main_file.read().split("\n")
+        main_file.close()
+        X = []
+        Y = []
 
-        self.y_path = os.path.join(dir, 'Labels')
+        self.x_path = os.path.join(dataset_path, 'Images')
+        self.y_path = os.path.join(dataset_path, 'Labels')
 
-        self.X = os.listdir(self.x_path)
-        self.Y = os.listdir(self.y_path)
+        for single_image_path in os.listdir(self.x_path):
+            X.append(single_image_path)
 
+        for single_image_path in os.listdir(self.y_path):
+            Y.append(single_image_path)
+
+        self.X = X
+        self.Y = Y
         self.length = len(self.X)
 
 
@@ -27,8 +38,8 @@ class DatasetLoader(Dataset):
         x_full_path = os.path.join(self.x_path, self.X[index])
         y_full_path = os.path.join(self.y_path, self.Y[index])
 
-        #print (x_full_path)
-        #print (y_full_path)
+        # print (x_full_path)
+        # print (y_full_path)
 
         x = Image.open(x_full_path).convert('RGB')
         y = Image.open(y_full_path).convert('L')
