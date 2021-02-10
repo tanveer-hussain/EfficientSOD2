@@ -15,7 +15,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB\Pascal-S'
 base_dir = r"C:\Users\user02\Documents\GitHub\EfficientSOD2"
 output_dir = base_dir + r"\PASCAL\\"
-model_path = os.path.join(base_dir, 'TrainedModels\\DDNet_500Model.pt')
+model_path = os.path.join(base_dir, 'TrainedModels\\PASCAL_DDNet_500Model.pt')
 ##################################################################################
 
 model = torch.load(model_path)
