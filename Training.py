@@ -38,7 +38,7 @@ def main():
     model.to(device)
 
     base_lr = 0.0001
-    epochs = 8
+    epochs = 500
     weight_decay = 1e-3
     
     optimizerr = torch.optim.Adam(model.parameters(), lr=base_lr, weight_decay=weight_decay, betas=(0.9, 0.95))
