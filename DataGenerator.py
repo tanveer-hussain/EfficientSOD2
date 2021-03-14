@@ -4,39 +4,25 @@ from torchvision import transforms as T
 from PIL import Image
 import torch
 from torch import nn
+import numpy as np
 import csv
+import cv2
 
 class DatasetLoader(Dataset):
 
 
-    def __init__(self, dataset_path, X, Y):
+    def __init__(self, dir, d_type):
 
-        with open(r"C:\Users\user02\Documents\GitHub\EfficientSOD2\Pascal-S_Train.csv", 'r') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                x_image = dataset_path + "\Images\\" + str(row[0])
-                y_label = dataset_path + "\Labels\\" + str(row[0])[0:(len(str(row[0])) - 3)] + "png"
+        self.x_path = os.path.join(dir, str(d_type), 'Images')
 
-                X.append(x_image)
-                Y.append(y_label)
+        self.y_path = os.path.join(dir, str(d_type), 'Labels')
 
+        self.d_path = os.path.join(dir, str(d_type), 'Depth')
 
-        # main_file.close()
-        # # print (main_data)
+        self.X = os.listdir(self.x_path)
+        self.Y = os.listdir(self.y_path)
+        self.D = os.listdir(self.d_path)
 
-        # for single_image_path in main_data:
-        #     print (single_image_path)
-        #     if not single_image_path is None:
-        #         full_path = dataset_path + "\Images\\" + single_image_path[0:(len(single_image_path) - 3)]
-        #         X.append(full_path)
-
-        # for single_image_path in main_data:
-        #     if not single_image_path is None:
-        #         full_path = dataset_path + "\Labels\\" + single_image_path[0:(len(single_image_path) - 3)]
-        #         Y.append(full_path)
-
-        self.X = X
-        self.Y = Y
         self.length = len(self.X)
 
 
@@ -44,21 +30,30 @@ class DatasetLoader(Dataset):
         return self.length
 
     def __getitem__(self, index):
-        x_full_path = self.X[index]
-        y_full_path = self.Y[index]
+        x_full_path = os.path.join(self.x_path, self.X[index])
+        y_full_path = os.path.join(self.y_path, self.Y[index])
+        d_full_path = os.path.join(self.d_path, self.D[index])
 
+        # print (f'x > {x_full_path}, y > {y_full_path}, d > {d_full_path}')
 
         x = Image.open(x_full_path).convert('RGB')
         y = Image.open(y_full_path).convert('L')
+        d = cv2.imread(d_full_path, 0)
+        # cv2.imshow('', d)
+        d = Image.fromarray(d)
+        # d.show()
+        # d = Image.open(d_full_path).convert('RGB')
+
+        # d.show()
 
         transform = T.Compose([T.Resize((224, 224)), T.ToTensor()])
 
         x = transform(x)
         y = transform(y)
+        d = transform(d)
 
 
-        return x , y
-
+        return x , y , d
 
 
 

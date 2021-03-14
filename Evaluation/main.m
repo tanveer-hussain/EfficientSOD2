@@ -2,8 +2,8 @@ clear all; close all; clc;
 
 %set your dataset path and saliency map result path.
 % dataset = 'SIP';
-% salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD\SIPTestResults/';
-% gtPath = 'D:\My Research\Datasets\Saliency Detection\SIP\Test\Labels\';
+% salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\SIP/';
+% gtPath = 'D:\My Research\Datasets\Saliency Detection\RGBD\SIP\Test\Labels\';
 
 % dataset = 'NLPR';
 % salPath = 'D:\Research Group\Research circle\Dr. Saeed Anwar\VS via Saliency\Experimental results\NLPR Data Results\Temp/';
@@ -15,18 +15,18 @@ clear all; close all; clc;
 
 % Testing DUTRGBD
 % dataset = 'DUTRGB-D';
-% salPath = 'D:\Research Group\Research circle\Dr. Saeed Anwar\VS via Saliency\Experimental results\DUTRGB-D Test Data Results\Temp/';
-% gtPath = 'D:\My Research\Datasets\Saliency Detection\DUT-RGBD\Test\Labels/';
+% salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\DUT-RGBD/';
+% gtPath = 'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test\Labels/';
 
 % Testing Chokepiont data
-% dataset = 'Choke';
-% salPath = 'D:\Research Group\Research circle\Dr. Saeed Anwar\VS via Saliency\Experimental results\CrossData\EfficientNet_binary_crossentropy_SIPData\';
-% gtPath = 'D:\My Research\Datasets\Saliency Detection\SOD_Dataset\S-SOD\Labels\';
+dataset = 'Choke';
+salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\S-SOD\';
+gtPath = 'D:\My Research\Datasets\Saliency Detection\S-SOD\S-SOD\Labels\';
 
 % Testing Chokepiont data
-dataset = 'Pascal-S';
-salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\PASCAL\';
-gtPath = 'D:\My Research\Datasets\Saliency Detection\RGB\Pascal-S\Labels\';
+% dataset = 'Pascal-S';
+% salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\PASCAL\';
+% gtPath = 'D:\My Research\Datasets\Saliency Detection\RGB\Pascal-S\Labels\';
 
 %obtain the total number of image (ground-truth)
 imgFiles = dir(gtPath);
@@ -106,6 +106,6 @@ Em = mean2(Emeasure);
 mae = mean2(MAE);
 F_wm = mean2(F_wm);
 
-fprintf('(%s Dataset)Emeasure: %.3f; Smeasure %.3f; weighted_F: %.3f; Fmeasure %.3f; MAE: %.3f.\n',dataset,Em, Sm, F_wm, Fm, mae);
+fprintf('(%s Dataset) Emeasure: %.3f; Smeasure %.3f; weighted_F: %.3f; Fmeasure %.3f; MAE: %.3f.\n',dataset,Em, Sm, F_wm, Fm, mae);
 
 
