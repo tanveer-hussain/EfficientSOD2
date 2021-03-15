@@ -24,6 +24,8 @@ SOTA: Smeasure 0.915;  Fmeasure 0.915; MAE: 0.033.
 
 200 epochs, fusion before  layer1 and preprocess layer (Choke Dataset) Emeasure: 0.661; Smeasure 0.500; weighted_F: 0.153; Fmeasure 0.181; MAE: 0.097.
 
+Figure 1 images > 47 , 64 , 102 , 135 , 69
+
 
 In DDNet: single loss only, no data augmentation etc. and the network is simple as well.
 
