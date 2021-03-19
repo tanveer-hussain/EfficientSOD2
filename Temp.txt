@@ -43,3 +43,9 @@ figure 1 > other network with comparatively bad performance
 dataset > https://playing-for-benchmarks.org/
 
 baseline for synthetic datasets generation: https://github.com/ZheC/GTA-IM-Dataset
+
+
+References should be on page 9, 8 pages content is okay.
+Table 1 title > mention from where results are borrowed.
+Table 1 heading models > model name or et al.
+Figure 5, rotate rows into columns.
