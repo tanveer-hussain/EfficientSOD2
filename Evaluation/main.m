@@ -1,9 +1,9 @@
 clear all; close all; clc;
 
 %set your dataset path and saliency map result path.
-% dataset = 'SIP';
-% salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\SIP/';
-% gtPath = 'D:\My Research\Datasets\Saliency Detection\RGBD\SIP\Test\Labels\';
+dataset = 'SIP';
+salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD\SIP/';
+gtPath = 'D:\My Research\Datasets\Saliency Detection\RGBD\SIP\Test\Labels\';
 
 % dataset = 'NLPR';
 % salPath = 'D:\Research Group\Research circle\Dr. Saeed Anwar\VS via Saliency\Experimental results\NLPR Data Results\Temp/';
@@ -19,9 +19,9 @@ clear all; close all; clc;
 % gtPath = 'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test\Labels/';
 
 % Testing Chokepiont data
-dataset = 'Choke';
-salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\S-SOD\';
-gtPath = 'D:\My Research\Datasets\Saliency Detection\S-SOD\S-SOD\Labels\';
+% dataset = 'Choke';
+% salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD2\S-SOD\';
+% gtPath = 'D:\My Research\Datasets\Saliency Detection\S-SOD\S-SOD\Labels\';
 
 % Testing Chokepiont data
 % dataset = 'Pascal-S';
