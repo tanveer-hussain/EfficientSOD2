@@ -46,7 +46,7 @@ def main():
 
     cudnn.benchmark = True
     model.to(device)
-    print (count_parameters(model))
+    print (count_parameters(model), " <<< parameters")
     # print (model)
     # summary(model,(3, 224,224),(1, 224,224))
 
@@ -54,11 +54,11 @@ def main():
     epochs = 200
     # x = torch.cat((x,d), 1)
     weight_decay = 1e-3
-    
+
     optimizerr = torch.optim.Adam(model.parameters(), lr=base_lr, weight_decay=weight_decay, betas=(0.9, 0.95))
     criterion = nn.MSELoss().to(device)
     # criterion = KLDLoss().to(device)
-    
+
     print('Model on GPU: ', next(model.parameters()).is_cuda)
 
     dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD\SIP'
@@ -71,7 +71,7 @@ def main():
     d_type = ['Train', 'Test']
 
     train_data = DatasetLoader(dataset_path, d_type[0])
-    
+
     train_loader = DataLoader(train_data, batch_size=16, shuffle=True, num_workers=1, drop_last=True)
     # total_training_loss = []
     # total_validation_loss = []
@@ -103,14 +103,14 @@ def main():
             training_loss += loss.item()
 
 
-    
+
         training_loss /= len(train_loader)
     #     validation_loss /= len(validation_loader)
         if epoch%2 == 0:
             print(f'Epoch: {epoch+1}/{epochs}.. Training loss: {training_loss}')
             # print(f'Epoch: {epoch+1}/{epochs}.. Training loss: {training_loss}.. Validation Loss: {validation_loss}')
 
-    
+
     torch.save(model, os.path.join(base_dir, 'TrainedModels\\SIP_DDNet_Model_200.pt'))
     # torch.save(model.state_dict(), os.path.join(base_dir,'TrainedModels\\PASCAL_DDNet_500Weights.pt'))
 
