@@ -2,7 +2,7 @@ clear all; close all; clc;
 
 %set your dataset path and saliency map result path.
 dataset = 'SIP';
-salPath = 'C:\Users\user02\Documents\GitHub\EfficientSOD\SIP/';
+salPath = 'C:\Users\user02\Documents\GitHub\Classification-SwinTransformer\SIP/';
 gtPath = 'D:\My Research\Datasets\Saliency Detection\RGBD\SIP\Test\Labels\';
 
 % dataset = 'NLPR';
