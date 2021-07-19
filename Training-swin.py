@@ -7,7 +7,7 @@ import torch.backends.cudnn as cudnn
 from ModelNetworks import model
 
 model = model.ResNet50(num_classes=1000, resolution=(224, 224))
-x = torch.randn([2, 3, 224, 224])
+x = torch.randn([2, 3, 225, 224])
 print(model)
 
 
