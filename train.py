@@ -171,7 +171,10 @@ if __name__ == '__main__':
             if i % 2 == 0 or i == total_step:
                 print('{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
                     format(datetime.now(), epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
-                # print(anneal_reg) 
+                # print(anneal_reg)
+            # if epoch % 10 == 0:
+            #     opt.lr_gen = opt.lr_gen/10
+                # generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
 
         adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
