@@ -8,15 +8,16 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
-from swin_transformer_pytorch import SwinTransformer
 from torch.distributions import Normal, Independent, kl
 # DPT
+import cv2
 from torchvision.transforms import Compose
 from dpt.models import DPTSegmentationModel
 from dpt.transforms import Resize, NormalizeImage, PrepareForNet
 
 
-model_type = 'dpt_large'
+net_w = net_h = 480
+model_type = 'dpt_hybrid'
 default_models = {
         "dpt_large": "weights/dpt_large-ade20k-b12dca68.pt",
         "dpt_hybrid": "weights/dpt_hybrid-ade20k-53898607.pt",
@@ -24,7 +25,7 @@ default_models = {
 model_weights = default_models[model_type]
 dpt_output = DPTSegmentationModel(
             150,
-            path=model_path,
+            path=None,
             backbone="vitl16_384",
         )
 transform = Compose(
