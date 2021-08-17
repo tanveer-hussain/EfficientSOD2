@@ -12,4 +12,4 @@ dataset
 *.pt
 ./dataset
 *.mp4
-*.lst
+*.lst\
