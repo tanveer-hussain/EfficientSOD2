@@ -16,14 +16,14 @@ from dpt.models import DPTSegmentationModel
 from dpt.transforms import Resize, NormalizeImage, PrepareForNet
 
 
-net_w = net_h = 480
+net_w = net_h = 28
 model_type = 'dpt_hybrid'
 default_models = {
         "dpt_large": "weights/dpt_large-ade20k-b12dca68.pt",
         "dpt_hybrid": "weights/dpt_hybrid-ade20k-53898607.pt",
     }
 model_weights = default_models[model_type]
-dpt_output = DPTSegmentationModel(
+dpt_model = DPTSegmentationModel(
             150,
             path=None,
             backbone="vitl16_384",
@@ -43,8 +43,8 @@ transform = Compose(
             PrepareForNet(),
         ]
     )
-dpt_output.eval()
-dpt_output.to(device)
+# dpt_model.train()
+dpt_model.to(device)
 
 
 class BasicConv2d(nn.Module):
@@ -83,6 +83,10 @@ class Encoder_x(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
+
+        # to get output that could be fit in dpt model.
+        self.preprocess_layer = nn.Conv2d(input_channels, 3, kernel_size=4, stride=2, padding=1)
+
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
@@ -102,7 +106,8 @@ class Encoder_x(nn.Module):
 
     def forward(self, input):
         # trans_output = swin_model(input)
-        dpt_output = dpt_model(input)
+        preprocess = self.preprocess_layer(input)
+        dpt_output = dpt_model.forward(preprocess)
         #
         # output = self.leakyrelu(self.bn1(self.layer1(input)))
         # # print(output.size())
@@ -131,6 +136,9 @@ class Encoder_xy(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
+        # to get output that could be fit in dpt model.
+        self.preprocess_layer = nn.Conv2d(input_channels, 3, kernel_size=4, stride=2, padding=1)
+
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
 
@@ -158,7 +166,8 @@ class Encoder_xy(nn.Module):
     def forward(self, x):
         # print (x.shape)
         # trans_output = swin_model(x)
-        dpt_output = dpt_model(input)
+        preprocess = self.preprocess_layer(x)
+        dpt_output = dpt_model.forward(preprocess)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
         # # print(output.size())
         # output = self.leakyrelu(self.bn2(self.layer2(output)))

@@ -11,6 +11,9 @@ import torch.nn.functional as F
 from swin_transformer_pytorch import SwinTransformer
 from torch.distributions import Normal, Independent, kl
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 swin_model = SwinTransformer(
         hidden_dim=96,
         layers=(2, 2, 6, 2),
@@ -21,6 +24,7 @@ swin_model = SwinTransformer(
         downscaling_factors=(4, 2, 2, 2),
         relative_pos_embedding=True)
 swin_model.to(device)
+
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
