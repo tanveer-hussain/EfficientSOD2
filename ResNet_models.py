@@ -23,7 +23,9 @@ swin_model = SwinTransformer(
         window_size=7,
         downscaling_factors=(4, 2, 2, 2),
         relative_pos_embedding=True)
+        
 swin_model.to(device)
+print('parameters = ', count_parameters(swin_model))
 
 
 class BasicConv2d(nn.Module):
@@ -80,7 +82,7 @@ class Encoder_x(nn.Module):
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
-        print('parameters = ', count_parameters(swin_model))
+        
         trans_output = swin_model(input)
         #
         # output = self.leakyrelu(self.bn1(self.layer1(input)))
@@ -136,7 +138,6 @@ class Encoder_xy(nn.Module):
 
     def forward(self, x):
         # print (x.shape)
-        print('parameters = ', count_parameters(swin_model))
         trans_output = swin_model(x)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
         # # print(output.size())

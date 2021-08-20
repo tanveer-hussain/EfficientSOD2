@@ -117,7 +117,8 @@ def linear_annealing(init, fin, step, annealing_steps):
     delta = fin - init
     annealed = min(init + delta * step / annealing_steps, fin)
     return annealed
-
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
 if __name__ == '__main__':
@@ -138,6 +139,8 @@ if __name__ == '__main__':
             gts = gts.cuda()
             depths = depths.cuda()
             grays = grays.cuda()
+
+            print ("generator model params > ", count_parameters(generator))
 
             pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
 

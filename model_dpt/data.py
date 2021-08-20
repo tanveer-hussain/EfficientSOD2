@@ -2,6 +2,7 @@ import os
 from PIL import Image
 import torch.utils.data as data
 import torchvision.transforms as transforms
+from dpt.transforms import PrepareForNet
 
 
 class SalObjDataset(data.Dataset):

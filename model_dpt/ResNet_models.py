@@ -16,36 +16,9 @@ from dpt.models import DPTSegmentationModel
 from dpt.transforms import Resize, NormalizeImage, PrepareForNet
 
 
-net_w = net_h = 28
-model_type = 'dpt_hybrid'
-default_models = {
-        "dpt_large": "weights/dpt_large-ade20k-b12dca68.pt",
-        "dpt_hybrid": "weights/dpt_hybrid-ade20k-53898607.pt",
-    }
-model_weights = default_models[model_type]
-dpt_model = DPTSegmentationModel(
-            150,
-            path=None,
-            backbone="vitl16_384",
-        )
-transform = Compose(
-        [
-            Resize(
-                net_w,
-                net_h,
-                resize_target=None,
-                keep_aspect_ratio=True,
-                ensure_multiple_of=32,
-                resize_method="minimal",
-                image_interpolation_method=cv2.INTER_CUBIC,
-            ),
-            NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-            PrepareForNet(),
-        ]
-    )
-# dpt_model.train()
-dpt_model.to(device)
-
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+# print('parameters = ', count_parameters(dpt_model))
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
@@ -105,9 +78,9 @@ class Encoder_x(nn.Module):
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
-        # trans_output = swin_model(input)
-        preprocess = self.preprocess_layer(input)
-        dpt_output = dpt_model.forward(preprocess)
+        trans_output = swin_model(input)
+        # preprocess = self.preprocess_layer(input)
+        # dpt_output = dpt_model.forward(preprocess)
         #
         # output = self.leakyrelu(self.bn1(self.layer1(input)))
         # # print(output.size())
@@ -165,9 +138,9 @@ class Encoder_xy(nn.Module):
 
     def forward(self, x):
         # print (x.shape)
-        # trans_output = swin_model(x)
-        preprocess = self.preprocess_layer(x)
-        dpt_output = dpt_model.forward(preprocess)
+        trans_output = swin_model(x)
+        # preprocess = self.preprocess_layer(x)
+        # dpt_output = dpt_model.forward(preprocess)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
         # # print(output.size())
         # output = self.leakyrelu(self.bn2(self.layer2(output)))
