@@ -155,20 +155,23 @@ if __name__ == '__main__':
                 nn.Conv2d(in_channels=64, out_channels=28, kernel_size=(3, 3), stride=1, padding=1),
                 nn.AdaptiveAvgPool2d((21, 21))
             ).cuda().half()
-
-            xy_encoder_output = LinearNet(xy_encoder_output)
-            xy_encoder_output = xy_encoder_output.view(xy_encoder_output.size(0), -1)
             fc1 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
             fc2 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
 
+            xy_encoder_output = LinearNet(xy_encoder_output)
+            xy_encoder_output = xy_encoder_output.view(xy_encoder_output.size(0), -1)
+            muxy = fc1(xy_encoder_output)
+            logvarxy = fc2(xy_encoder_output)
+            posterior = Independent(Normal(loc=muxy, scale=torch.exp(logvarxy)), 1)
+
             x_encoder_output = LinearNet(x_encoder_output)
             x_encoder_output = xy_encoder_output.view(x_encoder_output.size(0), -1)
-
-
             mux = fc1(x_encoder_output)
             logvarx = fc2(x_encoder_output)
             prior = Independent(Normal(loc=mux, scale=torch.exp(logvarx)), 1)
-            
+
+
+
             print ("Done..!")
 
 
