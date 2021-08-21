@@ -455,7 +455,7 @@ if __name__ == '__main__':
 
     latent_size = latent_dim = 3
     feat_channel = 32
-    sal_encoder = Saliency_feat_encoder(feat_channel, latent_dim)
+    sal_encoder = Saliency_feat_encoder(feat_channel, latent_dim).cuda().half()
 
 
     print("Let's Play!")
