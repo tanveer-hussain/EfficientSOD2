@@ -187,55 +187,55 @@ class Saliency_feat_encoder(nn.Module):
         z = torch.unsqueeze(z, 3)
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
-        x = self.conv_depth1(x)
-        x = self.resnet.conv1(x)
-        x = self.resnet.bn1(x)
-        x = self.resnet.relu(x)
-        x = self.resnet.maxpool(x)
-        x1 = self.resnet.layer1(x)  # 256 x 64 x 64
-        x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
-        x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
-        x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
+        x = self.conv_depth1(x).half()
+        x = self.resnet.conv1(x).half()
+        x = self.resnet.bn1(x).half()
+        x = self.resnet.relu(x).half()
+        x = self.resnet.maxpool(x).half()
+        x1 = self.resnet.layer1(x) .half() # 256 x 64 x 64
+        x2 = self.resnet.layer2(x1).half()  # 512 x 32 x 32
+        x3 = self.resnet.layer3(x2).half()  # 1024 x 16 x 16
+        x4 = self.resnet.layer4(x3).half()  # 2048 x 8 x 8
 
         ## depth estimation
-        conv1_depth = self.conv1_depth(x1)
-        conv2_depth = self.upsample2(self.conv2_depth(x2))
-        conv3_depth = self.upsample4(self.conv3_depth(x3))
-        conv4_depth = self.upsample8(self.conv4_depth(x4))
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        depth_pred = self.layer_depth(conv_depth)
+        conv1_depth = self.conv1_depth(x1).half()
+        conv2_depth = self.upsample2(self.conv2_depth(x2)).half()
+        conv3_depth = self.upsample4(self.conv3_depth(x3)).half()
+        conv4_depth = self.upsample8(self.conv4_depth(x4)).half()
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1).half()
+        depth_pred = self.layer_depth(conv_depth).half()
 
 
-        conv1_feat = self.conv1(x1)
-        conv1_feat = self.asppconv1(conv1_feat)
-        conv2_feat = self.conv2(x2)
-        conv2_feat = self.asppconv2(conv2_feat)
-        conv3_feat = self.conv3(x3)
-        conv3_feat = self.asppconv3(conv3_feat)
-        conv4_feat = self.conv4(x4)
-        conv4_feat = self.asppconv4(conv4_feat)
-        conv4_feat = self.upsample2(conv4_feat)
+        conv1_feat = self.conv1(x1).half()
+        conv1_feat = self.asppconv1(conv1_feat).half()
+        conv2_feat = self.conv2(x2).half()
+        conv2_feat = self.asppconv2(conv2_feat).half()
+        conv3_feat = self.conv3(x3).half()
+        conv3_feat = self.asppconv3(conv3_feat).half()
+        conv4_feat = self.conv4(x4).half()
+        conv4_feat = self.asppconv4(conv4_feat).half()
+        conv4_feat = self.upsample2(conv4_feat).half()
 
-        conv43 = torch.cat((conv4_feat, conv3_feat), 1)
-        conv43 = self.racb_43(conv43)
-        conv43 = self.conv43(conv43)
+        conv43 = torch.cat((conv4_feat, conv3_feat), 1).half()
+        conv43 = self.racb_43(conv43).half()
+        conv43 = self.conv43(conv43).half()
 
-        conv43 = self.upsample2(conv43)
-        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
-        conv432 = self.racb_432(conv432)
-        conv432 = self.conv432(conv432)
+        conv43 = self.upsample2(conv43).half()
+        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1).half()
+        conv432 = self.racb_432(conv432).half()
+        conv432 = self.conv432(conv432).half()
 
-        conv432 = self.upsample2(conv432)
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
-        conv4321 = self.racb_4321(conv4321)
-        conv4321 = self.conv4321(conv4321)
+        conv432 = self.upsample2(conv432).half()
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1).half()
+        conv4321 = self.racb_4321(conv4321).half()
+        conv4321 = self.conv4321(conv4321).half()
 
-        sal_init = self.layer6(conv4321)
+        sal_init = self.layer6(conv4321).half()
 
         return self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
-        res50 = models.resnet50(pretrained=True)
+        res50 = models.resnet50(pretrained=True).half()
         pretrained_dict = res50.state_dict()
         all_params = {}
         for k, v in self.resnet.state_dict().items():
@@ -310,8 +310,8 @@ class CALayer(nn.Module):
         )
 
     def forward(self, x):
-        y = self.avg_pool(x)
-        y = self.conv_du(y)
+        y = self.avg_pool(x).half()
+        y = self.conv_du(y).half()
         return x * y
 
 ## Residual Channel Attention Block (RCAB)
@@ -446,9 +446,10 @@ class BasicConv2d(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        x = self.conv(x)
-        x = self.bn(x)
+        x = self.conv(x).half()
+        x = self.bn(x).half()
         return x
+from  torch.cuda.amp import autocast
 
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
@@ -515,10 +516,23 @@ if __name__ == '__main__':
             logvarx = fc2(x_encoder_output)
             prior = Independent(Normal(loc=mux, scale=torch.exp(logvarx)), 1)
 
+            lattent_loss = torch.mean(kl_divergence(posterior, prior))
+
             z_noise_post = reparametrize(muxy, logvarxy)
             z_noise_prior = reparametrize(mux, logvarx)
-            prob_pred_post, depth_pred_post = sal_encoder(images, depths, z_noise_post)
-            prob_pred_prior, depth_pred_prior = sal_encoder(images, depths, z_noise_prior)
+            with autocast():
+                prob_pred_post, depth_pred_post = sal_encoder(images, depths, z_noise_post)
+                prob_pred_prior, depth_pred_prior = sal_encoder(images, depths, z_noise_prior)
+
+            smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
+            reg_loss = opt.reg_weight * reg_loss
+            latent_loss = latent_loss
+            depth_loss_post = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
+            sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
+            anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+            latent_loss = opt.lat_weight * anneal_reg * latent_loss
+            gen_loss_cvae = sal_loss + latent_loss
+            gen_loss_cvae = opt.vae_loss_weight * gen_loss_cvae
 
 
 
