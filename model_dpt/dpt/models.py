@@ -124,7 +124,7 @@ class DPTDepthModel(DPT):
 
 
 class DPTSegmentationModel(DPT):
-    def __init__(self, num_classes, path=None, **kwargs):
+    def __init__(self, path=None, **kwargs):
 
         features = kwargs["features"] if "features" in kwargs else 256
 
@@ -135,7 +135,7 @@ class DPTSegmentationModel(DPT):
             nn.BatchNorm2d(features),
             nn.ReLU(True),
             nn.Dropout(0.1, False),
-            nn.Conv2d(features, num_classes, kernel_size=1),
+            #nn.Conv2d(features, num_classes, kernel_size=1),
             Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
         )
 
@@ -145,8 +145,8 @@ class DPTSegmentationModel(DPT):
             nn.Conv2d(features, features, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(features),
             nn.ReLU(True),
-            nn.Dropout(0.1, False),
-            nn.Conv2d(features, num_classes, kernel_size=1),
+            nn.Dropout(0.1, False)#,
+            #nn.Conv2d(features, num_classes, kernel_size=1),
         )
 
         if path is not None:

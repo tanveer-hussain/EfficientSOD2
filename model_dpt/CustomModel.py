@@ -17,17 +17,22 @@ import torchvision.models as models
 from torch.distributions import Normal, Independent, kl
 
 
-from dpt.models import DPTSegmentationModel
+from dpt.models import DPTSegmentationModel as DPTModel
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 net_w = net_h = 224
 optimize=True
 model_path = None
-model = DPTSegmentationModel(
-            150,
-            path=model_path,
-            backbone="vitb_rn50_384",
-        )
+model = DPTModel()
+# model = DPTSegmentationModel(
+#             150,
+#             path=model_path,
+#             backbone="vitb_rn50_384",
+#         )
 model.eval()
+
+
+
 if optimize == True and device == torch.device("cuda"):
         model = model.to(memory_format=torch.channels_last)
         model = model.half()
