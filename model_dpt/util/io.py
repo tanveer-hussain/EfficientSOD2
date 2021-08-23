@@ -111,7 +111,8 @@ def read_image(path):
     img = cv2.imread(path)
 
     if img.ndim == 2:
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    #     print ('Kess than 2 Dimension here')
+        img = cv2.cvtColor(img, cv2.COLOR_BGRGRAY)
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) / 255.0
 
