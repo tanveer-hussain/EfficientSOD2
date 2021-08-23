@@ -460,13 +460,22 @@ from SalModel import SaliencyModel
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
 
+    epochs = 10
     latent_size = latent_dim = 3
     feat_channel = 32
-    sal_encoder = SaliencyModel(feat_channel, latent_dim).cuda().half()
+    sal_model = SaliencyModel(feat_channel, latent_dim).cuda().half()
+    lr_gen = 5e-5
+    sal_model_opt = torch.optim.Adam(sal_model.parameters(), lr_gen, betas=(0.5, 0.999))
+
+    sm_weight = 0.1
+    reg_weight = 1e-4
+    depth_loss_weight = 0.1
+    vae_loss_weights = 0.4
+    lat_weight = 10.0
 
 
     print("Let's Play!")
-    for epoch in range(1, 40):
+    for epoch in range(1, epochs):
         # print('Generator Learning Rate: {}'.format(generator_optimizer.param_groups[0]['lr']))
 
         for i, pack in enumerate(train_loader, start=1):
@@ -482,80 +491,38 @@ if __name__ == '__main__':
             grays = grays.cuda().half()
 
             with autocast():
-                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = sal_encoder.forward(images, depths,
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = sal_model.forward(images, depths,
                                                                                                       gts)
 
-            # preprocess_layer_7 = nn.Conv2d(in_channels=7, out_channels=3, kernel_size=(3, 3), stride=1, padding=1).cuda().half()
-            # preprocess_layer_6 = nn.Conv2d(in_channels=6, out_channels=3, kernel_size=(3, 3), stride=1,
-            #                                padding=1).cuda().half()
+                reg_loss = l2_regularisation(sal_model.xy_encoder) + \
+                           l2_regularisation(sal_model.x_encoder) + l2_regularisation(sal_model.sal_encoder)
 
-            #
-            # with torch.no_grad():
-            #     # sample = torch.from_numpy(img_input).to(device).unsqueeze(0)
-            #     if optimize == True and device == torch.device("cuda"):
-            #         images = images.to(memory_format=torch.channels_last)
-            #
-            #     xy_encoder_input = torch.cat((images,depths,gts),1)
-            #     xy_encoder_input = preprocess_layer_7(xy_encoder_input)
-            #
-            #     x_encoder_input = torch.cat((images,depths),1)
-            #     x_encoder_input = preprocess_layer_6(x_encoder_input)
-            #
-            #
-            #
-            #     xy_encoder_output = model.forward(xy_encoder_input)
-            #     x_encoder_output = model.forward(x_encoder_input)
-            #
-            # LinearNet = nn.Sequential(
-            #     nn.Conv2d(in_channels=150, out_channels=64, kernel_size=(3, 3), stride=1, padding=1),
-            #     nn.Conv2d(in_channels=64, out_channels=28, kernel_size=(3, 3), stride=1, padding=1),
-            #     nn.AdaptiveAvgPool2d((21, 21))
-            # ).cuda().half()
-            # fc1 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
-            # fc2 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
-            #
-            # xy_encoder_output = LinearNet(xy_encoder_output)
-            # xy_encoder_output = xy_encoder_output.view(xy_encoder_output.size(0), -1)
-            # muxy = fc1(xy_encoder_output)
-            # logvarxy = fc2(xy_encoder_output)
-            # posterior = Independent(Normal(loc=muxy, scale=torch.exp(logvarxy)), 1)
-            #
-            # x_encoder_output = LinearNet(x_encoder_output)
-            # x_encoder_output = xy_encoder_output.view(x_encoder_output.size(0), -1)
-            # mux = fc1(x_encoder_output)
-            # logvarx = fc2(x_encoder_output)
-            # prior = Independent(Normal(loc=mux, scale=torch.exp(logvarx)), 1)
-            #
-            # lattent_loss = torch.mean(kl_divergence(posterior, prior))
-            #
-            # z_noise_post = reparametrize(muxy, logvarxy)
-            # z_noise_prior = reparametrize(mux, logvarx)
-            # with autocast():
-            #     prob_pred_post, depth_pred_post = sal_encoder(images, depths, z_noise_post)
-            #     prob_pred_prior, depth_pred_prior = sal_encoder(images, depths, z_noise_prior)
+                smoothLoss_post = sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
+                reg_loss = reg_weight * reg_loss
+                latent_loss = latent_loss
+                depth_loss_post = depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
+                sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
+                anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+                latent_loss = lat_weight * anneal_reg * latent_loss
+                gen_loss_cvae = sal_loss + latent_loss
+                gen_loss_cvae = vae_loss_weight * gen_loss_cvae
 
-            # smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
-            # reg_loss = opt.reg_weight * reg_loss
-            # latent_loss = latent_loss
-            # depth_loss_post = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
-            # sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
-            # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-            # latent_loss = opt.lat_weight * anneal_reg * latent_loss
-            # gen_loss_cvae = sal_loss + latent_loss
-            # gen_loss_cvae = opt.vae_loss_weight * gen_loss_cvae
+                sal_model_opt.zero_grad()
+                gen_loss.backward()
+                sal_model_opt.step()
+                visualize_gt(gts)
+                visualize_uncertainty_post_init(torch.sigmoid(pred_post))
+                visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
+
+            if i % 2 == 0 or i == total_step:
+                print(
+                    '{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
+                    format(datetime.now(), epoch, epochs, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data,
+                           reg_loss.data))
 
 
 
             print ("Done..!")
-
-
-
-
-             # print(anneal_reg)
-            # if epoch % 10 == 0:
-            #     opt.lr_gen = opt.lr_gen/10
-                # generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
-
 
         adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
 
