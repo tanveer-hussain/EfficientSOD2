@@ -359,15 +359,15 @@ class Encoder_XY(nn.Module):
         self.model = self.model.eval()
         self.model = self.model.to(memory_format=torch.channels_last)
         self.model = self.model.cuda().half()
+        #
+        # self.LinearNet = nn.Sequential(
+        #    nn.Conv2d(in_channels=256, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
+        #    nn.Conv2d(in_channels=128, out_channels=28, kernel_size=(3, 3), stride=1, padding=1),
+        #    nn.AdaptiveAvgPool2d((21, 21))
+        # ).cuda().half()
 
-        self.LinearNet = nn.Sequential(
-           nn.Conv2d(in_channels=256, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
-           nn.Conv2d(in_channels=128, out_channels=28, kernel_size=(3, 3), stride=1, padding=1),
-           nn.AdaptiveAvgPool2d((21, 21))
-        ).cuda().half()
-
-        self.fc1 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
-        self.fc2 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
+        self.fc1 = nn.Linear(32 * 16 * 16, latent_size).cuda().half()
+        # self.fc2 = nn.Linear(128 * 21 * 21, latent_size).cuda().half()
 
     def forward(self, x):
 
@@ -377,28 +377,12 @@ class Encoder_XY(nn.Module):
 
         with torch.no_grad():
             x = self.model.forward(x)
-
-        prediction = torch.nn.functional.interpolate(
-            x, size=x.shape[:2], mode="bicubic", align_corners=False
-        )
-        prediction = torch.argmax(prediction, dim=1) + 1
-        prediction = prediction.squeeze().cpu().numpy()
-
-        # output
-
-        filename = os.path.join(
-            "temp", os.path.splitext(os.path.basename(img_name))[0]
-        )
-        util.io.write_segm_img(filename, img, prediction, alpha=0.5)
-
-
-        print("finished")
-
-        x = self.LinearNet(x)
-        x = x.view(x.size(0),-1)
+        #
+        # x = self.LinearNet(x)
+        # x = x.view(x.size(0),-1)
 
         muxy = self.fc1(x)
-        logvarxy = self.fc2(x)
+        logvarxy = self.fc1(x)
         posterior = Independent(Normal(loc=muxy, scale=torch.exp(logvarxy)), 1)
 
         return posterior , muxy, logvarxy
@@ -415,27 +399,29 @@ class Encoder_X(nn.Module):
         self.model = self.model.to(memory_format=torch.channels_last)
         self.model = self.model.cuda().half()
 
-        self.LinearNet = nn.Sequential(
-            nn.Conv2d(in_channels=256, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
-            nn.Conv2d(in_channels=128, out_channels=28, kernel_size=(3, 3), stride=1, padding=1),
-           nn.AdaptiveAvgPool2d((21, 21))
-        ).cuda().half()
+        # self.LinearNet = nn.Sequential(
+        #     nn.Conv2d(in_channels=256, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
+        #     nn.Conv2d(in_channels=128, out_channels=28, kernel_size=(3, 3), stride=1, padding=1),
+        #    nn.AdaptiveAvgPool2d((21, 21))
+        # ).cuda().half()
 
-        self.fc1 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
-        self.fc2 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
+        self.fc1 = nn.Linear(32 * 16 * 16, latent_size).cuda().half()
+        # self.fc2 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
 
     def forward(self,x):
+        x = x.to(memory_format=torch.channels_last)
 
         x = self.preprocess_layer_6(x)
+
         with torch.no_grad():
             x = self.model.forward(x)
 
-
-        x = self.LinearNet(x)
-        x = x.view(x.size(0),-1)
+        #
+        # x = self.LinearNet(x)
+        # x = x.view(x.size(0),-1)
 
         mux = self.fc1(x)
-        logvarx = self.fc2(x)
+        logvarx = self.fc1(x)
         prior = Independent(Normal(loc=mux, scale=torch.exp(logvarx)), 1)
 
         return prior , mux, logvarx

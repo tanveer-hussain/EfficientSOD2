@@ -135,8 +135,11 @@ class DPTSegmentationModel(DPT):
             nn.BatchNorm2d(features),
             nn.ReLU(True),
             nn.Dropout(0.1, False),
-            nn.Conv2d(features, 3, kernel_size=1),
-            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
+            nn.AdaptiveAvgPool2d((16, 16)),
+            nn.Conv2d(features, 32, kernel_size=1),
+            nn.Flatten()
+            # nn.Conv2d(features, 3, kernel_size=1),
+            # Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
         )
 
         super().__init__(head, **kwargs)
@@ -146,7 +149,10 @@ class DPTSegmentationModel(DPT):
             nn.BatchNorm2d(features),
             nn.ReLU(True),
             nn.Dropout(0.1, False),
-            nn.Conv2d(features, 3, kernel_size=1),
+            nn.Conv2d(features, 32, kernel_size=1),
+            nn.AdaptiveAvgPool2d((16, 16)),
+            nn.Flatten()
+            # nn.Conv2d(features, 3, kernel_size=1),
         )
 
         if path is not None:
