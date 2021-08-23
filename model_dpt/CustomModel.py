@@ -481,7 +481,8 @@ if __name__ == '__main__':
             depths = depths.cuda().half()
             grays = grays.cuda().half()
 
-            pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = sal_encoder.forward(images, depths,
+            with autocast():
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = sal_encoder.forward(images, depths,
                                                                                                       gts)
 
             # preprocess_layer_7 = nn.Conv2d(in_channels=7, out_channels=3, kernel_size=(3, 3), stride=1, padding=1).cuda().half()

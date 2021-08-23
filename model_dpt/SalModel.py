@@ -9,6 +9,7 @@ from dpt.models import DPTSegmentationModel as DPTModel
 from torch.distributions import Normal, Independent, kl
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
+import numpy as np
 
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
