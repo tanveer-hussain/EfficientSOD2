@@ -460,7 +460,7 @@ from SalModel import SaliencyModel
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
 
-    epochs = 10
+    epochs = 50
     latent_size = latent_dim = 3
     feat_channel = 32
     sal_model = SaliencyModel(feat_channel, latent_dim).cuda().half()
@@ -473,7 +473,7 @@ if __name__ == '__main__':
     vae_loss_weight = 0.4
     lat_weight = 10.0
     decay_rate = 0.9
-    decay_epoch = 80
+    decay_epoch = 40
 
 
     print("Let's Play!")
