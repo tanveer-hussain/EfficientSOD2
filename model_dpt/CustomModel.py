@@ -508,6 +508,7 @@ if __name__ == '__main__':
                 latent_loss = lat_weight * anneal_reg * latent_loss
                 gen_loss_cvae = sal_loss + latent_loss
                 gen_loss_cvae = vae_loss_weight * gen_loss_cvae
+                gen_loss_gsnn = (1 - vae_loss_weight) * gen_loss_gsnn
                 gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
 
                 sal_model_opt.zero_grad()
