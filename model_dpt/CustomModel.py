@@ -470,8 +470,10 @@ if __name__ == '__main__':
     sm_weight = 0.1
     reg_weight = 1e-4
     depth_loss_weight = 0.1
-    vae_loss_weights = 0.4
+    vae_loss_weight = 0.4
     lat_weight = 10.0
+    decay_rate = 0.9
+    decay_epoch = 80
 
 
     print("Let's Play!")
@@ -524,7 +526,7 @@ if __name__ == '__main__':
 
             print ("Done..!")
 
-        adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
+        adjust_lr(generator_optimizer, lr_gen, epoch, decay_rate, decay_epoch)
 
         save_path = 'models/'
 
@@ -532,4 +534,4 @@ if __name__ == '__main__':
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         if epoch % 4 == 0:
-            torch.save(generator.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_gen_TRANSFORMER.pth')
+            torch.save(generator.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_gen_DPTTRANSFORMER.pth')
