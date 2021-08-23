@@ -460,7 +460,7 @@ from SalModel import SaliencyModel
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
 
-    epochs = 50
+    epochs = 10
     latent_size = latent_dim = 3
     feat_channel = 32
     sal_model = SaliencyModel(feat_channel, latent_dim).cuda().half()
@@ -528,16 +528,16 @@ if __name__ == '__main__':
                     format(datetime.now(), epoch, epochs, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data,
                            reg_loss.data))
 
+            #
+            #
+            # print ("Done..!")
 
-
-            print ("Done..!")
-
-        adjust_lr(generator_optimizer, lr_gen, epoch, decay_rate, decay_epoch)
+        adjust_lr(sal_model_opt, lr_gen, epoch, decay_rate, decay_epoch)
 
         save_path = 'models/'
 
 
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        if epoch % 4 == 0:
-            torch.save(generator.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_gen_DPTTRANSFORMER.pth')
+        if epoch % 2 == 0:
+            torch.save(sal_model.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_gen_DPTTRANSFORMER.pth')
