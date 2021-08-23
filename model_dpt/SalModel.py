@@ -352,6 +352,7 @@ class Encoder_XY(nn.Module):
                                        padding=1).cuda().half()
 
         self.model = DPTModel()
+        self.model = self.model.eval()
         self.model = self.model.to(memory_format=torch.channels_last)
         self.model = self.model.cuda().half()
 
@@ -366,7 +367,8 @@ class Encoder_XY(nn.Module):
 
     def forward(self, x):
 
-        x = self.preprocess_layer_7(x)
+        # x = self.preprocess_layer_7(x)
+        x = x.to(memory_format=torch.channels_last)
         with torch.no_grad():
             x = self.model.forward(x)
         x = self.LinearNet(x)
@@ -386,6 +388,7 @@ class Encoder_X(nn.Module):
                                        padding=1).cuda().half()
 
         self.model = DPTModel()
+        self.model = self.model.eval()
         self.model = self.model.to(memory_format=torch.channels_last)
         self.model = self.model.cuda().half()
 
@@ -438,7 +441,7 @@ class SaliencyModel(nn.Module):
 
     def forward(self, x, depth, y=None, training=True):
         if training:
-            self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
+            self.posterior, muxy, logvarxy = self.xy_encoder(x)#(torch.cat((x,depth,y),1))
             self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
             lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
             z_noise_post = self.reparametrize(muxy, logvarxy)
