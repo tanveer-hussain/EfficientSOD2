@@ -7,6 +7,8 @@ import torch.nn.functional as F
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 from dpt.models import DPTSegmentationModel as DPTModel
 from torch.distributions import Normal, Independent, kl
+from torch.autograd import Variable
+from torch.nn import Parameter, Softmax
 
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
