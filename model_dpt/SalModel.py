@@ -349,9 +349,14 @@ class Classifier_Module(nn.Module):
             out += self.conv2d_list[i+1](x)
         return out
 
-model = DPTSegmentationModel().cuda().half()
-model = model.eval()
-model = model.to(memory_format=torch.channels_last)
+
+net_w = net_h = 224
+model = DPTSegmentationModel(
+            150,
+            path=None,
+            backbone="vitb_rn50_384",
+        )
+model.eval().cuda().half()
 import imageio
 
 class Encoder_XY(nn.Module):
@@ -377,8 +382,9 @@ class Encoder_XY(nn.Module):
 
         # x = self.preprocess_layer_7_1(x)
         # x = self.preprocess_layer_7_2(x)
-        x = x.to(memory_format=torch.channels_last)
+        # x = x.to(memory_format=torch.channels_last)
         # x = self.transform(x)
+        print ('Inside')
 
         with torch.no_grad():
             x = model.forward(x)
