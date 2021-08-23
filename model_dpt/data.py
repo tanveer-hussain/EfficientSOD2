@@ -4,6 +4,13 @@ import torch.utils.data as data
 import torchvision.transforms as transforms
 from dpt.transforms import PrepareForNet
 
+# DPT
+import cv2
+import util.io
+from torchvision.transforms import Compose
+from dpt.models import DPTSegmentationModel
+from dpt.transforms import Resize, NormalizeImage, PrepareForNet
+
 
 class SalObjDataset(data.Dataset):
     def __init__(self, image_root, gt_root, depth_root, gray_root, trainsize):
@@ -19,29 +26,65 @@ class SalObjDataset(data.Dataset):
         self.grays = sorted(self.grays)
         self.filter_files()
         self.size = len(self.images)
-        self.img_transform = transforms.Compose([
-            transforms.Resize((224,224)),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-        self.gt_transform = transforms.Compose([
-            transforms.Resize((224,224)),
-            transforms.ToTensor()])
-        self.depth_transform = transforms.Compose([
-            transforms.Resize((224,224)),
-            transforms.ToTensor()])
-        self.gray_transform = transforms.Compose([
-            transforms.Resize((224,224)),
-            transforms.ToTensor()])
+
+        net_w = net_h = 224
+
+        self.img_transform = Compose(
+        [
+            Resize(
+                net_w,
+                net_h,
+                resize_target=None,
+                keep_aspect_ratio=True,
+                ensure_multiple_of=32,
+                resize_method="minimal",
+                image_interpolation_method=cv2.INTER_CUBIC,
+            ),
+            NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+            PrepareForNet(),
+        ]
+    )
+
+        self.transform = Compose(
+        [
+            Resize(
+                net_w,
+                net_h,
+                resize_target=None,
+                keep_aspect_ratio=True,
+                ensure_multiple_of=32,
+                resize_method="minimal",
+                image_interpolation_method=cv2.INTER_CUBIC,
+            ),
+            PrepareForNet(),
+        ]
+    )
+        #
+        # self.img_transform = transforms.Compose([
+        #     transforms.Resize((224,224)),
+        #     transforms.ToTensor(),
+        #     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        # self.gt_transform = transforms.Compose([
+        #     transforms.Resize((224,224)),
+        #     transforms.ToTensor()])
+        # self.depth_transform = transforms.Compose([
+        #     transforms.Resize((224,224)),
+        #     transforms.ToTensor()])
+        # self.gray_transform = transforms.Compose([
+        #     transforms.Resize((224,224)),
+        #     transforms.ToTensor()])
 
     def __getitem__(self, index):
         image = self.rgb_loader(self.images[index])
         gt = self.binary_loader(self.gts[index])
         depth = self.rgb_loader(self.depths[index])
         gray = self.binary_loader(self.grays[index])
-        image = self.img_transform(image)
-        gt = self.gt_transform(gt)
-        depth = self.depth_transform(depth)
-        gray = self.gray_transform(gray)
+
+        image = self.img_transform({"image": image})["image"]
+
+        gt = self.transform({"image": gt})["image"]
+        depth = self.transform({"image": depth})["image"]
+        gray = self.transform({"image": gray})["image"]
         # img_names = self.images[index]
         return image, gt, depth, gray, index
 
@@ -69,25 +112,28 @@ class SalObjDataset(data.Dataset):
         self.grays = grays
 
     def rgb_loader(self, path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            return img.convert('RGB')
+        return util.io.read_image(path)
+        # with open(path, 'rb') as f:
+        #     img = Image.open(f)
+        #     return img.convert('RGB')
 
     def binary_loader(self, path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            # return img.convert('1')
-            return img.convert('L')
 
-    def resize(self, img, gt):
-        assert img.size == gt.size
-        w, h = img.size
-        if h < self.trainsize or w < self.trainsize:
-            h = max(h, self.trainsize)
-            w = max(w, self.trainsize)
-            return img.resize((w, h), Image.BILINEAR), gt.resize((w, h), Image.NEAREST)
-        else:
-            return img, gt
+        return util.io.read_image(path)
+        # with open(path, 'rb') as f:
+        #     img = Image.open(f)
+        #     # return img.convert('1')
+        #     return img.convert('L')
+    #
+    # def resize(self, img, gt):
+    #     assert img.size == gt.size
+    #     w, h = img.size
+    #     if h < self.trainsize or w < self.trainsize:
+    #         h = max(h, self.trainsize)
+    #         w = max(w, self.trainsize)
+    #         return img.resize((w, h), Image.BILINEAR), gt.resize((w, h), Image.NEAREST)
+    #     else:
+    #         return img, gt
 
     def __len__(self):
         return self.size

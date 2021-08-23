@@ -6,15 +6,17 @@ import torch
 import torch.nn.functional as F
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-from dpt.models import DPTSegmentationModel
+
 from torch.distributions import Normal, Independent, kl
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import numpy as np
 from torchvision.transforms import Compose
-from dpt.transforms import Resize, NormalizeImage, PrepareForNet
 import cv2
 import util.io
+
+from dpt_.models import DPTSegmentationModel
+from dpt_.transforms import Resize, NormalizeImage, PrepareForNet
 
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
@@ -347,18 +349,20 @@ class Classifier_Module(nn.Module):
             out += self.conv2d_list[i+1](x)
         return out
 
+model = DPTSegmentationModel().cuda().half()
+model = model.eval()
+model = model.to(memory_format=torch.channels_last)
+import imageio
 
 class Encoder_XY(nn.Module):
     def __init__(self, input_channels, latent_size):
         super(Encoder_XY, self).__init__()
 
-        self.preprocess_layer_7 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
+        self.preprocess_layer_7_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
+        self.preprocess_layer_7_2 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
+                                            padding=1).cuda().half()
 
-        self.model = DPTSegmentationModel()
-        self.model = self.model.eval()
-        self.model = self.model.to(memory_format=torch.channels_last)
-        self.model = self.model.cuda().half()
         #
         # self.LinearNet = nn.Sequential(
         #    nn.Conv2d(in_channels=256, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
@@ -371,12 +375,22 @@ class Encoder_XY(nn.Module):
 
     def forward(self, x):
 
-        # x = self.preprocess_layer_7(x)
+        # x = self.preprocess_layer_7_1(x)
+        # x = self.preprocess_layer_7_2(x)
         x = x.to(memory_format=torch.channels_last)
         # x = self.transform(x)
 
         with torch.no_grad():
-            x = self.model.forward(x)
+            x = model.forward(x)
+            for kk in range(x.shape[0]):
+                pred_edge_kk = x[kk, :, :, :]
+                pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+                # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+                pred_edge_kk *= 255.0
+                pred_edge_kk = pred_edge_kk.astype(np.uint8)
+                save_path = './temp/'
+                name = '{:02d}_prior_int.png'.format(kk)
+                imageio.imwrite(save_path + name, pred_edge_kk)
         #
         # x = self.LinearNet(x)
         # x = x.view(x.size(0),-1)
@@ -391,13 +405,16 @@ class Encoder_X(nn.Module):
     def __init__(self, input_channels, latent_size):
         super(Encoder_X, self).__init__()
 
-        self.preprocess_layer_6 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
+        self.preprocess_layer_6_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
+        self.preprocess_layer_6_2 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3),
+                                            stride=1,
+                                            padding=1).cuda().half()
 
-        self.model = DPTSegmentationModel()
-        self.model = self.model.eval()
-        self.model = self.model.to(memory_format=torch.channels_last)
-        self.model = self.model.cuda().half()
+        # self.model = DPTSegmentationModel()
+        # self.model = self.model.eval()
+        # self.model = self.model.to(memory_format=torch.channels_last)
+        # self.model = self.model.cuda().half()
 
         # self.LinearNet = nn.Sequential(
         #     nn.Conv2d(in_channels=256, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
@@ -409,12 +426,14 @@ class Encoder_X(nn.Module):
         # self.fc2 = nn.Linear(28 * 21 * 21, latent_size).cuda().half()
 
     def forward(self,x):
-        x = x.to(memory_format=torch.channels_last)
+        # x = x.to(memory_format=torch.channels_last)
 
-        x = self.preprocess_layer_6(x)
+        x = self.preprocess_layer_6_1(x)
+        x = self.preprocess_layer_6_2(x)
 
         with torch.no_grad():
-            x = self.model.forward(x)
+            x = model.forward(x)
+
 
         #
         # x = self.LinearNet(x)
