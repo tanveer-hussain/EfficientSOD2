@@ -363,7 +363,7 @@ class Encoder_XY(nn.Module):
     def __init__(self, input_channels, latent_size):
         super(Encoder_XY, self).__init__()
 
-        self.preprocess_layer_7_1 = nn.Conv2d(in_channels=9, out_channels=7, kernel_size=(3, 3), stride=1,
+        self.preprocess_layer_7_1 = nn.Conv2d(in_channels=7, out_channels=7, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
         self.preprocess_layer_7_2 = nn.Conv2d(in_channels=7, out_channels=3, kernel_size=(3, 3), stride=1,
                                             padding=1).cuda().half()
@@ -380,11 +380,10 @@ class Encoder_XY(nn.Module):
 
     def forward(self, x):
 
-        x = self.preprocess_layer_7_1(x)
-        x = self.preprocess_layer_7_2(x)
+        # x = self.preprocess_layer_7_1(x)
+        # x = self.preprocess_layer_7_2(x)
         # x = x.to(memory_format=torch.channels_last)
         # x = self.transform(x)
-        print ('Inside')
 
         with torch.no_grad():
             x = model.forward(x)
@@ -477,7 +476,7 @@ class SaliencyModel(nn.Module):
 
     def forward(self, x, depth, y=None, training=True):
         if training:
-            self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
+            self.posterior, muxy, logvarxy = self.xy_encoder(x)#(torch.cat((x,depth,y),1))
             self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
 
             lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))

@@ -64,9 +64,9 @@ class SalObjDataset(data.Dataset):
         #     transforms.Resize((224,224)),
         #     transforms.ToTensor(),
         #     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-        # self.gt_transform = transforms.Compose([
-        #     transforms.Resize((224,224)),
-        #     transforms.ToTensor()])
+        self.gt_transform = transforms.Compose([
+            transforms.Resize((224,224)),
+            transforms.ToTensor()])
         # self.depth_transform = transforms.Compose([
         #     transforms.Resize((224,224)),
         #     transforms.ToTensor()])
@@ -82,9 +82,9 @@ class SalObjDataset(data.Dataset):
 
         image = self.img_transform({"image": image})["image"]
 
-        gt = self.transform({"image": gt})["image"]
+        gt = self.gt_transform(gt)
         depth = self.transform({"image": depth})["image"]
-        gray = self.transform({"image": gray})["image"]
+        gray = self.gt_transform(gray)
         # img_names = self.images[index]
         return image, gt, depth, gray, index
 
@@ -119,7 +119,8 @@ class SalObjDataset(data.Dataset):
 
     def binary_loader(self, path):
         # img = cv2.imread(path, cv2.IMREAD_GRAYSCALE) / 255.0
-        img = util.io.read_image(path)
+        img = Image.open(path).convert("L")
+        # img = util.io.read_image(path)
         # print ('image in binary loader shape > ', img.shape)
         return img#cv2.imread(path, cv2.IMREAD_GRAYSCALE) / 255.0#img#util.io.read_image(path)#cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         # with open(path, 'rb') as f:
