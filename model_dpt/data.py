@@ -120,8 +120,8 @@ class SalObjDataset(data.Dataset):
     def binary_loader(self, path):
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE) / 255.0
         # img = util.io.read_image(path)
-        print ('image in binary loader shape > ', img.shape)
-        return img#util.io.read_image(path)#cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        # print ('image in binary loader shape > ', img.shape)
+        return cv2.imread(path, cv2.IMREAD_GRAYSCALE) / 255.0#img#util.io.read_image(path)#cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         # with open(path, 'rb') as f:
         #     img = Image.open(f)
         #     # return img.convert('1')
