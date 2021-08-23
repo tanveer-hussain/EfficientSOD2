@@ -363,9 +363,9 @@ class Encoder_XY(nn.Module):
     def __init__(self, input_channels, latent_size):
         super(Encoder_XY, self).__init__()
 
-        self.preprocess_layer_7_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=(3, 3), stride=1,
+        self.preprocess_layer_7_1 = nn.Conv2d(in_channels=7, out_channels=7, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
-        self.preprocess_layer_7_2 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
+        self.preprocess_layer_7_2 = nn.Conv2d(in_channels=7, out_channels=3, kernel_size=(3, 3), stride=1,
                                             padding=1).cuda().half()
 
         #
@@ -380,23 +380,23 @@ class Encoder_XY(nn.Module):
 
     def forward(self, x):
 
-        # x = self.preprocess_layer_7_1(x)
-        # x = self.preprocess_layer_7_2(x)
+        x = self.preprocess_layer_7_1(x)
+        x = self.preprocess_layer_7_2(x)
         # x = x.to(memory_format=torch.channels_last)
         # x = self.transform(x)
         print ('Inside')
 
         with torch.no_grad():
             x = model.forward(x)
-            for kk in range(x.shape[0]):
-                pred_edge_kk = x[kk, :, :, :]
-                pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-                # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-                pred_edge_kk *= 255.0
-                pred_edge_kk = pred_edge_kk.astype(np.uint8)
-                save_path = './temp/'
-                name = '{:02d}_prior_int.png'.format(kk)
-                imageio.imwrite(save_path + name, pred_edge_kk)
+            # for kk in range(x.shape[0]):
+            #     pred_edge_kk = x[kk, :, :, :]
+            #     pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+            #     # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+            #     pred_edge_kk *= 255.0
+            #     pred_edge_kk = pred_edge_kk.astype(np.uint8)
+            #     save_path = './temp/'
+            #     name = '{:02d}_prior_int.png'.format(kk)
+            #     imageio.imwrite(save_path + name, pred_edge_kk)
         #
         # x = self.LinearNet(x)
         # x = x.view(x.size(0),-1)
@@ -411,9 +411,9 @@ class Encoder_X(nn.Module):
     def __init__(self, input_channels, latent_size):
         super(Encoder_X, self).__init__()
 
-        self.preprocess_layer_6_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=(3, 3), stride=1,
+        self.preprocess_layer_6_1 = nn.Conv2d(in_channels=6, out_channels=6, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
-        self.preprocess_layer_6_2 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3),
+        self.preprocess_layer_6_2 = nn.Conv2d(in_channels=6, out_channels=3, kernel_size=(3, 3),
                                             stride=1,
                                             padding=1).cuda().half()
 
@@ -477,8 +477,9 @@ class SaliencyModel(nn.Module):
 
     def forward(self, x, depth, y=None, training=True):
         if training:
-            self.posterior, muxy, logvarxy = self.xy_encoder(x)#(torch.cat((x,depth,y),1))
+            self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
             self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
+
             lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
             z_noise_post = self.reparametrize(muxy, logvarxy)
             z_noise_prior = self.reparametrize(mux, logvarx)

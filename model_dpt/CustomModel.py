@@ -39,22 +39,6 @@ from torch.distributions import Normal, Independent, kl
 # model.to(device)
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-
-## load data
-image_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Images/'
-gt_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Labels/'
-depth_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Depth/'
-gray_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Gray/'
-
-train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=10, trainsize=352)
-total_step = len(train_loader)
-
-## define loss
-CE = torch.nn.BCELoss()
-mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
-smooth_loss = smoothness.smoothness_loss(size_average=True)
-
 
 def structure_loss(pred, mask):
     weit  = 1+5*torch.abs(F.avg_pool2d(mask, kernel_size=31, stride=1, padding=15)-mask)
@@ -457,6 +441,21 @@ class BasicConv2d(nn.Module):
 from  torch.cuda.amp import autocast
 from SalModel import SaliencyModel
 
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+
+## load data
+image_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Images/'
+gt_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Labels/'
+depth_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Depth/'
+gray_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Gray/'
+
+train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=10, trainsize=352)
+total_step = len(train_loader)
+
+## define loss
+CE = torch.nn.BCELoss()
+mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
+smooth_loss = smoothness.smoothness_loss(size_average=True)
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
 
