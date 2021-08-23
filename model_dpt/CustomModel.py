@@ -502,7 +502,7 @@ if __name__ == '__main__':
                 latent_loss = latent_loss
                 depth_loss_post = depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
                 sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
-                anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+                anneal_reg = linear_annealing(0, 1, epoch, epochs)
                 latent_loss = lat_weight * anneal_reg * latent_loss
                 gen_loss_cvae = sal_loss + latent_loss
                 gen_loss_cvae = vae_loss_weight * gen_loss_cvae
