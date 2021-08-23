@@ -14,7 +14,7 @@ import numpy as np
 from torchvision.transforms import Compose
 from dpt.transforms import Resize, NormalizeImage, PrepareForNet
 import cv2
-
+import util.io
 
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
@@ -349,24 +349,9 @@ class Classifier_Module(nn.Module):
 
 
 class Encoder_XY(nn.Module):
-    def __init__(self, input_channels, channels, latent_size):
+    def __init__(self, input_channels, latent_size):
         super(Encoder_XY, self).__init__()
 
-        self.transform = Compose(
-            [
-                Resize(
-                    28,
-                    28,
-                    resize_target=None,
-                    keep_aspect_ratio=True,
-                    ensure_multiple_of=32,
-                    resize_method="minimal",
-                    image_interpolation_method=cv2.INTER_CUBIC,
-                ),
-                NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-                PrepareForNet(),
-            ]
-        )
         self.preprocess_layer_7 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
 
@@ -388,10 +373,27 @@ class Encoder_XY(nn.Module):
 
         # x = self.preprocess_layer_7(x)
         x = x.to(memory_format=torch.channels_last)
-        x = self.transform(x)
+        # x = self.transform(x)
 
         with torch.no_grad():
             x = self.model.forward(x)
+
+        prediction = torch.nn.functional.interpolate(
+            x, size=x.shape[:2], mode="bicubic", align_corners=False
+        )
+        prediction = torch.argmax(prediction, dim=1) + 1
+        prediction = prediction.squeeze().cpu().numpy()
+
+        # output
+
+        filename = os.path.join(
+            "temp", os.path.splitext(os.path.basename(img_name))[0]
+        )
+        util.io.write_segm_img(filename, img, prediction, alpha=0.5)
+
+
+        print("finished")
+
         x = self.LinearNet(x)
         x = x.view(x.size(0),-1)
 
@@ -402,7 +404,7 @@ class Encoder_XY(nn.Module):
         return posterior , muxy, logvarxy
 
 class Encoder_X(nn.Module):
-    def __init__(self, input_channels, channels, latent_size):
+    def __init__(self, input_channels, latent_size):
         super(Encoder_X, self).__init__()
 
         self.preprocess_layer_6 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
@@ -427,6 +429,8 @@ class Encoder_X(nn.Module):
         x = self.preprocess_layer_6(x)
         with torch.no_grad():
             x = self.model.forward(x)
+
+
         x = self.LinearNet(x)
         x = x.view(x.size(0),-1)
 
@@ -443,8 +447,8 @@ class SaliencyModel(nn.Module):
         self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=False)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False)
-        self.xy_encoder = Encoder_XY(7, channel, latent_dim)
-        self.x_encoder = Encoder_X(6, channel, latent_dim)
+        self.xy_encoder = Encoder_XY(7, latent_dim)
+        self.x_encoder = Encoder_X(6, latent_dim)
         self.tanh = nn.Tanh()
 
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
