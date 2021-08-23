@@ -5,11 +5,16 @@ import torchvision
 import torch
 import torch.nn.functional as F
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-from dpt.models import DPTSegmentationModel as DPTModel
+
+from dpt.models import DPTSegmentationModel
 from torch.distributions import Normal, Independent, kl
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import numpy as np
+from torchvision.transforms import Compose
+from dpt.transforms import Resize, NormalizeImage, PrepareForNet
+import cv2
+
 
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
@@ -347,11 +352,25 @@ class Encoder_XY(nn.Module):
     def __init__(self, input_channels, channels, latent_size):
         super(Encoder_XY, self).__init__()
 
-
+        self.transform = Compose(
+            [
+                Resize(
+                    28,
+                    28,
+                    resize_target=None,
+                    keep_aspect_ratio=True,
+                    ensure_multiple_of=32,
+                    resize_method="minimal",
+                    image_interpolation_method=cv2.INTER_CUBIC,
+                ),
+                NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+                PrepareForNet(),
+            ]
+        )
         self.preprocess_layer_7 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
 
-        self.model = DPTModel()
+        self.model = DPTSegmentationModel()
         self.model = self.model.eval()
         self.model = self.model.to(memory_format=torch.channels_last)
         self.model = self.model.cuda().half()
@@ -369,6 +388,8 @@ class Encoder_XY(nn.Module):
 
         # x = self.preprocess_layer_7(x)
         x = x.to(memory_format=torch.channels_last)
+        x = self.transform(x)
+
         with torch.no_grad():
             x = self.model.forward(x)
         x = self.LinearNet(x)
@@ -387,7 +408,7 @@ class Encoder_X(nn.Module):
         self.preprocess_layer_6 = nn.Conv2d(in_channels=input_channels, out_channels=3, kernel_size=(3, 3), stride=1,
                                        padding=1).cuda().half()
 
-        self.model = DPTModel()
+        self.model = DPTSegmentationModel()
         self.model = self.model.eval()
         self.model = self.model.to(memory_format=torch.channels_last)
         self.model = self.model.cuda().half()
