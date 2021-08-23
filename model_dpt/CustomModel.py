@@ -510,7 +510,8 @@ if __name__ == '__main__':
                 gen_loss_cvae = vae_loss_weight * gen_loss_cvae
 
                 smoothLoss_prior = sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
-                depth_loss_prior = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_prior), depths)
+                depth_loss_prior = depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_prior), depths)
+                gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
                 gen_loss_gsnn = (1 - vae_loss_weight) * gen_loss_gsnn
                 gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
 
