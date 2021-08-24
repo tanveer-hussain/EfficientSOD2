@@ -17,7 +17,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=50, help='epoch number')
+parser.add_argument('--epoch', type=int, default=100, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=10, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -188,4 +188,4 @@ if __name__ == '__main__':
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         if epoch % 4 == 0:
-            torch.save(generator.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_gen_TRANSFORMER.pth')
+            torch.save(generator.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_UCNet.pth')
