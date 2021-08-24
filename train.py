@@ -140,7 +140,7 @@ if __name__ == '__main__':
             depths = depths.cuda()
             grays = grays.cuda()
 
-            print ("generator model params > ", count_parameters(generator))
+            #print ("generator model params > ", count_parameters(generator))
 
             pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
 
