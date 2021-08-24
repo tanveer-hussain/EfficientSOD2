@@ -8,7 +8,6 @@ from datetime import datetime
 from ResNet_models_UCNet import Generator
 from data import get_loader
 from utils import adjust_lr
-from scipy import misc
 from utils import l2_regularisation
 import smoothness
 import imageio

@@ -58,8 +58,8 @@ class Encoder_x(nn.Module):
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
 
-        self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
-        self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
+        self.fc1 = nn.Linear(256*7*7, latent_size)
+        self.fc2 = nn.Linear(256*7*7, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
@@ -73,7 +73,7 @@ class Encoder_x(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, self.channel * 8 * 11 * 11)
+        output = output.view(-1, 256*7*7)
         # print(output.size())
         # output = self.tanh(output)
 
@@ -103,8 +103,8 @@ class Encoder_xy(nn.Module):
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
 
-        self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
-        self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
+        self.fc1 = nn.Linear(256*7*7, latent_size)
+        self.fc2 = nn.Linear(256*7*7, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
@@ -118,7 +118,7 @@ class Encoder_xy(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, self.channel * 8 * 11 * 11)
+        output = output.view(-1, 256*7*7)
 
         mu = self.fc1(output)
         logvar = self.fc2(output)
