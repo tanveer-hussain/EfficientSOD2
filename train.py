@@ -5,7 +5,7 @@ from torch.autograd import Variable
 import numpy as np
 import pdb, os, argparse
 from datetime import datetime
-from model.ResNet_models import Generator
+from ResNet_models_UCNet import Generator
 from data import get_loader
 from utils import adjust_lr
 from scipy import misc
