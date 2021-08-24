@@ -44,10 +44,10 @@ generator_params = generator.parameters()
 generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
 ## load data
-image_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Images/'
-gt_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Labels/'
-depth_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Depth/'
-gray_root = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Train/Gray/'
+image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Images/'
+gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Labels/'
+depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Depth/'
+gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Gray/'
 
 train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=opt.batchsize, trainsize=opt.trainsize)
 total_step = len(train_loader)
