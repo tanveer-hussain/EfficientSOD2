@@ -191,5 +191,5 @@ if __name__ == '__main__':
 
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        if epoch % 4 == 0:
+        if epoch % 10 == 0:
             torch.save(generator.state_dict(), save_path + dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth')
