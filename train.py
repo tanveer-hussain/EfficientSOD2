@@ -3,8 +3,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 import numpy as np
-import pdb, os, argparse
-from datetime import datetime
+import os, argparse
 from ResNet_models_UCNet import Generator
 from data import get_loader
 from utils import adjust_lr
