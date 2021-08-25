@@ -17,11 +17,12 @@ parser.add_argument('--latent_dim', type=int, default=3, help='latent dim')
 parser.add_argument('--feat_channel', type=int, default=32, help='reduced channel of saliency feat')
 opt = parser.parse_args()
 
-dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test'
+dataset_name = "DUT-RGBD"
+dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
-
+epoch = 28
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.load_state_dict(torch.load('models/DUT_Model_8_gen_TRANSFORMER.pth'))
+generator.load_state_dict(torch.load(dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
 generator.cuda()
 generator.eval()
@@ -35,7 +36,7 @@ generator.eval()
 #     if not os.path.exists(save_path):
 #         os.makedirs(save_path)
 
-save_path = r'D:\PycharmProjects\SOD_SOTA\0_CVPR2020_UCNet-master\DUT_output'
+save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
 image_root = dataset_path + '/Images/'
 depth_root = dataset_path + '/Depth/'
 print (image_root, "\n", depth_root)
