@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=100, help='epoch number')
+parser.add_argument('--epoch', type=int, default=30, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=10, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -43,10 +43,11 @@ generator_params = generator.parameters()
 generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
 ## load data
-image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Images/'
-gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Labels/'
-depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Depth/'
-gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/DUT-RGBD/Train/Gray/'
+dataset_name = "NLPR"
+image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
+gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Labels/'
+depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name +'/Train/Depth/'
+gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Gray/'
 
 train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=opt.batchsize, trainsize=opt.trainsize)
 total_step = len(train_loader)
@@ -191,4 +192,4 @@ if __name__ == '__main__':
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         if epoch % 4 == 0:
-            torch.save(generator.state_dict(), save_path + 'DUT_Model' + '_%d' % epoch + '_UCNet.pth')
+            torch.save(generator.state_dict(), save_path + dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth')
