@@ -94,7 +94,7 @@ class Encoder_x(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, self.channel * 8 * 11 * 11)
+        output = output.view(-1, 256 * 7 * 7)
         # print(output.size())
         output = self.tanh(output)
 
@@ -148,7 +148,7 @@ class Encoder_xy(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, self.channel * 8 * 11 * 11)
+        output = output.view(-1, 256 * 7 * 7)
 
         mu = self.fc1(output)
         logvar = self.fc2(output)
