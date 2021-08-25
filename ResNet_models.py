@@ -76,8 +76,8 @@ class Encoder_x(nn.Module):
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
 
-        self.fc1 = nn.Linear(768 * 7 * 7, latent_size)
-        self.fc2 = nn.Linear(768 * 7 * 7, latent_size)
+        self.fc1 = nn.Linear(256 * 7 * 7, latent_size)
+        self.fc2 = nn.Linear(256 * 7 * 7, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
@@ -131,8 +131,8 @@ class Encoder_xy(nn.Module):
         # self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
         # self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
 
-        self.fc1 = nn.Linear(768 * 7 * 7, latent_size)
-        self.fc2 = nn.Linear(768 * 7 * 7, latent_size)
+        self.fc1 = nn.Linear(256 * 7 * 7, latent_size)
+        self.fc2 = nn.Linear(256 * 7 * 7, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
