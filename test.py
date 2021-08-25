@@ -4,7 +4,7 @@ from torch.autograd import Variable
 import numpy as np
 import pdb, os, argparse
 from scipy import misc
-from model.ResNet_models import Generator
+from ResNet_models_UCNet import Generator
 from data import test_dataset
 from PIL import Image
 import cv2
@@ -17,10 +17,10 @@ parser.add_argument('--latent_dim', type=int, default=3, help='latent dim')
 parser.add_argument('--feat_channel', type=int, default=32, help='reduced channel of saliency feat')
 opt = parser.parse_args()
 
-dataset_name = "NLPR"
+dataset_name = "DUT-RGBD"
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
-epoch = 28
+epoch = 30
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 generator.load_state_dict(torch.load("models/" + dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
