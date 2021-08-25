@@ -1,12 +1,9 @@
 import torch
 import torch.nn.functional as F
-from torch.autograd import Variable
-import numpy as np
 import pdb, os, argparse
-from scipy import misc
 from ResNet_models_UCNet import Generator
 from data import test_dataset
-from PIL import Image
+
 import cv2
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '1'
