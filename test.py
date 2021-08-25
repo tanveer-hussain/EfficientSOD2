@@ -22,7 +22,7 @@ dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/
 
 epoch = 28
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.load_state_dict(torch.load(dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth'))
+generator.load_state_dict(torch.load("Models" + dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
 generator.cuda()
 generator.eval()
