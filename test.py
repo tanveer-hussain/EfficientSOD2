@@ -17,9 +17,9 @@ opt = parser.parse_args()
 dataset_name = "NLPR"
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
-epoch = 30
+epoch = 10
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.load_state_dict(torch.load("models/" + dataset_name + '_Model' + '_%d' % epoch + '_UCNet.pth'))
+generator.load_state_dict(torch.load("models/" + dataset_name + '_SWINModel' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
 generator.cuda()
 generator.eval()
