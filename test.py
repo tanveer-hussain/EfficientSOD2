@@ -1,7 +1,8 @@
 import torch
 import torch.nn.functional as F
 import pdb, os, argparse
-from ResNet_models_UCNet import Generator
+# from ResNet_models_UCNet import Generator
+from ResNet_models import Generator
 from data import test_dataset
 
 import cv2
