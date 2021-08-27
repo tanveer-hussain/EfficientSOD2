@@ -219,8 +219,9 @@ class SwinTransformer(nn.Module):
                                   downscaling_factor=downscaling_factors[3], num_heads=heads[3], head_dim=head_dim,
                                   window_size=window_size, relative_pos_embedding=relative_pos_embedding)
 
-        # self.mlp_head = nn.Sequential(
-        #     nn.Linear(37632, 3),
+        self.mlp_head = nn.Sequential(
+            nn.Flatten()
+        )
         #     nn.LeakyReLU()
         #     # nn.AdaptiveAvgPool2d((21, 21))
         #     # nn.Conv2d(in_channels=768, out_channels=384, kernel_size=(3, 3), stride=1, padding=1),
@@ -257,14 +258,14 @@ class SwinTransformer(nn.Module):
         x = self.stage3(x)
         # print("after stage 3", x.shape)
         x = self.stage4(x)
-        x = x.contiguous()
-        x = x.view(x.size(0),-1)
+        # x = x.contiguous()
+        # x = x.view(x.size(0),-1)
         # print("after stage 4", x.shape)
         # x = x.mean(dim=[2, 3])
         # print("after mean", x.shape)
-        # y = self.mlp_head(x)
+        y = self.mlp_head(x)
         # print ('y.shape', y.shape)
-        return x
+        return y
 
 
 def swin_t(hidden_dim=96, layers=(2, 2, 6, 2), heads=(3, 6, 12, 24), **kwargs):
