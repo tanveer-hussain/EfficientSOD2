@@ -154,6 +154,7 @@ class Encoder_xy(nn.Module):
 
         mu = self.fc1(swin_output)
         logvar = self.fc2(swin_output)
+        print ('Mu shape > ', mu.shape, ', logvar shape > ', logvar.shape)
         dist = Independent(Normal(loc=mu, scale=torch.exp(logvar)), 1)
         # print(output.size())
         # output = self.tanh(output)
