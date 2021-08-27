@@ -166,11 +166,11 @@ class Encoder_xy(nn.Module):
         # mu = (mu - mu_mean) / mu_std
 
         logvar = self.fc2(swin_output)
-        # logvar_mean = torch.mean(logvar, 0, keepdim=True)
-        # log_std = torch.std(logvar, 0, keepdim=True)
-        # logvar = (logvar - logvar_mean) / log_std
-        #
-        # # print ('Mu shape > ', mu, ', \n copy shape > ', copy)
+        logvar_mean = torch.mean(logvar, 0, keepdim=True)
+        log_std = torch.std(logvar, 0, keepdim=True)
+        logvar = (logvar - logvar_mean) / log_std
+
+        # print ('Mu shape > ', mu, ', \n copy shape > ', copy)
         dist = Independent(Normal(loc=mu, scale=torch.exp(logvar)), 1)
         # print(output.size())
         # output = self.tanh(output)
