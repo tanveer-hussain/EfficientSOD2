@@ -14,12 +14,12 @@ parser.add_argument('--latent_dim', type=int, default=3, help='latent dim')
 parser.add_argument('--feat_channel', type=int, default=32, help='reduced channel of saliency feat')
 opt = parser.parse_args()
 
-dataset_name = "NLPR"
-dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
+dataset_name = ["DUT-RGBD", "NLPR"]
+dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name[0] + '/Test'
 
 epoch = 10
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.load_state_dict(torch.load("models/" + dataset_name + '_SWINModel' + '_%d' % epoch + '_UCNet.pth'))
+generator.load_state_dict(torch.load("models/" + dataset_name[0] + '_SWINModel' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
 generator.cuda()
 generator.eval()
