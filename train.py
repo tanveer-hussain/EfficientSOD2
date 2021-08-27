@@ -4,7 +4,7 @@ from torch.autograd import Variable
 
 import numpy as np
 import os, argparse
-from ResNet_models import Generator
+# from ResNet_models import Generator
 # from ResNet_models_UCNet import Generator
 from data import get_loader
 from utils import adjust_lr
@@ -44,7 +44,7 @@ generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.
 
 ## load data
 datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
-dataset_name = datasets[1]
+dataset_name = datasets[4]
 image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
 gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Labels/'
 depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name +'/Train/Depth/'
