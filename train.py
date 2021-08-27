@@ -43,7 +43,7 @@ generator_params = generator.parameters()
 generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
 ## load data
-datasets = ["DUT-RGBD", "NLPR"]
+datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
 dataset_name = datasets[1]
 image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
 gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Labels/'
