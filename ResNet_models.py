@@ -76,14 +76,15 @@ class Encoder_x(nn.Module):
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
 
-        self.fc1 = nn.Linear(256 * 7 * 7, latent_size)
-        self.fc2 = nn.Linear(256 * 7 * 7, latent_size)
+        self.fc1 = nn.Linear(37632, latent_size)
+        self.fc2 = nn.Linear(37632, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
         
         swin_output = swin_model(input)
+        # print(swin_output.shape)
         #
         # output = self.leakyrelu(self.bn1(self.layer1(input)))
         # # # print(output.size())
@@ -131,14 +132,15 @@ class Encoder_xy(nn.Module):
         # self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
         # self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
 
-        self.fc1 = nn.Linear(256 * 7 * 7, latent_size)
-        self.fc2 = nn.Linear(256 * 7 * 7, latent_size)
+        self.fc1 = nn.Linear(37632, latent_size)
+        self.fc2 = nn.Linear(37632, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, x):
         # print (x.shape)
         swin_output = swin_model(x)
+        # print (swin_output.shape)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
         # # # print(output.size())
         # output = self.leakyrelu(self.bn2(self.layer2(output)))
