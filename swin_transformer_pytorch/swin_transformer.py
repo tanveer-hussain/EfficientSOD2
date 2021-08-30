@@ -201,12 +201,12 @@ class SwinTransformer(nn.Module):
         self.conv1_1_6C = nn.Conv2d(in_channels=6, out_channels=3, kernel_size=(3, 3), stride=1, padding=1)
         # self.maxpool1 = nn.MaxPool2d((2, 2), stride=(2, 2))
         # self.bn1 = nn.BatchNorm2d(176)
+        #
+        # self.stage1 = StageModule(in_channels=7, hidden_dimension=hidden_dim, layers=layers[0],
+        #                           downscaling_factor=downscaling_factors[0], num_heads=heads[0], head_dim=head_dim,
+        #                           window_size=window_size, relative_pos_embedding=relative_pos_embedding)
 
-        self.stage1 = StageModule(in_channels=7, hidden_dimension=hidden_dim, layers=layers[0],
-                                  downscaling_factor=downscaling_factors[0], num_heads=heads[0], head_dim=head_dim,
-                                  window_size=window_size, relative_pos_embedding=relative_pos_embedding)
-
-        self.stage1 = StageModule(in_channels=7, hidden_dimension=hidden_dim, layers=layers[0],
+        self.stage1 = StageModule(in_channels=3, hidden_dimension=hidden_dim, layers=layers[0],
                                   downscaling_factor=downscaling_factors[0], num_heads=heads[0], head_dim=head_dim,
                                   window_size=window_size, relative_pos_embedding=relative_pos_embedding)
         self.stage2 = StageModule(in_channels=hidden_dim, hidden_dimension=hidden_dim * 2, layers=layers[1],
