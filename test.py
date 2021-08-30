@@ -19,9 +19,9 @@ datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
 dataset_name = datasets[6]
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
-epoch = 150
+epoch = 10
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.load_state_dict(torch.load("models/" + dataset_name+ '_SWINModel' + '_%d' % epoch + '_UCNet.pth'))
+generator.load_state_dict(torch.load("models/" + dataset_name+ '_ALLSWINModel' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
 generator.cuda()
 generator.eval()
