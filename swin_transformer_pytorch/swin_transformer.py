@@ -241,13 +241,7 @@ class SwinTransformer(nn.Module):
         # x = self.conv1_1(img)
         if img.size(1) == 6:
             x = self.conv1_1_6C(img)
-            x1 = self.stage1(x)
-            # print("after stage 1", x.shape)
-            x2 = self.stage2(x1)
-            # print("after stage 2", x.shape)
-            x3 = self.stage3(x2)
-            # print("after stage 3", x.shape)
-            x4 = self.stage4(x3)
+
         elif img.size(1) == 7:
             x = self.conv1_1_7c(img)
             x1 = self.stage1(x)
