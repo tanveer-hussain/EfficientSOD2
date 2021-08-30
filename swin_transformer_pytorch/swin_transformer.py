@@ -197,8 +197,8 @@ class SwinTransformer(nn.Module):
                  downscaling_factors=(4, 2, 2, 2), relative_pos_embedding=True):
         super().__init__()
 
-        self.conv1_1_7c = nn.Conv2d(in_channels=7, out_channels=7, kernel_size=(3, 3), stride=1, padding=1)
-        self.conv1_1_6C = nn.Conv2d(in_channels=6, out_channels=7, kernel_size=(3, 3), stride=1, padding=1)
+        self.conv1_1_7c = nn.Conv2d(in_channels=7, out_channels=3, kernel_size=(3, 3), stride=1, padding=1)
+        self.conv1_1_6C = nn.Conv2d(in_channels=6, out_channels=3, kernel_size=(3, 3), stride=1, padding=1)
         # self.maxpool1 = nn.MaxPool2d((2, 2), stride=(2, 2))
         # self.bn1 = nn.BatchNorm2d(176)
 
