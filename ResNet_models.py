@@ -136,6 +136,7 @@ class Encoder_xy(nn.Module):
         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
+        self.flatten = nn.Flatten()
 
         # self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
         # self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
@@ -148,6 +149,7 @@ class Encoder_xy(nn.Module):
     def forward(self, x):
         # print (x.shape)
         swin_output = swin_model(x)
+        swin_output
         # print (swin_output.shape)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
         # # # print(output.size())
