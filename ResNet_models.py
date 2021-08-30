@@ -75,6 +75,7 @@ class Encoder_x(nn.Module):
         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
+        self.flatten = nn.Flatten()
 
         self.fc1 = nn.Linear(37632, latent_size)
         self.fc2 = nn.Linear(37632, latent_size)
