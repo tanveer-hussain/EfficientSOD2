@@ -423,7 +423,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv_depth1 = BasicConv2d(6+latent_dim, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
-        self.racb_432 = RCAB(channel * 3)
+        self.racb_432 = RCAB(channel * 3)g
         self.racb_4321 = RCAB(channel * 4)
 
         self.conv43 = Triple_Conv(2 * channel, channel)
