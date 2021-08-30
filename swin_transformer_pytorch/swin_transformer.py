@@ -240,10 +240,8 @@ class SwinTransformer(nn.Module):
         # x = self.conv1_1(img)
         if img.size(1) == 6:
             x = self.conv1_1_6C(img)
-            x = self.stage1_6C(x)
         elif img.size(1) == 7:
             x = self.conv1_1_7c(img)
-            x = self.stage1(x)
 
         # x = self.bn1(x)
         # x = self.conv1_2(x)
@@ -251,13 +249,13 @@ class SwinTransformer(nn.Module):
         # print ("after two conv layers", x.shape)
 
         # print ("initial image shape", img.shape)
-
+        x1 = self.stage1(x)
         # print("after stage 1", x.shape)
-        x1 = self.stage2(x)
+        x2 = self.stage2(x1)
         # print("after stage 2", x.shape)
-        x2 = self.stage3(x)
+        x3 = self.stage3(x2)
         # print("after stage 3", x.shape)
-        x = self.stage4(x)
+        x4 = self.stage4(x3)
         # x = x.contiguous()
         # x = x.view(x.size(0),-1)
         # print("after stage 4", x.shape)
@@ -265,7 +263,7 @@ class SwinTransformer(nn.Module):
         # print("after mean", x.shape)
         # y = self.mlp_head(x)
         # print ('y.shape', y.shape)
-        return x1, x2, x3, y
+        return x1, x2, x3, x4
 
 
 def swin_t(hidden_dim=96, layers=(2, 2, 6, 2), heads=(3, 6, 12, 24), **kwargs):
