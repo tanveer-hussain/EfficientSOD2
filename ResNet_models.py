@@ -149,7 +149,7 @@ class Encoder_xy(nn.Module):
     def forward(self, x):
         # print (x.shape)
         swin_output = swin_model(x)
-        swin_output
+        swin_output = self.flatten(swin_output)
         # print (swin_output.shape)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
         # # # print(output.size())
