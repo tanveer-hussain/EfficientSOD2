@@ -242,6 +242,8 @@ class SwinTransformer(nn.Module):
             x = self.conv1_1_6C(img)
         elif img.size(1) == 7:
             x = self.conv1_1_7c(img)
+        elif img.size(1) == 7:
+            x = self.conv1_1_7c(img)
 
         # x = self.bn1(x)
         # x = self.conv1_2(x)
