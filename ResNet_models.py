@@ -460,15 +460,16 @@ class Saliency_feat_encoder(nn.Module):
         z = torch.unsqueeze(z, 3)
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
-        x = self.conv_depth1(x)
-        x = self.resnet.conv1(x)
-        x = self.resnet.bn1(x)
-        x = self.resnet.relu(x)
-        x = self.resnet.maxpool(x)
-        x1 = self.resnet.layer1(x)  # 256 x 64 x 64
-        x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
-        x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
-        x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
+        # x = self.conv_depth1(x)
+        # x = self.resnet.conv1(x)
+        # x = self.resnet.bn1(x)
+        # x = self.resnet.relu(x)
+        # x = self.resnet.maxpool(x)
+        # x1 = self.resnet.layer1(x)  # 256 x 64 x 64
+        # x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
+        # x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
+        # x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
+        x1 , x2 , x3 , x4 = swin_model(x)
 
         ## depth estimation
         conv1_depth = self.conv1_depth(x1)
