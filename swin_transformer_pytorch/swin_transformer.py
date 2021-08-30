@@ -240,7 +240,6 @@ class SwinTransformer(nn.Module):
         # x = self.conv1_1(img)
         if img.size(1) == 6:
             x = self.conv1_1_6C(img)
-
         elif img.size(1) == 7:
             x = self.conv1_1_7c(img)
 
