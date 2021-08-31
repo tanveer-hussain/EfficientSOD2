@@ -509,6 +509,7 @@ class Saliency_feat_encoder(nn.Module):
         return self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
+        print ("initializing weights....")
         res50 = models.resnet50(pretrained=True)
         pretrained_dict = res50.state_dict()
         all_params = {}
