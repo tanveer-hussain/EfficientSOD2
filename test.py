@@ -16,7 +16,7 @@ parser.add_argument('--feat_channel', type=int, default=32, help='reduced channe
 opt = parser.parse_args()
 
 datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
-dataset_name = datasets[1]
+dataset_name = datasets[4]
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
 epoch = 150
