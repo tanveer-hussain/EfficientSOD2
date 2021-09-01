@@ -592,5 +592,14 @@ class Segmentation(nn.Module):
                  use_checkpoint=False, upscale=2, img_range=1.):
 
         super(Segmentation, self).__init__()
-        in_channels = 3 = out_channels
+        in_channels = out_channels = 3
+        if in_channels == 3:
+            rgb_mean = (0.4488, 0.4371, 0.4040)
+            self.mean = torch.Tensor(rgb_mean).view(1, 3, 1, 1)
+        else:
+            self.mean = torch.zeros(1, 1, 1, 1)
+
+        self.upscale = upscale
+
+        self.conv_1 = nn.Conv2d(in_channels, embed_dim, 3 , 1 , 1)
         
