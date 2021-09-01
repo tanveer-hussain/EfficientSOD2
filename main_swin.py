@@ -735,8 +735,8 @@ class SwinIR(nn.Module):
         ################################ 3, high quality image reconstruction ################################
         elif self.upsampler == 'pixelshuffledirect':
             # for lightweight SR (to save parameters)
-            self.upsample = UpsampleOneStep(upscale, embed_dim, num_out_ch,
-                                            (patches_resolution[0], patches_resolution[1]))
+        self.upsample = UpsampleOneStep(upscale, embed_dim, num_out_ch,
+                                        (patches_resolution[0], patches_resolution[1]))
 
         self.apply(self._init_weights)
 
