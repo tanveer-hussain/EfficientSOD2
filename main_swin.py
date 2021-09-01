@@ -795,4 +795,27 @@ class Segmentation(nn.Module):
         self.upsample = UpsampleOneStep(upscale, embed_dim, out_channels,
                                         (patches_resolution[0], patches_resolution[1]))
 
+    def forward_features(self, x):
+        x_size = (x.shape[2], x.shape[3])
+        x = self.patch_embed(x)
+        if self.ape:
+            x = x + self.absolute_pos_embed
+        x = self.pos_drop(x)
+
+        for layer in self.layers:
+            x = layer(x, x_size)
+
+        x = self.norm(x)
+        x = self.patch_unembed(x, x_size)
+
+        return x
+
+    def forward(self, x):
+        self.mean = self.mean.type_as(x)
+        x = (x - self.mean) * self.img_range
+
+        x = self.conv_1(x)
+        x = self.conv_after_body(self.forward_features(x)) + x
+        x = self.upsample(x)
+
         
