@@ -668,7 +668,11 @@ class Segmentation(nn.Module):
 
         for i_layer in range(self.num_layers):
             layer = RSTB(dim=embed_dim,
-                         input_resolu)
+                         input_resolution=(patches_resolution[0], patches_resolution[1]),
+                         depth=depths[i_layer],
+                         num_heads=num_heads[i_layer],
+
+                         )
 
 
         
