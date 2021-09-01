@@ -667,7 +667,8 @@ class Segmentation(nn.Module):
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]
 
         for i_layer in range(self.num_layers):
-            layer =
+            layer = RSTB(dim=embed_dim,
+                         input_resolu)
 
 
         
