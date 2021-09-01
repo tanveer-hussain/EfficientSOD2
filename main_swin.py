@@ -618,7 +618,7 @@ class PatchUnEmbed(nn.Module):
     def flops(self):
         flops = 0
         return flops
-
+######################################################################################
 class Segmentation(nn.Module):
 
     def __init__(self, img_size=224, patch_size=1, in_channels=3, embed_dim=96, depths=[8,8,8,8], num_heads=[8,8,8,8], window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
