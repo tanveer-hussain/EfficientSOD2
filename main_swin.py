@@ -646,7 +646,7 @@ class SwinIR(nn.Module):
                  window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0.1,
                  norm_layer=nn.LayerNorm, ape=False, patch_norm=True,
-                 use_checkpoint=False, upscale=2, img_range=1., upsampler='', resi_connection='1conv',
+                 use_checkpoint=False, upscale=2, img_range=1., resi_connection='1conv',
                  **kwargs):
         super(SwinIR, self).__init__()
         num_in_ch = in_chans
@@ -659,7 +659,6 @@ class SwinIR(nn.Module):
         else:
             self.mean = torch.zeros(1, 1, 1, 1)
         self.upscale = upscale
-        self.upsampler = upsampler
 
         #####################################################################################################
         ################################### 1, shallow feature extraction ###################################
@@ -734,12 +733,6 @@ class SwinIR(nn.Module):
 
         #####################################################################################################
         ################################ 3, high quality image reconstruction ################################
-        if self.upsampler == 'pixelshuffle':
-            # for classical SR
-            self.conv_before_upsample = nn.Sequential(nn.Conv2d(embed_dim, num_feat, 3, 1, 1),
-                                                      nn.LeakyReLU(inplace=True))
-            self.upsample = Upsample(upscale, num_feat)
-            self.conv_last = nn.Conv2d(num_feat, num_out_ch, 3, 1, 1)
         elif self.upsampler == 'pixelshuffledirect':
             # for lightweight SR (to save parameters)
             self.upsample = UpsampleOneStep(upscale, embed_dim, num_out_ch,
@@ -824,7 +817,7 @@ if __name__ == '__main__':
     width = (720 // upscale // window_size + 1) * window_size
     model = SwinIR(upscale=2, img_size=(height, width),
                    window_size=window_size, img_range=1., depths=[6, 6, 6, 6],
-                   embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2, upsampler='pixelshuffledirect')
+                   embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2)
     print(model)
     print(height, width, model.flops() / 1e9)
 
