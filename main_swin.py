@@ -818,4 +818,6 @@ class Segmentation(nn.Module):
         x = self.conv_after_body(self.forward_features(x)) + x
         x = self.upsample(x)
 
+        x = x / self.img_range + self.mean
+
         
