@@ -610,4 +610,10 @@ class Segmentation(nn.Module):
         self.num_features = embed_dim
         self.mlp_ratio = mlp_ratio
 
+        # Split image into overlapping patches from swin transformer class
+        self.patch_embed = PatchEmbed(
+            img_size=img_size, p
+        )
+
+
         
