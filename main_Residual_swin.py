@@ -801,7 +801,7 @@ if __name__ == '__main__':
     print (model)
     x = torch.randn((1,3,height,width))
     x = model(x)
-    print (x)
+    print (x.shape)
 
     # upscale = 4
     # window_size = 8
