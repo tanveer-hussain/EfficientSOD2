@@ -662,6 +662,7 @@ class Segmentation(nn.Module):
             self.absolute_pos_embed = nn.Parameter(torch.zeros(1, num_patches, embed_dim))
             trunc_normal_(self.absolute_pos_embed, std=.02)
 
+        self.pos_drop = nn.Dropout(p=drop_rate)
 
 
         
