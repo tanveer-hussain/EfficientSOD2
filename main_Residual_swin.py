@@ -796,7 +796,7 @@ class SwinIR(nn.Module):
 
 
 if __name__ == '__main__':
-    height , width = 224
+    height = width = 224
 
     # upscale = 4
     # window_size = 8
