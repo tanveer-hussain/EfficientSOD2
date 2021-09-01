@@ -604,4 +604,5 @@ class Segmentation(nn.Module):
         self.conv_1 = nn.Conv2d(in_channels, embed_dim, 3 , 1 , 1)
 
         self.num_layers = len(depths)
+        self.embed_dim = embed_dim
         
