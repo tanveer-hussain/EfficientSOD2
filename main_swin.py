@@ -614,7 +614,7 @@ class Segmentation(nn.Module):
         self.patch_embed = PatchEmbed(
             img_size=img_size, patch_size=patch_size, in_chans=embed_dim, embed_dim=embed_dim,
             norm_layer=norm_layer if self.patch_norm else None)
-
+        num_patches = self.patch_embed.num_patches
 
 
         
