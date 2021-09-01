@@ -585,6 +585,39 @@ class SwinTransformer(nn.Module):
         return flops
 
 
+class PatchUnEmbed(nn.Module):
+    r""" Image to Patch Unembedding
+
+    Args:
+        img_size (int): Image size.  Default: 224.
+        patch_size (int): Patch token size. Default: 4.
+        in_chans (int): Number of input image channels. Default: 3.
+        embed_dim (int): Number of linear projection output channels. Default: 96.
+        norm_layer (nn.Module, optional): Normalization layer. Default: None
+    """
+
+    def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
+        super().__init__()
+        img_size = to_2tuple(img_size)
+        patch_size = to_2tuple(patch_size)
+        patches_resolution = [img_size[0] // patch_size[0], img_size[1] // patch_size[1]]
+        self.img_size = img_size
+        self.patch_size = patch_size
+        self.patches_resolution = patches_resolution
+        self.num_patches = patches_resolution[0] * patches_resolution[1]
+
+        self.in_chans = in_chans
+        self.embed_dim = embed_dim
+
+    def forward(self, x, x_size):
+        B, HW, C = x.shape
+        x = x.transpose(1, 2).view(B, self.embed_dim, x_size[0], x_size[1])  # B Ph*Pw C
+        return x
+
+    def flops(self):
+        flops = 0
+        return flops
+
 class Segmentation(nn.Module):
 
     def __init__(self, img_size=224, patch_size=1, in_channels=3, embed_dim=96, depths=[8,8,8,8], num_heads=[8,8,8,8], window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
@@ -616,7 +649,12 @@ class Segmentation(nn.Module):
             norm_layer=norm_layer if self.patch_norm else None)
         num_patches = self.patch_embed.num_patches
         patches_resolution = self.patch_embed.patches_resolution
-        self.patches
+        self.patches_resolution = patches_resolution
+
+        # Merging non-overlapping patches into an image
+        self.patch_un_embed = PatchUnEmbed(
+
+        )
 
 
         
