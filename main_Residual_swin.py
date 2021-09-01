@@ -794,10 +794,10 @@ class SwinIR(nn.Module):
         flops += H * W * 3 * self.embed_dim * self.embed_dim
         return flops
 
-from swi
+from swin_transformer import  SwinTransformer
 if __name__ == '__main__':
     height = width = 224
-    model =
+    model = S
 
     # upscale = 4
     # window_size = 8
