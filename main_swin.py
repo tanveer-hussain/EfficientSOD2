@@ -796,17 +796,10 @@ class SwinIR(nn.Module):
         self.mean = self.mean.type_as(x)
         x = (x - self.mean) * self.img_range
 
-        self.upsampler == 'pixelshuffledirect':
-            # for lightweight SR
-            x = self.conv_first(x)
-            x = self.conv_after_body(self.forward_features(x)) + x
-            x = self.upsample(x)
-
-        else:
-            # for image denoising and JPEG compression artifact reduction
-            x_first = self.conv_first(x)
-            res = self.conv_after_body(self.forward_features(x_first)) + x_first
-            x = x + self.conv_last(res)
+        # for lightweight SR
+        x = self.conv_first(x)
+        x = self.conv_after_body(self.forward_features(x)) + x
+        x = self.upsample(x)
 
         x = x / self.img_range + self.mean
 
