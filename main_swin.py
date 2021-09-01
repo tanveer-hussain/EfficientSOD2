@@ -664,5 +664,10 @@ class Segmentation(nn.Module):
 
         self.pos_drop = nn.Dropout(p=drop_rate)
 
+        dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]
+
+        for i_layer in range(self.num_layers):
+            layer =
+
 
         
