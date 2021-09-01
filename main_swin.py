@@ -592,3 +592,5 @@ class Segmentation(nn.Module):
                  use_checkpoint=False, upscale=2, img_range=1.):
 
         super(Segmentation, self).__init__()
+        in_channels = 3 = out_channels
+        
