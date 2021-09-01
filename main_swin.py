@@ -654,8 +654,9 @@ class Segmentation(nn.Module):
 
         # Merging non-overlapping patches into an image
         self.patch_un_embed = PatchUnEmbed(
+            img_size=img_size, patch_size=patch_size, in_chans=embed_dim, embed_dim=embed_dim,
+            norm_layer=norm_layer if self.patch_norm else None)
 
-        )
 
 
         
