@@ -799,6 +799,9 @@ if __name__ == '__main__':
     img_size = height = width = 224
     model = SwinTransformer()
     print (model)
+    x = torch.randn((1,3,height,width))
+    x = model(x)
+    print (x)
 
     # upscale = 4
     # window_size = 8
