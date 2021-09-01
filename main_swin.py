@@ -584,7 +584,8 @@ class SwinTransformer(nn.Module):
         flops += self.num_features * self.num_classes
         return flops
 
-
+#################################################################################
+# code by SWINIR
 class PatchUnEmbed(nn.Module):
     r""" Image to Patch Unembedding
 
