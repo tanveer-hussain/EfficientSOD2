@@ -605,4 +605,6 @@ class Segmentation(nn.Module):
 
         self.num_layers = len(depths)
         self.embed_dim = embed_dim
+        self.ape = ape
+
         
