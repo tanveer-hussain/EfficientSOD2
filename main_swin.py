@@ -608,5 +608,6 @@ class Segmentation(nn.Module):
         self.ape = ape
         self.patch_norm = patch_norm
         self.num_features = embed_dim
+        self.mlp_ratio = mlp_ratio
 
         
