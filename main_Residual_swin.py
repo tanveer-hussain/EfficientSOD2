@@ -796,8 +796,9 @@ class SwinIR(nn.Module):
 
 from swin_transformer import  SwinTransformer
 if __name__ == '__main__':
-    height = width = 224
-    model = S
+    img_size = height = width = 224
+    model = SwinTransformer()
+    print (model)
 
     # upscale = 4
     # window_size = 8
