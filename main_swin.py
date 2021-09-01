@@ -796,7 +796,7 @@ class SwinIR(nn.Module):
         self.mean = self.mean.type_as(x)
         x = (x - self.mean) * self.img_range
 
-        elif self.upsampler == 'pixelshuffledirect':
+        self.upsampler == 'pixelshuffledirect':
             # for lightweight SR
             x = self.conv_first(x)
             x = self.conv_after_body(self.forward_features(x)) + x
