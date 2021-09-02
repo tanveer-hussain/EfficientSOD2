@@ -298,17 +298,7 @@ class RCAB(nn.Module):
         return nn.Conv2d(in_channels, out_channels, kernel_size, padding=(kernel_size // 2), bias=bias)
 
     def forward(self, x):import torch
-import torch.nn as nn
-import torchvision.models as models
-import numpy as np
-from ResNet import *
-from utils import init_weights,init_weights_orthogonal_normal
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-from torch.autograd import Variable
-from torch.nn import Parameter, Softmax
-import torch.nn.functional as F
-from swin_transformer import SwinTransformer
-from torch.distributions import Normal, Independent, kl
+
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
