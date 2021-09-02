@@ -114,8 +114,7 @@ datasets = ["DUT-RGBD", "NLPR", 'NJU2K','SIP']
 # dataset_name = datasets[5]
 
 
-train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=opt.batchsize, trainsize=opt.trainsize)
-total_step = len(train_loader)
+
 train_z = torch.FloatTensor(training_set_size, opt.latent_dim).normal_(0, 1).cuda()
 
 if __name__ == '__main__':
@@ -195,4 +194,4 @@ if __name__ == '__main__':
             if not os.path.exists(save_path):
                 os.makedirs(save_path)
             if epoch % 10 == 0:
-                torch.save(generator.state_dict(), save_path + dataset_name + '_ALLSWINModel' + '_%d' % epoch + '_UCNet.pth')
+                torch.save(generator.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
