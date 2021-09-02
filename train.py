@@ -42,18 +42,6 @@ generator.cuda()
 generator_params = generator.parameters()
 generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
-## load data
-datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
-dataset_name = datasets[5]
-image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Labels/'
-depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name +'/Train/Depth/'
-gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Gray/'
-
-train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=opt.batchsize, trainsize=opt.trainsize)
-total_step = len(train_loader)
-train_z = torch.FloatTensor(training_set_size, opt.latent_dim).normal_(0, 1).cuda()
-
 ## define loss
 
 CE = torch.nn.BCELoss()
@@ -121,6 +109,17 @@ def linear_annealing(init, fin, step, annealing_steps):
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
+## load data
+datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
+dataset_name = datasets[5]
+image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
+gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Labels/'
+depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name +'/Train/Depth/'
+gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Gray/'
+
+train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root, batchsize=opt.batchsize, trainsize=opt.trainsize)
+total_step = len(train_loader)
+train_z = torch.FloatTensor(training_set_size, opt.latent_dim).normal_(0, 1).cuda()
 
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
