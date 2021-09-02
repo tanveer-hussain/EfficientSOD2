@@ -110,8 +110,8 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 ## load data
-datasets = ["DUT-RGBD", "NLPR", 'DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
-dataset_name = datasets[5]
+datasets = ["DUT-RGBD", "NLPR", 'NJU2K','SIP']
+# dataset_name = datasets[5]
 image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
 gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name + '/Train/Labels/'
 depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/'+ dataset_name +'/Train/Depth/'
