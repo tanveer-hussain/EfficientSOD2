@@ -15,11 +15,10 @@ def count_parameters(model):
 
 swin_model = SwinTransformer()
 checkpoint = torch.load("swin_base_patch4_window7_224_22k.pth", map_location="cpu")
-msg = swin_model.load_state_dict(checkpoint, strict=True)
+msg = swin_model.load_state_dict(checkpoint, strict=False)
 print (msg)
 swin_model.to(device)
 print('parameters = ', count_parameters(swin_model))
-
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
