@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=150, help='epoch number')
+parser.add_argument('--epoch', type=int, default=100, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=16, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -109,26 +109,24 @@ def linear_annealing(init, fin, step, annealing_steps):
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-## load data
-datasets = ["DUT-RGBD", "NLPR", 'NJU2K','SIP']
+
 # dataset_name = datasets[5]
 
-
-
-train_z = torch.FloatTensor(training_set_size, opt.latent_dim).normal_(0, 1).cuda()
 
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
 
     print("Let's Play!")
+    ## load data
+    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 
     for dataset_name in datasets:
+        print ("Training > ", dataset_name, " dataset.")
         image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
         depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
         gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
-        train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,
-                                                     batchsize=opt.batchsize, trainsize=opt.trainsize)
+        train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
         total_step = len(train_loader)
         for epoch in range(1, opt.epoch+1):
             # print('Generator Learning Rate: {}'.format(generator_optimizer.param_groups[0]['lr']))
