@@ -15,7 +15,7 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 swin_model = SwinTransformer()
-        
+checkpoint =        
 swin_model.to(device)
 print('parameters = ', count_parameters(swin_model))
 
