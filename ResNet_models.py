@@ -1,49 +1,4 @@
-import torch
-import torch.nn as nn
-import torchvision.models as models
-import numpy as np
-from ResNet import *
-from utils import init_weights,init_weights_orthogonal_normal
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-from torch.autograd import Variable
-from torch.nn import Parameter, Softmax
-import torch.nn.functional as F
-from swin_transformer import SwinTransformer
-from torch.distributions import Normal, Independent, kl
 
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-swin_model = SwinTransformer()
-checkpoint = torch.load("swin_base_patch4_window7_224_22k.pth", map_location="cpu")
-msg = swin_model.load_state_dict(checkpoint, strict=False)
-print (msg)
-swin_model.to(device)
-print('parameters = ', count_parameters(swin_model))
-
-
-class BasicConv2d(nn.Module):
-    def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
-        super(BasicConv2d, self).__init__()
-        self.conv = nn.Conv2d(in_planes, out_planes,
-                              kernel_size=kernel_size, stride=stride,
-                              padding=padding, dilation=dilation, bias=False)
-        self.bn = nn.BatchNorm2d(out_planes)
-        self.relu = nn.ReLU(inplace=True)
-
-    def forward(self, x):
-        x = self.conv(x)
-        x = self.bn(x)
-        return x
-
-class Classifier_Module(nn.Module):
-    def __init__(self,dilation_series,padding_series,NoLabels, input_channel):
-        super(Classifier_Module, self).__init__()
-        self.conv2d_list = nn.ModuleList()
-        for dilation,padding in zip(dilation_series,padding_series):
-            self.conv2d_list.append(nn.Conv2d(input_channel,NoLabels,kernel_size=3,stride=1, padding =padding, dilation = dilation,bias = True))
-        for m in self.conv2d_list:
-            m.weight.data.normal_(0, 0.01)
 import torchvision.models as models
 import numpy as np
 from ResNet import *
