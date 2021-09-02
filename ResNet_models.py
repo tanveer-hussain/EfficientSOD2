@@ -15,7 +15,9 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 swin_model = SwinTransformer()
-checkpoint =        
+checkpoint = torch.load("swin_base_patch4_window7_224_22k.pth", map_location="cpu")
+msg = swin_model.load_state_dict(checkpoint, strict=False)
+print (msg)
 swin_model.to(device)
 print('parameters = ', count_parameters(swin_model))
 
