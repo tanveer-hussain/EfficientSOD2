@@ -121,7 +121,7 @@ if __name__ == '__main__':
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 
     for dataset_name in datasets:
-        print ("Training > ", dataset_name, " dataset.")
+        print ("Training > ", dataset_name, " < dataset.")
         image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
         depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
