@@ -123,75 +123,76 @@ if __name__ == '__main__':
 
     print("Let's Play!")
 
-    image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-    gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
-    depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
-    gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
-    for epoch in range(1, opt.epoch+1):
-        # print('Generator Learning Rate: {}'.format(generator_optimizer.param_groups[0]['lr']))
+    for dataset_name in datasets:
+        image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
+        gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
+        depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
+        gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
+        for epoch in range(1, opt.epoch+1):
+            # print('Generator Learning Rate: {}'.format(generator_optimizer.param_groups[0]['lr']))
 
-        for i, pack in enumerate(train_loader, start=1):
-            images, gts, depths, grays, index_batch = pack
-            # print(index_batch)
-            images = Variable(images)
-            gts = Variable(gts)
-            depths = Variable(depths)
-            grays = Variable(grays)
-            images = images.cuda()
-            gts = gts.cuda()
-            depths = depths.cuda()
-            grays = grays.cuda()
+            for i, pack in enumerate(train_loader, start=1):
+                images, gts, depths, grays, index_batch = pack
+                # print(index_batch)
+                images = Variable(images)
+                gts = Variable(gts)
+                depths = Variable(depths)
+                grays = Variable(grays)
+                images = images.cuda()
+                gts = gts.cuda()
+                depths = depths.cuda()
+                grays = grays.cuda()
 
-            #print ("generator model params > ", count_parameters(generator))
+                #print ("generator model params > ", count_parameters(generator))
 
-            pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
 
-            ## l2 regularizer the inference model
-            reg_loss = l2_regularisation(generator.xy_encoder) + \
-                    l2_regularisation(generator.x_encoder) + l2_regularisation(generator.sal_encoder)
-            smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
-            reg_loss = opt.reg_weight * reg_loss
-            latent_loss = latent_loss
-            depth_loss_post = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_post),depths)
-            sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
-            anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-            latent_loss = opt.lat_weight*anneal_reg *latent_loss
-            gen_loss_cvae = sal_loss + latent_loss
-            gen_loss_cvae = opt.vae_loss_weight*gen_loss_cvae
+                ## l2 regularizer the inference model
+                reg_loss = l2_regularisation(generator.xy_encoder) + \
+                        l2_regularisation(generator.x_encoder) + l2_regularisation(generator.sal_encoder)
+                smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
+                reg_loss = opt.reg_weight * reg_loss
+                latent_loss = latent_loss
+                depth_loss_post = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_post),depths)
+                sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
+                anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+                latent_loss = opt.lat_weight*anneal_reg *latent_loss
+                gen_loss_cvae = sal_loss + latent_loss
+                gen_loss_cvae = opt.vae_loss_weight*gen_loss_cvae
 
-            smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
-            depth_loss_prior = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_prior),depths)
-            gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
-            gen_loss_gsnn = (1-opt.vae_loss_weight)*gen_loss_gsnn
-            gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
+                smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
+                depth_loss_prior = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_prior),depths)
+                gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
+                gen_loss_gsnn = (1-opt.vae_loss_weight)*gen_loss_gsnn
+                gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
 
-            generator_optimizer.zero_grad()
-            gen_loss.backward()
-            generator_optimizer.step()
-            visualize_gt(gts)
-            visualize_uncertainty_post_init(torch.sigmoid(pred_post))
-            visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
-
-
-            if i % 2 == 0 or i == total_step:
-                print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
-                    format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
-                # print(
-                #     '{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
-                #     format(datetime.now(), epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data,
-                #            reg_loss.data))
-                # print(anneal_reg)
-            # if epoch % 10 == 0:
-            #     opt.lr_gen = opt.lr_gen/10
-                # generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+                generator_optimizer.zero_grad()
+                gen_loss.backward()
+                generator_optimizer.step()
+                visualize_gt(gts)
+                visualize_uncertainty_post_init(torch.sigmoid(pred_post))
+                visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
 
-        adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
+                if i % 2 == 0 or i == total_step:
+                    print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
+                        format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
+                    # print(
+                    #     '{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
+                    #     format(datetime.now(), epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data,
+                    #            reg_loss.data))
+                    # print(anneal_reg)
+                # if epoch % 10 == 0:
+                #     opt.lr_gen = opt.lr_gen/10
+                    # generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
-        save_path = 'models/'
+
+            adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
+
+            save_path = 'models/'
 
 
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        if epoch % 10 == 0:
-            torch.save(generator.state_dict(), save_path + dataset_name + '_ALLSWINModel' + '_%d' % epoch + '_UCNet.pth')
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            if epoch % 10 == 0:
+                torch.save(generator.state_dict(), save_path + dataset_name + '_ALLSWINModel' + '_%d' % epoch + '_UCNet.pth')
