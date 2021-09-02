@@ -3,7 +3,8 @@ import torch.nn as nn
 import torchvision.models as models
 import numpy as np
 from ResNet import *
-from utils import init_weights,init_weights_orthogonal_normal
+from utils import init_weights, init_weights_orthogonal_normal
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
@@ -11,13 +12,15 @@ import torch.nn.functional as F
 from swin_transformer import SwinTransformer
 from torch.distributions import Normal, Independent, kl
 
+
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
+
 swin_model = SwinTransformer()
-checkpoint = torch.load("swin_base_patch4_window7_224_22k.pth", map_location="cpu")
+checkpoint = torch.load("/home/tinu/backup/swin_tiny_patch4_window7_224.pth", map_location='cpu')
 msg = swin_model.load_state_dict(checkpoint, strict=False)
-print (msg)
+print(msg)
 swin_model.to(device)
 print('parameters = ', count_parameters(swin_model))
 
@@ -36,19 +39,22 @@ class BasicConv2d(nn.Module):
         x = self.bn(x)
         return x
 
+
 class Classifier_Module(nn.Module):
-    def __init__(self,dilation_series,padding_series,NoLabels, input_channel):
+    def __init__(self, dilation_series, padding_series, NoLabels, input_channel):
         super(Classifier_Module, self).__init__()
         self.conv2d_list = nn.ModuleList()
-        for dilation,padding in zip(dilation_series,padding_series):
-            self.conv2d_list.append(nn.Conv2d(input_channel,NoLabels,kernel_size=3,stride=1, padding =padding, dilation = dilation,bias = True))
+        for dilation, padding in zip(dilation_series, padding_series):
+            self.conv2d_list.append(
+                nn.Conv2d(input_channel, NoLabels, kernel_size=3, stride=1, padding=padding, dilation=dilation,
+                          bias=True))
         for m in self.conv2d_list:
             m.weight.data.normal_(0, 0.01)
 
     def forward(self, x):
         out = self.conv2d_list[0](x)
-        for i in range(len(self.conv2d_list)-1):
-            out += self.conv2d_list[i+1](x)
+        for i in range(len(self.conv2d_list) - 1):
+            out += self.conv2d_list[i + 1](x)
         return out
 
 
@@ -60,13 +66,13 @@ class Encoder_x(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
-        self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
+        self.layer2 = nn.Conv2d(channels, 2 * channels, kernel_size=4, stride=2, padding=1)
         self.bn2 = nn.BatchNorm2d(channels * 2)
-        self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
+        self.layer3 = nn.Conv2d(2 * channels, 4 * channels, kernel_size=4, stride=2, padding=1)
         self.bn3 = nn.BatchNorm2d(channels * 4)
-        self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+        self.layer4 = nn.Conv2d(4 * channels, 8 * channels, kernel_size=4, stride=2, padding=1)
         self.bn4 = nn.BatchNorm2d(channels * 8)
-        self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+        self.layer5 = nn.Conv2d(8 * channels, 8 * channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
         self.flatten = nn.Flatten()
@@ -77,7 +83,6 @@ class Encoder_x(nn.Module):
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
-        
         _, _, _, swin_output = swin_model(input)
         swin_output = self.flatten(swin_output)
         # print(swin_output.shape)
@@ -111,6 +116,7 @@ class Encoder_x(nn.Module):
 
         return dist, mu, logvar
 
+
 class Encoder_xy(nn.Module):
     def __init__(self, input_channels, channels, latent_size):
         super(Encoder_xy, self).__init__()
@@ -120,16 +126,16 @@ class Encoder_xy(nn.Module):
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
 
-        self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
+        self.layer2 = nn.Conv2d(channels, 2 * channels, kernel_size=4, stride=2, padding=1)
         self.bn2 = nn.BatchNorm2d(channels * 2)
 
-        self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
+        self.layer3 = nn.Conv2d(2 * channels, 4 * channels, kernel_size=4, stride=2, padding=1)
         self.bn3 = nn.BatchNorm2d(channels * 4)
 
-        self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+        self.layer4 = nn.Conv2d(4 * channels, 8 * channels, kernel_size=4, stride=2, padding=1)
         self.bn4 = nn.BatchNorm2d(channels * 8)
 
-        self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+        self.layer5 = nn.Conv2d(8 * channels, 8 * channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
         self.flatten = nn.Flatten()
@@ -175,6 +181,7 @@ class Encoder_xy(nn.Module):
 
         return dist, mu, logvar
 
+
 class Generator(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Generator, self).__init__()
@@ -201,28 +208,30 @@ class Generator(nn.Module):
 
     def forward(self, x, depth, y=None, training=True):
         if training:
-            self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
-            self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
+            self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x, depth, y), 1))
+            self.prior, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
             lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
             z_noise_post = self.reparametrize(muxy, logvarxy)
             z_noise_prior = self.reparametrize(mux, logvarx)
-            self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
+            self.prob_pred_post, self.depth_pred_post = self.sal_encoder(x, depth, z_noise_post)
             self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
             return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
-            _, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
+            _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
             z_noise = self.reparametrize(mux, logvarx)
-            self.prob_pred,_  = self.sal_encoder(x,depth,z_noise)
+            self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
             return self.prob_pred
 
 
 class CAM_Module(nn.Module):
     """ Channel attention module"""
+
     def __init__(self):
         super(CAM_Module, self).__init__()
         self.gamma = Parameter(torch.zeros(1))
-        self.softmax  = Softmax(dim=-1)
-    def forward(self,x):
+        self.softmax = Softmax(dim=-1)
+
+    def forward(self, x):
         """
             inputs :
                 x : input feature maps( B X C X H X W)
@@ -234,15 +243,16 @@ class CAM_Module(nn.Module):
         proj_query = x.view(m_batchsize, C, -1)
         proj_key = x.view(m_batchsize, C, -1).permute(0, 2, 1)
         energy = torch.bmm(proj_query, proj_key)
-        energy_new = torch.max(energy, -1, keepdim=True)[0].expand_as(energy)-energy
+        energy_new = torch.max(energy, -1, keepdim=True)[0].expand_as(energy) - energy
         attention = self.softmax(energy_new)
         proj_value = x.view(m_batchsize, C, -1)
 
         out = torch.bmm(attention, proj_value)
         out = out.view(m_batchsize, C, height, width)
 
-        out = self.gamma*out + x
+        out = self.gamma * out + x
         return out
+
 
 ## Channel Attention (CA) Layer
 class CALayer(nn.Module):
@@ -252,10 +262,10 @@ class CALayer(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         # feature channel downscale and upscale --> channel weight
         self.conv_du = nn.Sequential(
-                nn.Conv2d(channel, channel // reduction, 1, padding=0, bias=True),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(channel // reduction, channel, 1, padding=0, bias=True),
-                nn.Sigmoid()
+            nn.Conv2d(channel, channel // reduction, 1, padding=0, bias=True),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(channel // reduction, channel, 1, padding=0, bias=True),
+            nn.Sigmoid()
         )
 
     def forward(self, x):
@@ -263,14 +273,14 @@ class CALayer(nn.Module):
         y = self.conv_du(y)
         return x * y
 
-## Residual Channel Attention Block (RCAB)
 
+## Residual Channel Attention Block (RCAB)
 
 
 class RCAB(nn.Module):
     def __init__(
-        self, n_feat, kernel_size=3, reduction=16,
-        bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
+            self, n_feat, kernel_size=3, reduction=16,
+            bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
 
         super(RCAB, self).__init__()
         modules_body = []
@@ -283,13 +293,14 @@ class RCAB(nn.Module):
         self.res_scale = res_scale
 
     def default_conv(self, in_channels, out_channels, kernel_size, bias=True):
-        return nn.Conv2d(in_channels, out_channels, kernel_size,padding=(kernel_size // 2), bias=bias)
+        return nn.Conv2d(in_channels, out_channels, kernel_size, padding=(kernel_size // 2), bias=bias)
 
     def forward(self, x):
         res = self.body(x)
-        #res = self.body(x).mul(self.res_scale)
+        # res = self.body(x).mul(self.res_scale)
         res += x
         return res
+
 
 class Triple_Conv(nn.Module):
     def __init__(self, in_channel, out_channel):
@@ -302,6 +313,7 @@ class Triple_Conv(nn.Module):
 
     def forward(self, x):
         return self.reduce(x)
+
 
 class _DenseAsppBlock(nn.Sequential):
     """ ConvNet block for building DenseASPP. """
@@ -331,7 +343,7 @@ class _DenseAsppBlock(nn.Sequential):
         self.drop_rate = drop_out
 
     def forward(self, _input):
-        #feature = super(_DenseAsppBlock, self).forward(_input)
+        # feature = super(_DenseAsppBlock, self).forward(_input)
         feature = self.asppconv(_input)
 
         if self.drop_rate > 0:
@@ -365,7 +377,7 @@ class multi_scale_aspp(nn.Sequential):
         )
 
     def forward(self, _input):
-        #feature = super(_DenseAsppBlock, self).forward(_input)
+        # feature = super(_DenseAsppBlock, self).forward(_input)
         aspp3 = self.ASPP_3(_input)
         feature = torch.cat((aspp3, _input), dim=1)
 
@@ -414,7 +426,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
-        self.conv_depth1 = BasicConv2d(6+latent_dim, 3, kernel_size=3, padding=1)
+        self.conv_depth1 = BasicConv2d(6 + latent_dim, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -445,10 +457,11 @@ class Saliency_feat_encoder(nn.Module):
         repeat_idx = [1] * a.dim()
         repeat_idx[dim] = n_tile
         a = a.repeat(*(repeat_idx))
-        order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
+        order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(
+            device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x,depth,z):
+    def forward(self, x, depth, z):
         z = torch.unsqueeze(z, 2)
         z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
         z = torch.unsqueeze(z, 3)
@@ -463,7 +476,7 @@ class Saliency_feat_encoder(nn.Module):
         # x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
         # x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
         # x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
-        x1 , x2 , x3 , x4 = swin_model(x)
+        x1, x2, x3, x4 = swin_model(x)
 
         ## depth estimation
         conv1_depth = self.conv1_depth(x1)
@@ -472,7 +485,6 @@ class Saliency_feat_encoder(nn.Module):
         conv4_depth = self.upsample8(self.conv4_depth(x4))
         conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
         depth_pred = self.layer_depth(conv_depth)
-
 
         conv1_feat = self.conv1(x1)
         conv1_feat = self.asppconv1(conv1_feat)
@@ -503,7 +515,7 @@ class Saliency_feat_encoder(nn.Module):
         return self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
-        print ("initializing weights....")
+        print("initializing weights....")
         res50 = models.resnet50(pretrained=True)
         pretrained_dict = res50.state_dict()
         all_params = {}
