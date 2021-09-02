@@ -8,21 +8,13 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
-from swin_transformer_pytorch import SwinTransformer
+from swin_transformer import SwinTransformer
 from torch.distributions import Normal, Independent, kl
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-swin_model = SwinTransformer(
-        hidden_dim=96,
-        layers=(2, 2, 6, 2),
-        heads=(3, 6, 12, 24),
-        channels=3,
-        head_dim=32,
-        window_size=7,
-        downscaling_factors=(4, 2, 2, 2),
-        relative_pos_embedding=True)
+swin_model = SwinTransformer()
         
 swin_model.to(device)
 print('parameters = ', count_parameters(swin_model))
