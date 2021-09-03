@@ -116,22 +116,22 @@ class Encoder_xy(nn.Module):
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
 
-        self.fc1 = nn.Linear(256*7*7, latent_size)
-        self.fc2 = nn.Linear(256*7*7, latent_size)
+        self.fc1 = nn.Linear(49*768, latent_size)
+        self.fc2 = nn.Linear(49*768, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, x):
-        output = self.leakyrelu(self.bn1(self.layer1(x)))
-        # print(output.size())
-        output = self.leakyrelu(self.bn2(self.layer2(output)))
-        # print(output.size())
-        output = self.leakyrelu(self.bn3(self.layer3(output)))
-        # print(output.size())
-        output = self.leakyrelu(self.bn4(self.layer4(output)))
-        # print(output.size())
-        output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, 256*7*7)
+        # output = self.leakyrelu(self.bn1(self.layer1(x)))
+        # # print(output.size())
+        # output = self.leakyrelu(self.bn2(self.layer2(output)))
+        # # print(output.size())
+        # output = self.leakyrelu(self.bn3(self.layer3(output)))
+        # # print(output.size())
+        # output = self.leakyrelu(self.bn4(self.layer4(output)))
+        # # print(output.size())
+        # output = self.leakyrelu(self.bn4(self.layer5(output)))
+        # output = output.view(-1, 256*7*7)
 
         mu = self.fc1(output)
         mu_mean = torch.mean(mu, 0, keepdim=True)
