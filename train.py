@@ -120,6 +120,10 @@ if __name__ == '__main__':
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     save_results_path = r"/home/tinu/PycharmProjects/SAFE/TempResults.dat"
+    save_path = 'models/'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
     for dataset_name in datasets:
         print ("Training > ", dataset_name, " < dataset.")
         image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
@@ -134,17 +138,10 @@ if __name__ == '__main__':
             for i, pack in enumerate(train_loader, start=1):
                 images, gts, depths, grays, index_batch = pack
                 # print(index_batch)
-                images = Variable(images)
-                gts = Variable(gts)
-                depths = Variable(depths)
-                grays = Variable(grays)
-                images = images.cuda()
-                gts = gts.cuda()
-                depths = depths.cuda()
-                grays = grays.cuda()
-
-                #print ("generator model params > ", count_parameters(generator))
-
+                images = Variable(images).cuda()
+                gts = Variable(gts).cuda()
+                depths = Variable(depths).cuda()
+                grays = Variable(grays).cuda()
                 pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
 
                 ## l2 regularizer the inference model
@@ -180,7 +177,7 @@ if __name__ == '__main__':
 
             adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
 
-            save_path = 'models/'
+
 
             if epoch % 50 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
