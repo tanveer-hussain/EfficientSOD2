@@ -9,6 +9,9 @@ from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
 from torch.distributions import Normal, Independent, kl
+from swin_transformer import SwinTransformer
+
+
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
