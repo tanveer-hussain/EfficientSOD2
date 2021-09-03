@@ -120,6 +120,40 @@ if __name__ == '__main__':
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 
+    save_results_path = r"/home/tinu/PycharmProjects/SAFE/TempResults.dat"  # hikmat path
+    # save_results_path = r"/home/tinu/PycharmProjects/SAFE/TempResults.dat" # tanveer path
+    save_path = 'TrainedModels/'
+    mode = 'a+'  # if os.path.exists(save_results_path) else 'w'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    for dataset_name in datasets:
+        print("Training : ", dataset_name, " <")
+        # dataset_path = r'/home/tinu/Desktop/' + dataset_name + '/' + d_type[0] # tanveer path
+        dataset_path = r'/home/tinu/Desktop/' + dataset_name + '/' + d_type[0]  # hikmat path
+        train_data = DatasetLoader(dataset_path)
+        train_loader = DataLoader(train_data, batch_size=16, shuffle=True, num_workers=8, drop_last=True)
+
+        for epoch in range(1, epochs + 1):
+            classification_loss, segmentation_loss, loss = train(model, optimizerr, classification_criterion,
+                                                                 segmentation_criterion, train_loader)
+            if epoch % 25 == 0:
+                print(
+                    'Epoch [{:03d}/{:03d}], Segmentation Loss: {:.4f}, Classification Loss: {:.4f}, Total Model Loss: {:.4f}'.
+                    format(epoch, epochs, round(segmentation_loss.item(), 4), round(classification_loss.item(), 4),
+                           loss.item()))
+
+            if epoch % 50 == 0:
+                with open(save_results_path, mode) as ResultsFile:
+                    writing_string = "Dataset: " + dataset_name + ", Base Model," + " Epoch [" + str(epoch) + "/" + str(
+                        epochs) + "], Segmentation Loss:" + str(
+                        round(segmentation_loss.item(), 4)) + ", Classification Loss:" + str(
+                        round(classification_loss.item(), 4)) + \
+                                     ", Total Model Loss:" + str(loss.item()) + "\n"
+                    ResultsFile.write(writing_string)
+                torch.save(model.state_dict(), save_path + dataset_name + '_Base' + '_%d' % epoch + '_.pth')
+
+
+
     for dataset_name in datasets:
         print ("Training > ", dataset_name, " < dataset.")
         image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
