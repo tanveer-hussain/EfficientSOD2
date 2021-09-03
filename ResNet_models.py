@@ -100,7 +100,7 @@ class Encoder_x(nn.Module):
         mu_std = torch.std(mu, 0, keepdim=True)
         mu = (mu - mu_mean) / mu_std
 
-        logvar = self.fc2(swin_output)
+        logvar = self.fc2(output)
         logvar_mean = torch.mean(logvar, 0, keepdim=True)
         log_std = torch.std(logvar, 0, keepdim=True)
         logvar = (logvar - logvar_mean) / log_std
