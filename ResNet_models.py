@@ -142,7 +142,7 @@ class Encoder_xy(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        # output = output.view(-1, 256*7*7)
+        output = output.view(-1, 256*7*7)
         # output = swin_model(self.conv1(x))
         # output = self.flatten(output)
 
