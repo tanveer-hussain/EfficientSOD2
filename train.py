@@ -119,6 +119,7 @@ if __name__ == '__main__':
     print("Let's Play!")
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    save_results_path = r"/home/tinu/PycharmProjects/SAFE/TempResults.dat"
     for dataset_name in datasets:
         print ("Training > ", dataset_name, " < dataset.")
         image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
@@ -176,22 +177,14 @@ if __name__ == '__main__':
                 if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
-                    # print(
-                    #     '{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
-                    #     format(datetime.now(), epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data,
-                    #            reg_loss.data))
-                    # print(anneal_reg)
-                # if epoch % 10 == 0:
-                #     opt.lr_gen = opt.lr_gen/10
-                    # generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
-
 
             adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
 
             save_path = 'models/'
 
+            if epoch % 50 == 0:
+                with open(save_results_path, "a+") as ResultsFile:
+                    writing_string = epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data
+                    ResultsFile.write(writing_string)
 
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
-            if epoch % 10 == 0:
-                torch.save(generator.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
+                    torch.save(generator.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
