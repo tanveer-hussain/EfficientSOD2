@@ -11,6 +11,7 @@ import torch.nn.functional as F
 from torch.distributions import Normal, Independent, kl
 from swin_transformer import SwinTransformer
 
+swin_model = SwinTransformer()
 
 
 class BasicConv2d(nn.Module):
