@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import torchvision.models as models
 import numpy as np
 from ResNet import *
@@ -14,11 +15,12 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 swin_model = SwinTransformer()
-checkpoint = torch.load("/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
+checkpoint = torch.load("swin_base_patch4_window7_224_22k.pth", map_location="cpu")
 msg = swin_model.load_state_dict(checkpoint, strict=False)
 print (msg)
 swin_model.to(device)
 print('parameters = ', count_parameters(swin_model))
+
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
@@ -56,7 +58,7 @@ class Encoder_x(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
-        self.layer1 = nn.Conv2d(input_channels, 3, kernel_size=3, stride=1, padding=1)
+        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
         self.bn2 = nn.BatchNorm2d(channels * 2)
@@ -76,8 +78,7 @@ class Encoder_x(nn.Module):
 
     def forward(self, input):
 
-        input = self.layer1(input)
-        swin_output = swin_model(input)
+        _, _, _, swin_output = swin_model(input)
         swin_output = self.flatten(swin_output)
         # print(swin_output.shape)
         #
@@ -116,7 +117,7 @@ class Encoder_xy(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
-        self.layer1 = nn.Conv2d(input_channels, 3, kernel_size=3, stride=1, padding=1)
+        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
 
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
@@ -143,8 +144,7 @@ class Encoder_xy(nn.Module):
 
     def forward(self, x):
         # print (x.shape)
-        x = self.layer1(x)
-        swin_output = swin_model(x)
+        _, _, _, swin_output = swin_model(x)
         swin_output = self.flatten(swin_output)
         # print (swin_output.shape)
         # output = self.leakyrelu(self.bn1(self.layer1(x)))
@@ -424,7 +424,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv1_depth = Triple_Conv(9, channel)
+        self.conv1_depth = Triple_Conv(96, channel)
         self.conv2_depth = Triple_Conv(192, channel)
         self.conv3_depth = Triple_Conv(384, channel)
         self.conv4_depth = Triple_Conv(768, channel)
@@ -454,16 +454,16 @@ class Saliency_feat_encoder(nn.Module):
         z = torch.unsqueeze(z, 3)
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
-        # x1 = self.conv_depth1(x)
-        x = self.resnet.conv1(x)
-        x = self.resnet.bn1(x)
-        x = self.resnet.relu(x)
-        x = self.resnet.maxpool(x)
-        x1 = self.resnet.layer1(x)  # 256 x 64 x 64
-        x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
-        x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
-        x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
-        # x = swin_model(x)
+        # x = self.conv_depth1(x)
+        # x = self.resnet.conv1(x)
+        # x = self.resnet.bn1(x)
+        # x = self.resnet.relu(x)
+        # x = self.resnet.maxpool(x)
+        # x1 = self.resnet.layer1(x)  # 256 x 64 x 64
+        # x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
+        # x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
+        # x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
+        x1 , x2 , x3 , x4 = swin_model(x)
 
         ## depth estimation
         conv1_depth = self.conv1_depth(x1)
@@ -521,12 +521,3 @@ class Saliency_feat_encoder(nn.Module):
                 all_params[k] = v
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
-
-
-    def forward(self, x):
-        out = self.conv2d_list[0](x)
-        for i in range(len(self.conv2d_list)-1):
-            out += self.conv2d_list[i+1](x)
-        return out
-
-        self.input_channels = input_channels
