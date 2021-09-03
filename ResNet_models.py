@@ -438,7 +438,7 @@ class Saliency_feat_encoder(nn.Module):
         depth_pred = self.upsample4(depth_pred)
         depth_pred = self.custom_upsample(depth_pred)
         depth_pred = self.conv2(depth_pred)
-        print ("x")
+        # print ("x")
 
         # x = self.conv_depth1(x)
         # x = self.resnet.conv1(x)
