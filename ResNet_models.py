@@ -376,8 +376,8 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv1 = Triple_Conv(7, 3)
-        self.conv2 = Triple_Conv(512, channel)
+        self.conv1 = Triple_Conv(9, 3)
+        self.conv2 = Triple_Conv(3, channel)
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
 
@@ -428,6 +428,7 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
         x = self.conv1(x)
+        depth = self.conv2(depth)
         # x = self.conv_depth1(x)
         # x = self.resnet.conv1(x)
         # x = self.resnet.bn1(x)
