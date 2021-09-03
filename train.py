@@ -174,6 +174,6 @@ if __name__ == '__main__':
             adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 1 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], gen vae Loss:" + str(gen_loss_cvae.data.item()) + ", gen_loss_gsnn:" + str(gen_loss_gsnn.data.item()) + ", reg_loss:" + str(reg_loss.data.item())
+                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], gen vae Loss:" + str(gen_loss_cvae.data.item()) + ", gen_loss_gsnn:" + str() + ", reg_loss:" + str(round(reg_loss.data.item(),4)) + "\n"
                     ResultsFile.write(writing_string)
                 torch.save(generator.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
