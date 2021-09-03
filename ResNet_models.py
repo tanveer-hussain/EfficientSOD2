@@ -11,7 +11,7 @@ import torch.nn.functional as F
 from torch.distributions import Normal, Independent, kl
 from swin_transformer import SwinTransformer
 
-swin_model = SwinTransformer()
+swin_model = SwinTransformer().to(device)
 checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
 msg = swin_model.load_state_dict(checkpoint, strict=False)
 print (msg)
@@ -376,6 +376,8 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
+        self.custom_upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
+
         self.conv1 = Triple_Conv(9, 3)
         self.conv2 = Triple_Conv(3, channel)
         self.conv3 = Triple_Conv(1024, channel)
@@ -428,7 +430,12 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
         x = self.conv1(x)
-        depth = self.conv2(depth)
+        sal_init = swin_model(x)
+        depth = swin_model(depth)
+        sal_init = sal_init.transpose(1,2)
+        sal_init = self.upsample4(sal_init)
+        sal_init = self.custom_upsample(sal_init)
+
         # x = self.conv_depth1(x)
         # x = self.resnet.conv1(x)
         # x = self.resnet.bn1(x)
