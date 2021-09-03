@@ -86,6 +86,7 @@ class Encoder_x(nn.Module):
         # print(output.size())
         # output = self.tanh(output)
         output = swin_model(self.conv1(input))
+        output = self.flatten(output)
 
         mu = self.fc1(output)
         mu_mean = torch.mean(mu, 0, keepdim=True)
