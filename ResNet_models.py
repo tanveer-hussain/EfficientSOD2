@@ -91,7 +91,8 @@ class Encoder_x(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, 256 * 7 * 7)
+        # output = output.view(-1, 256 * 7 * 7)
+        output = self.flatten(output)
         print(output.size())
         output = self.tanh(output)
 
@@ -156,7 +157,9 @@ class Encoder_xy(nn.Module):
         output = self.leakyrelu(self.bn4(self.layer4(output)))
         # # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        output = output.view(-1, 256 * 7 * 7)
+        # output = output.view(-1, 256 * 7 * 7)
+        output = self.flatten(output)
+
 
         mu = self.fc1(output)
         mu_mean = torch.mean(mu, 0, keepdim=True)
