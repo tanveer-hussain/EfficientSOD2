@@ -131,9 +131,8 @@ if __name__ == '__main__':
         gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
         train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
         total_step = len(train_loader)
-        for epoch in range(1, opt.epoch+1):
-            # print('Generator Learning Rate: {}'.format(generator_optimizer.param_groups[0]['lr']))
 
+        for epoch in range(1, opt.epoch+1):
             for i, pack in enumerate(train_loader, start=1):
                 images, gts, depths, grays, index_batch = pack
                 # print(index_batch)
