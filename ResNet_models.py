@@ -56,7 +56,7 @@ class Encoder_x(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
-        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
+        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
         self.bn2 = nn.BatchNorm2d(channels * 2)
@@ -76,7 +76,7 @@ class Encoder_x(nn.Module):
 
     def forward(self, input):
 
-
+        input = self.layer1(input)
         swin_output = swin_model(input)
         swin_output = self.flatten(swin_output)
         # print(swin_output.shape)
@@ -116,7 +116,7 @@ class Encoder_xy(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
-        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
+        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
 
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
@@ -143,6 +143,7 @@ class Encoder_xy(nn.Module):
 
     def forward(self, x):
         # print (x.shape)
+        x = self.layer1(x)
         swin_output = swin_model(x)
         swin_output = self.flatten(swin_output)
         # print (swin_output.shape)
