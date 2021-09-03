@@ -115,7 +115,6 @@ def count_parameters(model):
 
 if __name__ == '__main__':
     torch.multiprocessing.freeze_support()
-
     print("Let's Play!")
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
@@ -144,7 +143,6 @@ if __name__ == '__main__':
                 grays = Variable(grays).cuda()
                 pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
 
-                ## l2 regularizer the inference model
                 reg_loss = l2_regularisation(generator.xy_encoder) + \
                         l2_regularisation(generator.x_encoder) + l2_regularisation(generator.sal_encoder)
                 smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
@@ -170,18 +168,13 @@ if __name__ == '__main__':
                 visualize_uncertainty_post_init(torch.sigmoid(pred_post))
                 visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
-
-                if i % 2 == 0 or i == total_step:
+                if i % 25 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
 
             adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
-
-
-
-            if epoch % 50 == 0:
+            if epoch % 2 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data
+                    writing_string = dataset_name + str(epoch), str(opt.epoch), str(i), str(total_step), str(gen_loss_cvae.data), str(gen_loss_gsnn.data), reg_loss.data
                     ResultsFile.write(writing_string)
-
                     torch.save(generator.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
