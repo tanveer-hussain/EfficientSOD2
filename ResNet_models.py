@@ -125,8 +125,8 @@ class Encoder_xy(nn.Module):
         self.channel = channels
 
         # self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
-        self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
+        self.fc1 = nn.Linear(256*7*7, latent_size)
+        self.fc2 = nn.Linear(256*7*7, latent_size)
         # self.fc1 = nn.Linear(49*768, latent_size)
         # self.fc2 = nn.Linear(49*768, latent_size)
 
