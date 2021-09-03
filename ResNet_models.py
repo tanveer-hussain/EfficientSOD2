@@ -435,7 +435,8 @@ class Saliency_feat_encoder(nn.Module):
         # sal_init = sal_init.transpose(1,2)
         sal_init = self.upsample4(sal_init)
         sal_init = self.custom_upsample(sal_init)
-
+        depth_pred = self.upsample4(depth_pred)
+        depth_pred = self.custom_upsample(depth_pred)
         depth_pred = self.conv2(depth_pred)
         print ("x")
 
