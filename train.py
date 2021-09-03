@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=100, help='epoch number')
+parser.add_argument('--epoch', type=int, default=2, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=16, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -172,7 +172,7 @@ if __name__ == '__main__':
                         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
 
             adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
-            if epoch % 50 == 0:
+            if epoch % 1 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
                     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], gen vae Loss:" + str(gen_loss_cvae.data.item()) + ", gen_loss_gsnn:" + str(gen_loss_gsnn.data.item()) + ", reg_loss:" + str(reg_loss.data.item())
                     ResultsFile.write(writing_string)

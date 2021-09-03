@@ -12,9 +12,9 @@ from torch.distributions import Normal, Independent, kl
 from swin_transformer import SwinTransformer
 
 swin_model = SwinTransformer().to(device)
-checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
-msg = swin_model.load_state_dict(checkpoint, strict=False)
-print (msg)
+# checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
+# msg = swin_model.load_state_dict(checkpoint, strict=False)
+# print (msg)
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
