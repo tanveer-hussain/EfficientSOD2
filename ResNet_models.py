@@ -122,6 +122,7 @@ class Encoder_xy(nn.Module):
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
 
+        self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(49*768, latent_size)
         self.fc2 = nn.Linear(49*768, latent_size)
 
