@@ -89,6 +89,9 @@ class Encoder_x(nn.Module):
         mu = (mu - mu_mean) / mu_std
 
         logvar = self.fc2(output)
+        logvar_mean = torch.mean(logvar, 0, keepdim=True)
+        log_std = torch.std(logvar, 0, keepdim=True)
+        logvar = (logvar - logvar_mean) / log_std
         dist = Independent(Normal(loc=mu, scale=torch.exp(logvar)), 1)
         # print(output.size())
         # output = self.tanh(output)
@@ -131,7 +134,14 @@ class Encoder_xy(nn.Module):
         output = output.view(-1, 256*7*7)
 
         mu = self.fc1(output)
+        mu_mean = torch.mean(mu, 0, keepdim=True)
+        mu_std = torch.std(mu, 0, keepdim=True)
+        mu = (mu - mu_mean) / mu_std
+
         logvar = self.fc2(output)
+        logvar_mean = torch.mean(logvar, 0, keepdim=True)
+        log_std = torch.std(logvar, 0, keepdim=True)
+        logvar = (logvar - logvar_mean) / log_std
         dist = Independent(Normal(loc=mu, scale=torch.exp(logvar)), 1)
         # print(output.size())
         # output = self.tanh(output)
