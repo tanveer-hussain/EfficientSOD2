@@ -66,23 +66,25 @@ class Encoder_x(nn.Module):
         self.channel = channels
 
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(49*768, latent_size)
-        self.fc2 = nn.Linear(49*768, latent_size)
+        self.fc1 = nn.Linear(256*7*7, latent_size)
+        self.fc2 = nn.Linear(256*7*7, latent_size)
+        # self.fc1 = nn.Linear(49*768, latent_size)
+        # self.fc2 = nn.Linear(49*768, latent_size)
 
 
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
-        # output = self.leakyrelu(self.bn1(self.layer1(input)))
-        # # print(output.size())
-        # output = self.leakyrelu(self.bn2(self.layer2(output)))
-        # # print(output.size())
-        # output = self.leakyrelu(self.bn3(self.layer3(output)))
-        # # print(output.size())
-        # output = self.leakyrelu(self.bn4(self.layer4(output)))
-        # # print(output.size())
-        # output = self.leakyrelu(self.bn4(self.layer5(output)))
-        # output = output.view(-1, 256*7*7)
+        output = self.leakyrelu(self.bn1(self.layer1(input)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn2(self.layer2(output)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn3(self.layer3(output)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn4(self.layer4(output)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn4(self.layer5(output)))
+        output = output.view(-1, 256*7*7)
         # print(output.size())
         # output = self.tanh(output)
         # output = swin_model(self.conv1(input))
