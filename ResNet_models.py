@@ -8,19 +8,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
-from swin_transformer import SwinTransformer
 from torch.distributions import Normal, Independent, kl
-
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-swin_model = SwinTransformer()
-checkpoint = torch.load("swin_base_patch4_window7_224_22k.pth", map_location="cpu")
-msg = swin_model.load_state_dict(checkpoint, strict=False)
-print (msg)
-swin_model.to(device)
-print('parameters = ', count_parameters(swin_model))
-
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
@@ -69,43 +57,28 @@ class Encoder_x(nn.Module):
         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
-        self.flatten = nn.Flatten()
 
-        self.fc1 = nn.Linear(37632, latent_size)
-        self.fc2 = nn.Linear(37632, latent_size)
+        self.fc1 = nn.Linear(256*7*7, latent_size)
+        self.fc2 = nn.Linear(256*7*7, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
-
-        # _, _, _, swin_output = swin_model(input)
-        # swin_output = self.flatten(swin_output)
-        # print(swin_output.shape)
-        #
         output = self.leakyrelu(self.bn1(self.layer1(input)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn2(self.layer2(output)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn3(self.layer3(output)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer4(output)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        # output = output.view(-1, 256 * 7 * 7)
-        output = self.flatten(output)
-        print(output.size())
-        output = self.tanh(output)
+        output = output.view(-1, 256*7*7)
+        # print(output.size())
+        # output = self.tanh(output)
 
         mu = self.fc1(output)
-        mu_mean = torch.mean(mu, 0, keepdim=True)
-        mu_std = torch.std(mu, 0, keepdim=True)
-        mu = (mu - mu_mean) / mu_std
-
         logvar = self.fc2(output)
-        logvar_mean = torch.mean(logvar, 0, keepdim=True)
-        log_std = torch.std(logvar, 0, keepdim=True)
-        logvar = (logvar - logvar_mean) / log_std
-
         dist = Independent(Normal(loc=mu, scale=torch.exp(logvar)), 1)
         # print(output.size())
         # output = self.tanh(output)
@@ -120,58 +93,35 @@ class Encoder_xy(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
-
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
         self.bn2 = nn.BatchNorm2d(channels * 2)
-
         self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
         self.bn3 = nn.BatchNorm2d(channels * 4)
-
         self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
         self.bn4 = nn.BatchNorm2d(channels * 8)
-
         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
-        self.flatten = nn.Flatten()
 
-        self.fc1 = nn.Linear(channels * 8 * 11 * 11, latent_size)
-        self.fc2 = nn.Linear(channels * 8 * 11 * 11, latent_size)
-
-        # self.fc1 = nn.Linear(37632, latent_size)
-        # self.fc2 = nn.Linear(37632, latent_size)
+        self.fc1 = nn.Linear(256*7*7, latent_size)
+        self.fc2 = nn.Linear(256*7*7, latent_size)
 
         self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, x):
-        # print (x.shape)
-        # _, _, _, swin_output = swin_model(x)
-        # swin_output = self.flatten(swin_output)
-        # print (swin_output.shape)
         output = self.leakyrelu(self.bn1(self.layer1(x)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn2(self.layer2(output)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn3(self.layer3(output)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer4(output)))
-        # # print(output.size())
+        # print(output.size())
         output = self.leakyrelu(self.bn4(self.layer5(output)))
-        # output = output.view(-1, 256 * 7 * 7)
-        output = self.flatten(output)
-
+        output = output.view(-1, 256*7*7)
 
         mu = self.fc1(output)
-        mu_mean = torch.mean(mu, 0, keepdim=True)
-        mu_std = torch.std(mu, 0, keepdim=True)
-        mu = (mu - mu_mean) / mu_std
-
         logvar = self.fc2(output)
-        logvar_mean = torch.mean(logvar, 0, keepdim=True)
-        log_std = torch.std(logvar, 0, keepdim=True)
-        logvar = (logvar - logvar_mean) / log_std
-
-        # print ('Mu shape > ', mu, ', \n copy shape > ', copy)
         dist = Independent(Normal(loc=mu, scale=torch.exp(logvar)), 1)
         # print(output.size())
         # output = self.tanh(output)
@@ -406,10 +356,10 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv1 = Triple_Conv(96, channel)
-        self.conv2 = Triple_Conv(192, channel)
-        self.conv3 = Triple_Conv(384, channel)
-        self.conv4 = Triple_Conv(768, channel)
+        self.conv1 = Triple_Conv(256, channel)
+        self.conv2 = Triple_Conv(512, channel)
+        self.conv3 = Triple_Conv(1024, channel)
+        self.conv4 = Triple_Conv(2048, channel)
 
         self.asppconv1 = multi_scale_aspp(channel)
         self.asppconv2 = multi_scale_aspp(channel)
@@ -427,10 +377,10 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv1_depth = Triple_Conv(96, channel)
-        self.conv2_depth = Triple_Conv(192, channel)
-        self.conv3_depth = Triple_Conv(384, channel)
-        self.conv4_depth = Triple_Conv(768, channel)
+        self.conv1_depth = Triple_Conv(256, channel)
+        self.conv2_depth = Triple_Conv(512, channel)
+        self.conv3_depth = Triple_Conv(1024, channel)
+        self.conv4_depth = Triple_Conv(2048, channel)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
         if self.training:
@@ -457,16 +407,15 @@ class Saliency_feat_encoder(nn.Module):
         z = torch.unsqueeze(z, 3)
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
-        # x = self.conv_depth1(x)
-        # x = self.resnet.conv1(x)
-        # x = self.resnet.bn1(x)
-        # x = self.resnet.relu(x)
-        # x = self.resnet.maxpool(x)
-        # x1 = self.resnet.layer1(x)  # 256 x 64 x 64
-        # x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
-        # x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
-        # x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
-        x1 , x2 , x3 , x4 = swin_model(x)
+        x = self.conv_depth1(x)
+        x = self.resnet.conv1(x)
+        x = self.resnet.bn1(x)
+        x = self.resnet.relu(x)
+        x = self.resnet.maxpool(x)
+        x1 = self.resnet.layer1(x)  # 256 x 64 x 64
+        x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
+        x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
+        x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
 
         ## depth estimation
         conv1_depth = self.conv1_depth(x1)
@@ -506,7 +455,6 @@ class Saliency_feat_encoder(nn.Module):
         return self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
-        print ("initializing weights....")
         res50 = models.resnet50(pretrained=True)
         pretrained_dict = res50.state_dict()
         all_params = {}
