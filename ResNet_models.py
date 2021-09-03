@@ -104,6 +104,7 @@ class Encoder_xy(nn.Module):
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
+        self.conv1 = Triple_Conv(7, 3)
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(channels)
         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
@@ -132,6 +133,7 @@ class Encoder_xy(nn.Module):
         # # print(output.size())
         # output = self.leakyrelu(self.bn4(self.layer5(output)))
         # output = output.view(-1, 256*7*7)
+        output = swin_model(self.conv1(x))
 
         mu = self.fc1(output)
         mu_mean = torch.mean(mu, 0, keepdim=True)
