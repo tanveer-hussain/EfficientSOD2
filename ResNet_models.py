@@ -401,13 +401,16 @@ class PatchUnEmbed(nn.Module):
         self.patch_size = patch_size
         self.patches_resolution = patches_resolution
         self.num_patches = patches_resolution[0] * patches_resolution[1]
+        self.unflatten = nn.Unflatten(2,(7,7))
 
         self.in_chans = in_chans
         self.embed_dim = embed_dim
 
     def forward(self, x, x_size):
         B, HW, C = x.shape
-        x = x.transpose(1, 2).view(B, self.embed_dim, x_size[0], x_size[1]) # B Ph*Pw C
+        # x = x.transpose(1, 2).view(B, self.embed_dim, x_size[0], x_size[1]) # B Ph*Pw C
+        x = x.transpose(1,2)
+        x = self.unflatten(x)
         return x
 
     def flops(self):
@@ -454,9 +457,9 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv1_depth = Triple_Conv(256, channel)
-        self.conv2_depth = Triple_Conv(512, channel)
-        self.conv3_depth = Triple_Conv(1024, channel)
+        self.conv1_depth = Triple_Conv(768, 768//2)
+        self.conv2_depth = Triple_Conv(768//2, 768//8)
+        self.conv3_depth = Triple_Conv(768//8, 3)
         self.conv4_depth = Triple_Conv(2048, channel)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
@@ -502,7 +505,15 @@ class Saliency_feat_encoder(nn.Module):
 
         sal_init = swin_model(x)#.transpose(1,2)
         sal_init = self.patch_unembed(sal_init, x_size)
+        sal_init = self.conv1_depth(sal_init)
+        sal_init = self.conv2_depth(sal_init)
+        sal_init = self.conv3_depth(sal_init)
+
         depth_pred = swin_model(depth)
+        sal_init = self.patch_unembed(depth_pred, x_size)
+        sal_init = self.conv1_depth(sal_init)
+        sal_init = self.conv2_depth(sal_init)
+        sal_init = self.conv_depth1(sal_init)
         depth_pred = self.convlast(depth_pred)#.transpose(1,2).unsqueeze(1)
         # # sal_init = sal_init.transpose(1,2)
         # sal_init = self.upsample4(sal_init)
