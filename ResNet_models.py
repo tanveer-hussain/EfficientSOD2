@@ -11,10 +11,10 @@ import torch.nn.functional as F
 from torch.distributions import Normal, Independent, kl
 from swin_transformer import SwinTransformer
 
-# swin_model = SwinTransformer().to(device)
-# checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
-# msg = swin_model.load_state_dict(checkpoint, strict=False)
-# print (msg)
+swin_model = SwinTransformer().to(device)
+checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
+msg = swin_model.load_state_dict(checkpoint, strict=False)
+print (msg)
 # from swin_ir import network_swinir
 # upscale = 4
 # window_size = 8
