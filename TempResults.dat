@@ -1,0 +1,8 @@
+DUT-RGBD  Epoch [50/100] Step [34/34], gen vae Loss:0.4958, gen_loss_gsnn:0.6754, reg_loss:0.18
+DUT-RGBD  Epoch [100/100] Step [34/34], gen vae Loss:0.2217, gen_loss_gsnn:0.284, reg_loss:0.177
+NLPR  Epoch [50/100] Step [30/30], gen vae Loss:0.3716, gen_loss_gsnn:0.425, reg_loss:0.1769
+NLPR  Epoch [100/100] Step [30/30], gen vae Loss:0.1617, gen_loss_gsnn:0.2161, reg_loss:0.1768
+NJU2K  Epoch [50/100] Step [62/62], gen vae Loss:2.6083, gen_loss_gsnn:3.7289, reg_loss:0.1767
+NJU2K  Epoch [100/100] Step [62/62], gen vae Loss:1.9016, gen_loss_gsnn:2.6182, reg_loss:0.1767
+SIP  Epoch [50/100] Step [33/33], gen vae Loss:2.1084, gen_loss_gsnn:2.6334, reg_loss:0.1767
+SIP  Epoch [100/100] Step [33/33], gen vae Loss:3.0262, gen_loss_gsnn:4.0272, reg_loss:0.1767
