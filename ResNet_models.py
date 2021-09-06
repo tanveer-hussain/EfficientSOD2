@@ -456,9 +456,13 @@ class Saliency_feat_encoder(nn.Module):
         if self.training:
             self.initialize_weights()
 
+        img_size = 224
+        patch_size = 4
         img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
         patches_resolution = [img_size[0] // patch_size[0], img_size[1] // patch_size[1]]
+        embed_dim =
+        norm_layer = nn.LayerNorm
 
         self.patch_unembed = PatchUnEmbed(
             img_size=img_size, patch_size=patch_size, in_chans=embed_dim, embed_dim=embed_dim,
