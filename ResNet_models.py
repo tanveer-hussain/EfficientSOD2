@@ -91,9 +91,9 @@ class Encoder_x(nn.Module):
         output = self.flatten(output)
 
         mu = self.fc1(output)
-        # mu_mean = torch.mean(mu, 0, keepdim=True)
-        # mu_std = torch.std(mu, 0, keepdim=True)
-        # mu = (mu - mu_mean) / mu_std
+        mu_mean = torch.mean(mu, 0, keepdim=True)
+        mu_std = torch.std(mu, 0, keepdim=True)
+        mu = (mu - mu_mean) / mu_std
 
         logvar = self.fc2(output)
         logvar_mean = torch.mean(logvar, 0, keepdim=True)
