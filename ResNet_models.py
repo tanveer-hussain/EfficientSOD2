@@ -385,7 +385,7 @@ class PatchUnEmbed(nn.Module):
         norm_layer (nn.Module, optional): Normalization layer. Default: None
     """
 
-    def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
+    def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=49, norm_layer=None):
         super().__init__()
         img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
@@ -491,7 +491,9 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
         x = self.conv1(x)
+        x_size = (224,224)
         sal_init = swin_model(x)#.transpose(1,2)
+        sal_init = self.patch_unembed(sal_init, x_size)
         depth_pred = swin_model(depth).transpose(1,2).unsqueeze(1)
         # sal_init = sal_init.transpose(1,2)
         sal_init = self.upsample4(sal_init)
