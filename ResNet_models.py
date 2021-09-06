@@ -426,7 +426,7 @@ class Saliency_feat_encoder(nn.Module):
 
         self.custom_upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
 
-        self.conv1 = Triple_Conv(256, channel)
+        self.conv1 = Triple_Conv(9, 3)
         self.conv2 = Triple_Conv(512, channel)
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
@@ -461,8 +461,9 @@ class Saliency_feat_encoder(nn.Module):
         img_size = to_2tuple(img_size)
         patch_size = to_2tuple(patch_size)
         patches_resolution = [img_size[0] // patch_size[0], img_size[1] // patch_size[1]]
-        embed_dim = 96
+        embed_dim = 49
         norm_layer = nn.LayerNorm
+        self.patch_norm = None
 
         self.patch_unembed = PatchUnEmbed(
             img_size=img_size, patch_size=patch_size, in_chans=embed_dim, embed_dim=embed_dim,
@@ -490,7 +491,7 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
         x = self.conv1(x)
-        sal_init = swin_model(x).transpose(1,2).unsqueeze(1)
+        sal_init = swin_model(x)#.transpose(1,2)
         depth_pred = swin_model(depth).transpose(1,2).unsqueeze(1)
         # sal_init = sal_init.transpose(1,2)
         sal_init = self.upsample4(sal_init)
