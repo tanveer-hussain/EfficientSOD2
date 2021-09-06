@@ -460,7 +460,14 @@ class Saliency_feat_encoder(nn.Module):
         self.conv1_depth = Triple_Conv(768, 768//2)
         self.conv2_depth = Triple_Conv(768//2, 768//8)
         self.conv3_depth = Triple_Conv(768//8, 3)
-        self.conv4_depth = Triple_Conv(2048, channel)
+        self.conv3_depth1 = Triple_Conv(768 // 8, 1)
+        # self.conv4_depth = Triple_Conv(2048, channel)
+
+        self.upsampling1 = nn.Upsample(size=(56, 56), mode='bilinear', align_corners=True)
+        self.upsampling2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        # self.upsampling3 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
+
+
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
         if self.training:
@@ -508,13 +515,18 @@ class Saliency_feat_encoder(nn.Module):
         sal_init = self.conv1_depth(sal_init)
         sal_init = self.conv2_depth(sal_init)
         sal_init = self.conv3_depth(sal_init)
+        sal_init = self.upsampling1(sal_init)
+        sal_init = self.upsampling2(sal_init)
+        sal_init = self.upsampling3(sal_init)
 
         depth_pred = swin_model(depth)
-        sal_init = self.patch_unembed(depth_pred, x_size)
-        sal_init = self.conv1_depth(sal_init)
-        sal_init = self.conv2_depth(sal_init)
-        sal_init = self.conv_depth1(sal_init)
-        depth_pred = self.convlast(depth_pred)#.transpose(1,2).unsqueeze(1)
+        depth_pred = self.patch_unembed(depth_pred, x_size)
+        depth_pred = self.conv1_depth(depth_pred)
+        depth_pred = self.conv2_depth(depth_pred)
+        depth_pred = self.conv3_depth1(depth_pred)
+        depth_pred = self.upsampling1(depth_pred)
+        depth_pred = self.upsampling2(depth_pred)
+        depth_pred = self.upsampling3(depth_pred)
         # # sal_init = sal_init.transpose(1,2)
         # sal_init = self.upsample4(sal_init)
         # sal_init = self.custom_upsample(sal_init)
