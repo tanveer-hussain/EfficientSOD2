@@ -16,12 +16,12 @@ parser.add_argument('--feat_channel', type=int, default=32, help='reduced channe
 opt = parser.parse_args()
 
 datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-dataset_name = datasets[6]
+dataset_name = datasets[3]
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
 epoch = 100
 generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.load_state_dict(torch.load("models/" + dataset_name+ '_ALLSWINModel' + '_%d' % epoch + '_UCNet.pth'))
+generator.load_state_dict(torch.load("models/" + dataset_name+ 'SWIN' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
 generator.cuda()
 generator.eval()
