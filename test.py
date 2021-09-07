@@ -16,7 +16,7 @@ parser.add_argument('--feat_channel', type=int, default=32, help='reduced channe
 opt = parser.parse_args()
 
 datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-dataset_name = datasets[1]
+dataset_name = datasets[2]
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
 epoch = 100
@@ -26,14 +26,6 @@ print ('Model loaded')
 generator.cuda()
 generator.eval()
 
-
-# test_datasets = ['DES', 'LFSD','NJU2K','NLPR','SIP','STERE']
-#test_datasets = ['STERE']
-
-# for dataset in test_datasets:
-#     save_path = crossdata_output
-#     if not os.path.exists(save_path):
-#         os.makedirs(save_path)
 
 save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
 image_root = dataset_path + '/Images/'
