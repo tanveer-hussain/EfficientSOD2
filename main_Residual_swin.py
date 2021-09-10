@@ -807,7 +807,7 @@ if __name__ == '__main__':
     window_size = 8
     height = (224 // upscale // window_size + 1) * window_size
     width = (224 // upscale // window_size + 1) * window_size
-    model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+    model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/004_grayDN_DFWB_s128w8_SwinIR-M_noise50.pth"
     # model = SwinIR(upscale=2, img_size=(height, width),
     #                window_size=window_size, img_range=1., depths=[6, 6, 6, 6],
     #                embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2)
