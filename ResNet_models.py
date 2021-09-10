@@ -21,10 +21,10 @@ window_size = 8
 height = (224 // upscale // window_size + 1) * window_size
 width = (224 // upscale // window_size + 1) * window_size
 model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-model = network_swinir.SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+swin_model = network_swinir.SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
                     img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
                     mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-msg = model.load_state_dict(torch.load(model_path)['params'], strict=True)
+msg = swin_model.load_state_dict(torch.load(model_path)['params'], strict=True)
 print(msg)
 
 class BasicConv2d(nn.Module):
@@ -464,7 +464,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv1_depth = Triple_Conv(768, 768//2)
         self.conv2_depth = Triple_Conv(768//2, 768//8)
         self.conv3_depth = Triple_Conv(768//8, 3)
-        self.conv3_depth1 = Triple_Conv(768 // 8, 1)
+        self.conv3_depth1 = Triple_Conv(3 , 1)
         # self.conv4_depth = Triple_Conv(2048, channel)
 
         self.upsampling1 = nn.Upsample(size=(56, 56), mode='bilinear', align_corners=True)
@@ -527,7 +527,7 @@ class Saliency_feat_encoder(nn.Module):
         # depth_pred = self.patch_unembed(depth_pred, x_size)
         # depth_pred = self.conv1_depth(depth_pred)
         # depth_pred = self.conv2_depth(depth_pred)
-        # depth_pred = self.conv3_depth(depth_pred)
+        depth_pred = self.conv3_depth(depth_pred)
         # depth_pred = self.upsampling1(depth_pred)
         # depth_pred = self.upsampling2(depth_pred)
         # depth_pred = self.upsampling2(depth_pred)
