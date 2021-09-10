@@ -795,7 +795,7 @@ class SwinIR(nn.Module):
         return flops
 
 from swin_transformer import  SwinTransformer
-# if __name__ == '__main__':
+if __name__ == '__main__':
 #     # img_size = height = width = 224
 #     # model = SwinTransformer()
 #     # print (model)
@@ -803,16 +803,21 @@ from swin_transformer import  SwinTransformer
 #     # x = model(x)
 #     # print (x.shape)
 #
-#     upscale = 4
-#     window_size = 8
-#     height = (1024 // upscale // window_size + 1) * window_size
-#     width = (720 // upscale // window_size + 1) * window_size
-#     model = SwinIR(upscale=2, img_size=(height, width),
-#                    window_size=window_size, img_range=1., depths=[6, 6, 6, 6],
-#                    embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2)
-#     print(model)
-#     print(height, width, model.flops() / 1e9)
-#
-#     x = torch.randn((1, 3, height, width))
-#     x = model(x)
-#     print(x.shape)
+    upscale = 4
+    window_size = 8
+    height = (1024 // upscale // window_size + 1) * window_size
+    width = (720 // upscale // window_size + 1) * window_size
+    model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+    # model = SwinIR(upscale=2, img_size=(height, width),
+    #                window_size=window_size, img_range=1., depths=[6, 6, 6, 6],
+    #                embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2)
+    model = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+                    img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
+                    mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+    msg = model.load_state_dict(torch.load(model_path)['params'], strict=True)
+    print(msg)
+    print(height, width, model.flops() / 1e9)
+
+    x = torch.randn((1, 3, height, width))
+    x = model(x)
+    print(x.shape)
