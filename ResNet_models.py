@@ -531,7 +531,7 @@ class Saliency_feat_encoder(nn.Module):
         # depth_pred = self.patch_unembed(depth_pred, x_size)
         # depth_pred = self.conv1_depth(depth_pred)
         # depth_pred = self.conv2_depth(depth_pred)
-        depth_pred = self.conv3_depth(depth_pred)
+        depth_pred = self.conv3_depth1(depth_pred)
         # depth_pred = self.upsampling1(depth_pred)
         # depth_pred = self.upsampling2(depth_pred)
         # depth_pred = self.upsampling2(depth_pred)
