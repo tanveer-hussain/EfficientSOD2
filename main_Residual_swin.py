@@ -811,10 +811,10 @@ if __name__ == '__main__':
     # model = SwinIR(upscale=2, img_size=(height, width),
     #                window_size=window_size, img_range=1., depths=[6, 6, 6, 6],
     #                embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2)
-    model = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+    model = SwinIR(upscale=4, in_chans=3, img_size=128, window_size=8,
                     img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
                     mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-    msg = model.load_state_dict(torch.load(model_path)['params'], strict=True)
+    msg = model.load_state_dict(torch.load(model_path), strict=True)
     print(msg)
     print(height, width, model.flops() / 1e9)
 
