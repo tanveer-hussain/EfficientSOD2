@@ -511,8 +511,8 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
         z = torch.unsqueeze(z, 3)
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
-        x = torch.cat((x, depth, z), 1)
-        x = self.conv1(x)
+        # x = torch.cat((x, depth, z), 1)
+        # x = self.conv1(x)
 
         sal_init = swin_model(x)#.transpose(1,2)
         # sal_init = self.patch_unembed(sal_init, x_size)
