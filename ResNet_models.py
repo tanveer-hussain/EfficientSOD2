@@ -21,7 +21,7 @@ window_size = 8
 height = (224 // upscale // window_size + 1) * window_size
 width = (224 // upscale // window_size + 1) * window_size
 model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-model = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+model = network_swinir.SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
                     img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
                     mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
 msg = model.load_state_dict(torch.load(model_path)['params'], strict=True)
