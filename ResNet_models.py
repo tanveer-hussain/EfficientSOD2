@@ -24,7 +24,7 @@ model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR
 swin_model = network_swinir.SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
                     img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
                     mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-msg = swin_model.load_state_dict(torch.load(model_path)['params'], strict=True)
+msg = swin_model.load_state_dict(torch.load(model_path)['params'], strict=True).to(device)
 print(msg)
 
 class BasicConv2d(nn.Module):
