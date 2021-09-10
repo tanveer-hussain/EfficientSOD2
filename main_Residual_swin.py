@@ -820,4 +820,4 @@ if __name__ == '__main__':
 
     x = torch.randn((1, 3, height, width))
     x = model(x)
-    print(x.shape)
+    print(x.shape, ">>>", height, width)
