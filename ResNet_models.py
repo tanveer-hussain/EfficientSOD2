@@ -11,17 +11,21 @@ import torch.nn.functional as F
 from torch.distributions import Normal, Independent, kl
 from swin_transformer import SwinTransformer
 
-swin_model = SwinTransformer().to(device)
-checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
-msg = swin_model.load_state_dict(checkpoint, strict=False)
-print (msg)
-# from swin_ir import network_swinir
-# upscale = 4
-# window_size = 8
-# swin_model = network_swinir.SwinIR(upscale=2, img_size=(224, 224),
-#                    window_size=window_size, img_range=1., depths=[6, 6, 6, 6],
-#                    embed_dim=60, num_heads=[6, 6, 6, 6], mlp_ratio=2)
-# swin_model.to(device)
+# swin_model = SwinTransformer().to(device)
+# checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
+# msg = swin_model.load_state_dict(checkpoint, strict=False)
+# print (msg)
+from swin_ir import network_swinir
+upscale = 4
+window_size = 8
+height = (224 // upscale // window_size + 1) * window_size
+width = (224 // upscale // window_size + 1) * window_size
+model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+model = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+                    img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
+                    mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+msg = model.load_state_dict(torch.load(model_path)['params'], strict=True)
+print(msg)
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
@@ -511,22 +515,22 @@ class Saliency_feat_encoder(nn.Module):
         x = self.conv1(x)
 
         sal_init = swin_model(x)#.transpose(1,2)
-        sal_init = self.patch_unembed(sal_init, x_size)
-        sal_init = self.conv1_depth(sal_init)
-        sal_init = self.conv2_depth(sal_init)
-        sal_init = self.conv3_depth1(sal_init)
-        sal_init = self.upsampling1(sal_init)
-        sal_init = self.upsampling2(sal_init)
-        sal_init = self.upsampling2(sal_init)
+        # sal_init = self.patch_unembed(sal_init, x_size)
+        # sal_init = self.conv1_depth(sal_init)
+        # sal_init = self.conv2_depth(sal_init)
+        # sal_init = self.conv3_depth1(sal_init)
+        # sal_init = self.upsampling1(sal_init)
+        # sal_init = self.upsampling2(sal_init)
+        # sal_init = self.upsampling2(sal_init)
 
         depth_pred = swin_model(depth)
-        depth_pred = self.patch_unembed(depth_pred, x_size)
-        depth_pred = self.conv1_depth(depth_pred)
-        depth_pred = self.conv2_depth(depth_pred)
-        depth_pred = self.conv3_depth(depth_pred)
-        depth_pred = self.upsampling1(depth_pred)
-        depth_pred = self.upsampling2(depth_pred)
-        depth_pred = self.upsampling2(depth_pred)
+        # depth_pred = self.patch_unembed(depth_pred, x_size)
+        # depth_pred = self.conv1_depth(depth_pred)
+        # depth_pred = self.conv2_depth(depth_pred)
+        # depth_pred = self.conv3_depth(depth_pred)
+        # depth_pred = self.upsampling1(depth_pred)
+        # depth_pred = self.upsampling2(depth_pred)
+        # depth_pred = self.upsampling2(depth_pred)
         # # sal_init = sal_init.transpose(1,2)
         # sal_init = self.upsample4(sal_init)
         # sal_init = self.custom_upsample(sal_init)
