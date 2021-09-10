@@ -527,7 +527,7 @@ class Saliency_feat_encoder(nn.Module):
         # sal_init = self.upsampling2(sal_init)
 
         depth_pred = swin_model(depth)
-        sal_init = self.upsampling2(depth_pred)
+        depth_pred = self.upsampling2(depth_pred)
         # depth_pred = self.patch_unembed(depth_pred, x_size)
         # depth_pred = self.conv1_depth(depth_pred)
         # depth_pred = self.conv2_depth(depth_pred)
