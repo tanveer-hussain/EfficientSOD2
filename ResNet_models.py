@@ -15,13 +15,13 @@ from swin_transformer import SwinTransformer
 # checkpoint = torch.load(r"/home/tinu/PycharmProjects/EfficientSOD2/swin_base_patch4_window7_224_22k.pth", map_location="cpu")
 # msg = swin_model.load_state_dict(checkpoint, strict=False)
 # print (msg)
-from swin_ir import network_swinir
+from main_Residual_swin import SwinIR
 upscale = 4
 window_size = 8
 height = (1024 // upscale // window_size + 1) * window_size
 width = (720 // upscale // window_size + 1) * window_size
 model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-swin_model = network_swinir.SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+swin_model = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
                     img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
                     mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv').to(device)
 msg = swin_model.load_state_dict(torch.load(model_path)['params'], strict=True)
