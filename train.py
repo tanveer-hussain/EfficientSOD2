@@ -146,10 +146,10 @@ if __name__ == '__main__':
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
-                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = generator.forward(images,depths,gts)
-
-                reg_loss = l2_regularisation(generator.xy_encoder) + \
-                        l2_regularisation(generator.x_encoder) + l2_regularisation(generator.sal_encoder)
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, reg_loss = resswin.forward(images,depths,gts)
+                #
+                # reg_loss = l2_regularisation(resswin.xy_encoder) + \
+                #         l2_regularisation(resswin.x_encoder) + l2_regularisation(generator.sal_encoder)
                 smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
                 reg_loss = opt.reg_weight * reg_loss
                 latent_loss = latent_loss
