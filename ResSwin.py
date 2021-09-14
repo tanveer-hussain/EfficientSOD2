@@ -307,10 +307,10 @@ class Saliency_feat_encoder(nn.Module):
         self.resnet.load_state_dict(all_params)
 
 
-model = Saliency_feat_encoder(upscale=4, in_chans=3, img_size=64, window_size=8,
-                    img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-                    mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+model = Saliency_feat_encoder(32,3).to(device)
 
-x = torch.randn((16, 9, 224, 224))
-sal_init, depth_pred = model(x)
+x = torch.randn((8, 3, 224, 224)).to(device)
+depth = torch.randn((8, 3, 224, 224)).to(device)
+gt = torch.randn((8, 1, 224, 224)).to(device)
+sal_init, depth_pred = model(x,depth, gt)
 print(sal_init.shape, " > ", depth_pred.shape)
