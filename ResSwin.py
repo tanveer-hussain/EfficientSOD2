@@ -2,9 +2,9 @@ import torch
 from torch.autograd import Variable
 from  ResNet_models_Custom import Saliency_feat_encoder, Encoder_x, Encoder_xy, Triple_Conv
 import torch.nn as nn
-device = torch.device('cuda' if torch.cuda.is_available else "cpud")
+device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 from torch.distributions import Normal, Independent, kl
-from main_Residual_swin import SwinIR
+
 from utils import l2_regularisation
 import torch.nn.functional as F
 
@@ -15,18 +15,7 @@ class ResSwinModel(nn.Module):
         self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
         self.xy_encoder = Encoder_xy(7, channel, latent_dim)
         self.x_encoder = Encoder_x(6, channel, latent_dim)
-        model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-        self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
-                    img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-                    mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-        msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
-        self.swinmodel = self.swinmodel.to(device)
 
-        self.TrippleConv1 = Triple_Conv(60,30)
-        self.TrippleConv2 = Triple_Conv(30, 1)
-        self.upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False)
-        self.upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
-        print(msg)
 
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)

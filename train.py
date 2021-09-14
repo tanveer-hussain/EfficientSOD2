@@ -118,10 +118,25 @@ def count_parameters(model):
 
 
 # dataset_name = datasets[5]
-
-
-
+from  ResNet_models_Custom import Triple_Conv
+import torch.nn as nn
+from main_Residual_swin import SwinIR
 if __name__ == '__main__':
+
+    model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+    swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+                            img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
+                            mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+    msg = swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
+    swinmodel = swinmodel.to(device)
+
+    TrippleConv1 = Triple_Conv(60, 30)
+    TrippleConv2 = Triple_Conv(30, 1)
+    upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False)
+    upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
+    print(msg)
+
+
     torch.multiprocessing.freeze_support()
     print("Let's Play!")
     ## load data
