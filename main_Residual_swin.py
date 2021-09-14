@@ -778,13 +778,13 @@ class SwinIR(nn.Module):
         # for lightweight SR
         x = self.conv_first(x)
         x_features = self.forward_features(x)
-        #x = self.conv_after_body(x_features) + x
+        x = self.conv_after_body(x_features) + x
         # x = self.conv_after_body(self.forward_features(x)) + x
-        #x = self.upsample(x)
+        x = self.upsample(x)
 
-        #x = x / self.img_range + self.mean
+        x = x / self.img_range + self.mean
 
-        return x_features
+        return x
 
     def flops(self):
         flops = 0
