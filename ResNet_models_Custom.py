@@ -452,7 +452,7 @@ class Saliency_feat_encoder(nn.Module):
 
         sal_init = self.layer6(conv4321)
 
-        return self.upsample4(sal_init), self.upsample4(depth_pred)
+        return sal_init, depth_pred#self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
