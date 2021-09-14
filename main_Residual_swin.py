@@ -777,12 +777,14 @@ class SwinIR(nn.Module):
 
         # for lightweight SR
         x = self.conv_first(x)
-        x = self.conv_after_body(self.forward_features(x)) + x
+        x_features = self.forward_features(x)
+        x = self.conv_after_body(x_features) + x
+        # x = self.conv_after_body(self.forward_features(x)) + x
         x = self.upsample(x)
 
         x = x / self.img_range + self.mean
 
-        return x
+        return x, x_features
 
     def flops(self):
         flops = 0
@@ -819,5 +821,5 @@ if __name__ == '__main__':
     print(height, width, model.flops() / 1e9)
 
     x = torch.randn((16, 3, height, width))
-    x = model(x)
+    x, x_features = model(x)
     print(x.shape)
