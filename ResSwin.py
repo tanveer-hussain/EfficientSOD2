@@ -20,6 +20,8 @@ class ResSwin(nn.Module):
                     mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
         msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
         self.swinmodel = self.swinmodel.to(device)
+
+        self.upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False)
         print(msg)
 
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
@@ -49,6 +51,9 @@ class ResSwin(nn.Module):
             depth = F.interpolate(depth, size=64)
             self.x_swin_features = self.swinmodel(x)
             self.d_swin_features = self.swinmodel(depth)
+
+            self.x_swin = self.upsample3(self.x_swin_features)
+            self.d_swin = self.upsample3(self.d_swin_features)
 
             return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
