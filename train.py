@@ -121,6 +121,7 @@ def count_parameters(model):
 from  ResNet_models_Custom import Triple_Conv
 import torch.nn as nn
 from main_Residual_swin import SwinIR
+device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 if __name__ == '__main__':
 
     model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
