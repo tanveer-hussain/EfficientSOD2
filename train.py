@@ -42,8 +42,8 @@ print('Generator Learning Rate: {}'.format(opt.lr_gen))
 # generator_params = generator.parameters()
 # generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
-from ResSwin import ResSwin
-resswin = ResSwin(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+from ResSwin import ResSwinModel
+resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.cuda()
 resswin_params = resswin.parameters()
 resswin_params = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])

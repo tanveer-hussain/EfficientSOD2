@@ -8,9 +8,9 @@ from main_Residual_swin import SwinIR
 from utils import l2_regularisation
 import torch.nn.functional as F
 
-class ResSwin(nn.Module):
+class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
-        super(ResSwin, self).__init__()
+        super(ResSwinModel, self).__init__()
         self.relu = nn.ReLU(inplace=True)
         self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
         self.xy_encoder = Encoder_xy(7, channel, latent_dim)
