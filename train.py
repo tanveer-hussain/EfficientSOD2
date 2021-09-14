@@ -198,7 +198,7 @@ if __name__ == '__main__':
                 gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(x_swin))
+                visualize_uncertainty_post_init(torch.sigmoid(d_swin))
                 visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
                 if i % 50 == 0 or i == total_step:
