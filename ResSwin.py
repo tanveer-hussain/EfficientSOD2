@@ -40,7 +40,7 @@ class ResSwinModel(nn.Module):
             self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
             self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
             self.reg_loss = l2_regularisation(self.xy_encoder) + \
-                        l2_regularisation(self.x_encoder) + l2_regularisation(self.sal_encoder) + l2_regularisation(self.swinmodel)
+                        l2_regularisation(self.x_encoder) + l2_regularisation(self.sal_encoder) #+ l2_regularisation(self.swinmodel)
             #
             # x = F.interpolate(x, size=64)
             # depth = F.interpolate(depth, size=64)
