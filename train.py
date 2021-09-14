@@ -36,12 +36,17 @@ parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
 # build models
-generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-generator.cuda()
+# generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+# generator.cuda()
+#
+# generator_params = generator.parameters()
+# generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
-generator_params = generator.parameters()
-generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
-
+from ResSwin import ResSwin
+resswin = ResSwin(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+resswin.cuda()
+resswin_params = resswin.parameters()
+resswin_params = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 ## define loss
 
 CE = torch.nn.BCELoss()
@@ -111,6 +116,7 @@ def count_parameters(model):
 
 
 # dataset_name = datasets[5]
+
 
 
 if __name__ == '__main__':
