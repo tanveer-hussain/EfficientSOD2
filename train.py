@@ -18,7 +18,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 parser = argparse.ArgumentParser()
 parser.add_argument('--epoch', type=int, default=100, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=4, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=2, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -76,7 +76,7 @@ def visualize_uncertainty_post_init(var_map):
         pred_edge_kk = pred_edge_kk.astype(np.uint8)
         # print ('pred_edge_kk shape', pred_edge_kk.shape)
         save_path = './temp/'
-        name = '{:02d}_post_int.png'.format(kk)
+        name = '5{:02d}_post_int.png'.format(kk)
         imageio.imwrite(save_path + name, pred_edge_kk)
 
 def visualize_uncertainty_prior_init(var_map):
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     swinmodel = swinmodel.to(device)
 
     TrippleConv1 = Triple_Conv(60, 30).cuda()
-    TrippleConv2 = Triple_Conv(30, 1).cuda()
+    TrippleConv2 = Triple_Conv(3, 1).cuda()
     upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False).cuda()
     upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True).cuda()
     print(msg)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     print("Let's Play!")
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-    save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
+    save_results_path = r"/home/tinu/PycharmProjects/Effd_swin_featuresicientSOD2/TempResults.dat"
     save_path = 'models/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -170,19 +170,19 @@ if __name__ == '__main__':
                 depth = F.interpolate(depths, size=64)
                 x_swin_features = swinmodel(x)
                 d_swin_features = swinmodel(depth)
+
+                x_swin_features = TrippleConv2(x_swin_features)
+                d_swin_features = TrippleConv2(d_swin_features)
                 #
-                # x_swin_features = TrippleConv2(TrippleConv1(x_swin_features))
-                # d_swin_features = TrippleConv2(TrippleConv1(d_swin_features))
-                #
-                # x_swin = upsample(upsample3(x_swin_features))
-                # d_swin = upsample(upsample3(d_swin_features))
+                x_swin = upsample(x_swin_features)
+                d_swin = upsample(d_swin_features)
 
 
-                smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
+                smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(x_swin), gts)
                 reg_loss = opt.reg_weight * reg_loss
                 latent_loss = latent_loss
-                depth_loss_post = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_post),depths)
-                sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
+                depth_loss_post = opt.depth_loss_weight*mse_loss(torch.sigmoid(d_swin),depths)
+                sal_loss = structure_loss(x_swin, gts) + smoothLoss_post + depth_loss_post
                 anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
                 latent_loss = opt.lat_weight*anneal_reg *latent_loss
                 gen_loss_cvae = sal_loss + latent_loss
@@ -198,7 +198,7 @@ if __name__ == '__main__':
                 gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(x_swin_features))
+                visualize_uncertainty_post_init(torch.sigmoid(x_swin))
                 visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
                 if i % 50 == 0 or i == total_step:
