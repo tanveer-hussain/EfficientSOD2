@@ -166,16 +166,16 @@ if __name__ == '__main__':
                 grays = Variable(grays).cuda()
                 pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, reg_loss = resswin.forward(images,depths,gts)
 
-                # x = F.interpolate(x, size=64)
-                # depth = F.interpolate(depth, size=64)
-                # self.x_swin_features = self.swinmodel(x)
-                # self.d_swin_features = self.swinmodel(depth)
-                #
-                # self.x_swin_features = self.TrippleConv2(self.TrippleConv1(self.x_swin_features))
-                # self.d_swin_features = self.TrippleConv2(self.TrippleConv1(self.d_swin_features))
-                #
-                # self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
-                # self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
+                x = F.interpolate(images, size=64)
+                depth = F.interpolate(depths, size=64)
+                x_swin_features = swinmodel(x)
+                d_swin_features = swinmodel(depth)
+
+                x_swin_features = TrippleConv2(TrippleConv1(x_swin_features))
+                d_swin_features = TrippleConv2(TrippleConv1(d_swin_features))
+
+                x_swin = upsample(upsample3(x_swin_features))
+                d_swin = upsample(upsample3(d_swin_features))
 
 
                 smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
@@ -198,7 +198,7 @@ if __name__ == '__main__':
                 gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(d_swin))
+                visualize_uncertainty_post_init(torch.sigmoid(x_swin))
                 visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
                 if i % 50 == 0 or i == total_step:
