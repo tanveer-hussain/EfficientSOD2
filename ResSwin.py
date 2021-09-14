@@ -5,6 +5,7 @@ import torch.nn as nn
 device = torch.device('cuda' if torch.cuda.is_available else "cpud")
 from torch.distributions import Normal, Independent, kl
 from main_Residual_swin import SwinIR
+import torch.nn.functional as F
 
 class ResSwin(nn.Module):
     def __init__(self, channel, latent_dim):
@@ -44,6 +45,8 @@ class ResSwin(nn.Module):
             self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
             self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
 
+            x = F.interpolate(x, size=112)
+            depth = F.interpolate(depth, size=112)
             self.x_swin_features = self.swinmodel(x)
             self.d_swin_features = self.swinmodel(depth)
 
