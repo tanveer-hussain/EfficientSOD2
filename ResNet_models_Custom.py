@@ -23,7 +23,7 @@ class BasicConv2d(nn.Module):
         x = self.conv(x)
         x = self.bn(x)
         return x
-f
+
 class Classifier_Module(nn.Module):
     def __init__(self,dilation_series,padding_series,NoLabels, input_channel):
         super(Classifier_Module, self).__init__()
