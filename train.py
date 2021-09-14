@@ -147,9 +147,7 @@ if __name__ == '__main__':
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
                 pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, reg_loss = resswin.forward(images,depths,gts)
-                #
-                # reg_loss = l2_regularisation(resswin.xy_encoder) + \
-                #         l2_regularisation(resswin.x_encoder) + l2_regularisation(generator.sal_encoder)
+
                 smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
                 reg_loss = opt.reg_weight * reg_loss
                 latent_loss = latent_loss
@@ -177,7 +175,7 @@ if __name__ == '__main__':
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
 
-            adjust_lr(resswin, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
+            adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
                     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], gen vae Loss:" + str(round(gen_loss_cvae.data.item(),4)) + ", gen_loss_gsnn:" + str(round(gen_loss_gsnn.data.item(),4)) + ", reg_loss:" + str(round(reg_loss.data.item(),4)) + "\n"
