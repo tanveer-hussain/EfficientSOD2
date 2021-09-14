@@ -65,9 +65,9 @@ class ResSwin(nn.Module):
         else:
             pass
 
-x = torch.randn((8, 3, 224, 224)).to(device)
-depth = torch.randn((8, 3, 224, 224)).to(device)
-gt = torch.randn((8, 1, 224, 224)).to(device)
+x = torch.randn((12, 3, 224, 224)).to(device)
+depth = torch.randn((12, 3, 224, 224)).to(device)
+gt = torch.randn((12, 1, 224, 224)).to(device)
 model = ResSwin(32,3).to(device)
 a, b, c, d, e = model(x,depth, gt)
 print ('done')
