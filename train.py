@@ -166,9 +166,9 @@ if __name__ == '__main__':
                 gen_loss_gsnn = (1-opt.vae_loss_weight)*gen_loss_gsnn
                 gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
 
-                generator_optimizer.zero_grad()
+                resswin.zero_grad()
                 gen_loss.backward()
-                generator_optimizer.step()
+                resswin.step()
                 visualize_gt(gts)
                 visualize_uncertainty_post_init(torch.sigmoid(pred_post))
                 visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
@@ -177,9 +177,9 @@ if __name__ == '__main__':
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
 
-            adjust_lr(generator_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
+            adjust_lr(resswin, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
                     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], gen vae Loss:" + str(round(gen_loss_cvae.data.item(),4)) + ", gen_loss_gsnn:" + str(round(gen_loss_gsnn.data.item(),4)) + ", reg_loss:" + str(round(reg_loss.data.item(),4)) + "\n"
                     ResultsFile.write(writing_string)
-                torch.save(generator.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
+                torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
