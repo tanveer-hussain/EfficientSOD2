@@ -164,7 +164,19 @@ if __name__ == '__main__':
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
-                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, x_swin, d_swin, reg_loss = resswin.forward(images,depths,gts)
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, reg_loss = resswin.forward(images,depths,gts)
+
+                # x = F.interpolate(x, size=64)
+                # depth = F.interpolate(depth, size=64)
+                # self.x_swin_features = self.swinmodel(x)
+                # self.d_swin_features = self.swinmodel(depth)
+                #
+                # self.x_swin_features = self.TrippleConv2(self.TrippleConv1(self.x_swin_features))
+                # self.d_swin_features = self.TrippleConv2(self.TrippleConv1(self.d_swin_features))
+                #
+                # self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
+                # self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
+
 
                 smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
                 reg_loss = opt.reg_weight * reg_loss

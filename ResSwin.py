@@ -53,7 +53,7 @@ class ResSwinModel(nn.Module):
             # self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
             # self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
 
-            return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior, self.x_swin, self.d_swin, self.reg_loss
+            return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior, self.reg_loss
         else:
             pass
 
