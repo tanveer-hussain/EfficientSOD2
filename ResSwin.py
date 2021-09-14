@@ -305,3 +305,12 @@ class Saliency_feat_encoder(nn.Module):
                 all_params[k] = v
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
+
+
+model = Saliency_feat_encoder(upscale=4, in_chans=3, img_size=64, window_size=8,
+                    img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
+                    mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+
+x = torch.randn((16, 3, 224, 224))
+sal_init, depth_pred = model(x)
+print(x.shape)
