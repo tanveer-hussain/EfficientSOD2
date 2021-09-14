@@ -74,7 +74,7 @@ def visualize_uncertainty_post_init(var_map):
         # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
         pred_edge_kk *= 255.0
         pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        print ('pred_edge_kk shape', pred_edge_kk.shape)
+        # print ('pred_edge_kk shape', pred_edge_kk.shape)
         save_path = './temp/'
         name = '{:02d}_post_int.png'.format(kk)
         imageio.imwrite(save_path + name, pred_edge_kk)
@@ -87,7 +87,7 @@ def visualize_uncertainty_prior_init(var_map):
         # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
         pred_edge_kk *= 255.0
         pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        print('proir_edge_kk shape', pred_edge_kk.shape)
+        # print('proir_edge_kk shape', pred_edge_kk.shape)
         save_path = './temp/'
         name = '{:02d}_prior_int.png'.format(kk)
         imageio.imwrite(save_path + name, pred_edge_kk)
@@ -170,7 +170,7 @@ if __name__ == '__main__':
                 gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(pred_post))
+                visualize_uncertainty_post_init(torch.sigmoid(x_swin))
                 visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
                 if i % 50 == 0 or i == total_step:
