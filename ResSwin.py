@@ -1,7 +1,24 @@
-
+import torch.nn.functional as F
+import torch
+import torch.nn as nn
+from ResNet import *
 
 def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
     return block(dilation_series, padding_series, NoLabels, input_channel)
+
+class BasicConv2d(nn.Module):
+    def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
+        super(BasicConv2d, self).__init__()
+        self.conv = nn.Conv2d(in_planes, out_planes,
+                              kernel_size=kernel_size, stride=stride,
+                              padding=padding, dilation=dilation, bias=False)
+        self.bn = nn.BatchNorm2d(out_planes)
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        return x
 
 class Triple_Conv(nn.Module):
     def __init__(self, in_channel, out_channel):
@@ -14,7 +31,41 @@ class Triple_Conv(nn.Module):
 
     def forward(self, x):
         return self.reduce(x)
+class _DenseAsppBlock(nn.Sequential):
+    """ ConvNet block for building DenseASPP. """
 
+    def __init__(self, input_num, num1, num2, dilation_rate, drop_out, bn_start=True):
+        super(_DenseAsppBlock, self).__init__()
+        self.asppconv = torch.nn.Sequential()
+        if bn_start:
+            self.asppconv = nn.Sequential(
+                nn.BatchNorm2d(input_num),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(in_channels=input_num, out_channels=num1, kernel_size=1),
+                nn.BatchNorm2d(num1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(in_channels=num1, out_channels=num2, kernel_size=3,
+                          dilation=dilation_rate, padding=dilation_rate)
+            )
+        else:
+            self.asppconv = nn.Sequential(
+                nn.ReLU(inplace=True),
+                nn.Conv2d(in_channels=input_num, out_channels=num1, kernel_size=1),
+                nn.BatchNorm2d(num1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(in_channels=num1, out_channels=num2, kernel_size=3,
+                          dilation=dilation_rate, padding=dilation_rate)
+            )
+        self.drop_rate = drop_out
+
+    def forward(self, _input):
+        #feature = super(_DenseAsppBlock, self).forward(_input)
+        feature = self.asppconv(_input)
+
+        if self.drop_rate > 0:
+            feature = F.dropout2d(feature, p=self.drop_rate, training=self.training)
+
+        return feature
 class multi_scale_aspp(nn.Sequential):
     """ ConvNet block for building DenseASPP. """
 
@@ -60,6 +111,24 @@ class multi_scale_aspp(nn.Sequential):
         aspp_feat = self.classification(feature)
 
         return aspp_feat
+## Channel Attention (CA) Layer
+class CALayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(CALayer, self).__init__()
+        # global average pooling: feature --> point
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        # feature channel downscale and upscale --> channel weight
+        self.conv_du = nn.Sequential(
+                nn.Conv2d(channel, channel // reduction, 1, padding=0, bias=True),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(channel // reduction, channel, 1, padding=0, bias=True),
+                nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        y = self.avg_pool(x)
+        y = self.conv_du(y)
+        return x * y
 
 class RCAB(nn.Module):
     def __init__(
@@ -84,7 +153,22 @@ class RCAB(nn.Module):
         #res = self.body(x).mul(self.res_scale)
         res += x
         return res
-        
+
+class Classifier_Module(nn.Module):
+    def __init__(self,dilation_series,padding_series,NoLabels, input_channel):
+        super(Classifier_Module, self).__init__()
+        self.conv2d_list = nn.ModuleList()
+        for dilation,padding in zip(dilation_series,padding_series):
+            self.conv2d_list.append(nn.Conv2d(input_channel,NoLabels,kernel_size=3,stride=1, padding =padding, dilation = dilation,bias = True))
+        for m in self.conv2d_list:
+            m.weight.data.normal_(0, 0.01)
+
+    def forward(self, x):
+        out = self.conv2d_list[0](x)
+        for i in range(len(self.conv2d_list)-1):
+            out += self.conv2d_list[i+1](x)
+        return out
+
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
     def __init__(self, channel, latent_dim):
