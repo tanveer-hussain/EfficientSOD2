@@ -131,10 +131,10 @@ if __name__ == '__main__':
     msg = swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
     swinmodel = swinmodel.to(device)
 
-    TrippleConv1 = Triple_Conv(60, 30)
-    TrippleConv2 = Triple_Conv(30, 1)
-    upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False)
-    upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
+    TrippleConv1 = Triple_Conv(60, 30).cuda()
+    TrippleConv2 = Triple_Conv(30, 1).cuda()
+    upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False).cuda()
+    upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True).cuda()
     print(msg)
 
 
