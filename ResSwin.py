@@ -1,8 +1,9 @@
 import torch
+from torch.autograd import Variable
 from  ResNet_models_Custom import Saliency_feat_encoder, Encoder_x, Encoder_xy
 import torch.nn as nn
-from ResNet_models_UCNet import Generator
 device = torch.device('cuda' if torch.cuda.is_available else "cpud")
+from torch.distributions import Normal, Independent, kl
 
 class ResSwin():
     def __init__(self, channel, latent_dim):
@@ -33,6 +34,8 @@ class ResSwin():
             z_noise_prior = self.reparametrize(mux, logvarx)
             self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
             self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
+        else:
+            pass
 
 x = torch.randn((8, 3, 224, 224)).to(device)
 depth = torch.randn((8, 3, 224, 224)).to(device)
