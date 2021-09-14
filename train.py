@@ -146,15 +146,15 @@ if __name__ == '__main__':
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
-                pred_post, pred_prior, depth_pred_post, depth_pred_prior, x_swin, d_swin, reg_loss = resswin.forward(images,depths,gts)
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, x_swin, d_swin, reg_loss = resswin.forward(images,depths,gts)
 
                 smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
                 reg_loss = opt.reg_weight * reg_loss
-                # latent_loss = latent_loss
+                latent_loss = latent_loss
                 depth_loss_post = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_post),depths)
                 sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
                 anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                # latent_loss = opt.lat_weight*anneal_reg *latent_loss
+                latent_loss = opt.lat_weight*anneal_reg *latent_loss
                 gen_loss_cvae = sal_loss + latent_loss
                 gen_loss_cvae = opt.vae_loss_weight*gen_loss_cvae
 
