@@ -53,16 +53,16 @@ class ResSwinModel(nn.Module):
             self.reg_loss = l2_regularisation(self.xy_encoder) + \
                         l2_regularisation(self.x_encoder) + l2_regularisation(self.sal_encoder)
             #
-            # x = F.interpolate(x, size=64)
-            # depth = F.interpolate(depth, size=64)
-            # self.x_swin_features = self.swinmodel(x)
-            # self.d_swin_features = self.swinmodel(depth)
-            #
-            # self.x_swin_features = self.TrippleConv2(self.TrippleConv1(self.x_swin_features))
-            # self.d_swin_features = self.TrippleConv2(self.TrippleConv1(self.d_swin_features))
-            #
-            # self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
-            # self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
+            x = F.interpolate(x, size=64)
+            depth = F.interpolate(depth, size=64)
+            self.x_swin_features = self.swinmodel(x)
+            self.d_swin_features = self.swinmodel(depth)
+
+            self.x_swin_features = self.TrippleConv2(self.TrippleConv1(self.x_swin_features))
+            self.d_swin_features = self.TrippleConv2(self.TrippleConv1(self.d_swin_features))
+
+            self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
+            self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
 
             return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior, self.reg_loss
         else:
