@@ -45,8 +45,8 @@ class ResSwin(nn.Module):
             self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
             self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
 
-            x = F.interpolate(x, size=112)
-            depth = F.interpolate(depth, size=112)
+            x = F.interpolate(x, size=64)
+            depth = F.interpolate(depth, size=64)
             self.x_swin_features = self.swinmodel(x)
             self.d_swin_features = self.swinmodel(depth)
 
@@ -59,3 +59,4 @@ depth = torch.randn((8, 3, 224, 224)).to(device)
 gt = torch.randn((8, 1, 224, 224)).to(device)
 model = ResSwin(32,3).to(device)
 a, b, c, d, e = model(x,depth, gt)
+print ('done')
