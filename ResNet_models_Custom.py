@@ -413,7 +413,6 @@ class Saliency_feat_encoder(nn.Module):
         depth = F.interpolate(depth, size=64)
         x_swin_features = self.swinmodel(x)
         d_swin_features = self.swinmodel(depth)
-        print (x_swin_features.shape)
 
         x_swin_features = self.conv2(x_swin_features)
         d_swin_features = d_swin_features

@@ -46,10 +46,10 @@ class ResSwinModel(nn.Module):
             self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
             self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
             lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
-            z_noise_post = self.reparametrize(muxy, logvarxy)
-            z_noise_prior = self.reparametrize(mux, logvarx)
-            self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
-            self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
+            # z_noise_post = self.reparametrize(muxy, logvarxy)
+            # z_noise_prior = self.reparametrize(mux, logvarx)
+            self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth)
+            self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth)
             # self.reg_loss = l2_regularisation(self.xy_encoder) + \
             #             l2_regularisation(self.x_encoder) + l2_regularisation(self.sal_encoder) + l2_regularisation(self.)
             # #
