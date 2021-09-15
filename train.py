@@ -127,7 +127,7 @@ if __name__ == '__main__':
     model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
     swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
                             img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-                            mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='3conv')
+                            mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
     msg = swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
     swinmodel = swinmodel.to(device)
 
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     print("Let's Play!")
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-    save_results_path = r"/home/tinu/PycharmProjects/Effd_swin_featuresicientSOD2/TempResults.dat"
+    save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                 resswin_optimizer.step()
                 visualize_gt(gts)
                 visualize_uncertainty_post_init(torch.sigmoid(x_swin))
-                visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
+                visualize_uncertainty_prior_init(torch.sigmoid(pred_post))
 
                 if i % 50 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
