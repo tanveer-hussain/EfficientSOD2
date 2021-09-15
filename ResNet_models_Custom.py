@@ -413,13 +413,14 @@ class Saliency_feat_encoder(nn.Module):
         depth = F.interpolate(depth, size=64)
         x_swin_features = self.swinmodel(x)
         d_swin_features = self.swinmodel(depth)
+        print (x_swin_features.shape)
 
-        x_swin_features = self.conv2(self.conv1(x_swin_features))
-        d_swin_features = self.conv1(d_swin_features)
+        x_swin_features = self.conv2(x_swin_features)
+        d_swin_features = d_swin_features
 
-        x_swin = self.upsample(self.upsample4(x_swin_features))
-        d_swin = self.upsample(self.upsample4(d_swin_features))
-        print (x_swin.shape, d_swin.shape)
+        x_swin = self.upsample(x_swin_features)
+        d_swin = self.upsample(d_swin_features)
+        # print (x_swin.shape, d_swin.shape)
         # z = torch.unsqueeze(z, 2)
         # z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
         # z = torch.unsqueeze(z, 3)
@@ -471,7 +472,7 @@ class Saliency_feat_encoder(nn.Module):
         # sal_init = self.layer6(conv4321)
         # print (sal_init.shape, depth_pred.shape)
 
-        return self.upsample4(sal_init), self.upsample4(depth_pred)
+        return x_swin, d_swin #self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
