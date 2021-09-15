@@ -402,6 +402,18 @@ class Saliency_feat_encoder(nn.Module):
         return torch.index_select(a, dim, order_index)
 
     def forward(self, x,depth,z):
+
+        x = F.interpolate(x, size=64)
+        # depth = F.interpolate(depth, size=64)
+        self.x_swin_features = self.swinmodel(x)
+        self.d_swin_features = self.swinmodel(depth)
+
+        self.x_swin_features = self.TrippleConv2(self.TrippleConv1(self.x_swin_features))
+        self.d_swin_features = self.TrippleConv2(self.TrippleConv1(self.d_swin_features))
+
+        self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
+        self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
+
         z = torch.unsqueeze(z, 2)
         z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
         z = torch.unsqueeze(z, 3)
