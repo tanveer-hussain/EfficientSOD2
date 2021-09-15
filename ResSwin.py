@@ -39,9 +39,7 @@ class ResSwinModel(nn.Module):
             z_noise_prior = self.reparametrize(mux, logvarx)
             self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_post)
             self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_prior)
-            self.reg_loss = l2_regularisation(self.xy_encoder) + \
-                        l2_regularisation(self.x_encoder) + l2_regularisation(self.sal_encoder) #+ l2_regularisation(self.swinmodel)
-            #
+
             # x = F.interpolate(x, size=64)
             # depth = F.interpolate(depth, size=64)
             # self.x_swin_features = self.swinmodel(x)
@@ -53,7 +51,7 @@ class ResSwinModel(nn.Module):
             # self.x_swin = self.upsample(self.upsample3(self.x_swin_features))
             # self.d_swin = self.upsample(self.upsample3(self.d_swin_features))
 
-            return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior, self.reg_loss
+            return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior#, self.reg_loss
         else:
             pass
 
