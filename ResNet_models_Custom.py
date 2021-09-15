@@ -356,8 +356,8 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv1 = Triple_Conv(256, channel)
-        self.conv2 = Triple_Conv(512, channel)
+        self.conv1 = Triple_Conv(60, 3)
+        self.conv2 = Triple_Conv(3, 1)
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
 
@@ -381,6 +381,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv2_depth = Triple_Conv(512, channel)
         self.conv3_depth = Triple_Conv(1024, channel)
         self.conv4_depth = Triple_Conv(2048, channel)
+        self.upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
         if self.training:
@@ -402,6 +403,17 @@ class Saliency_feat_encoder(nn.Module):
         return torch.index_select(a, dim, order_index)
 
     def forward(self, x,depth,z):
+        x = F.interpolate(x, size=64)
+        depth = F.interpolate(depth, size=64)
+        x_swin_features = self.swinmodel(x)
+        d_swin_features = self.swinmodel(depth)
+
+        x_swin_features = self.conv2(self.conv1(x_swin_features))
+        d_swin_features = self.conv1(d_swin_features)
+
+        x_swin = self.upsample(self.upsample4(x_swin_features))
+        d_swin = self.upsample(self.upsample4(d_swin_features))
+        print (x_swin.shape, d_swin.shape)
         # z = torch.unsqueeze(z, 2)
         # z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
         # z = torch.unsqueeze(z, 3)
