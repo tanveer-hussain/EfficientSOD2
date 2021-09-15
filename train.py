@@ -138,7 +138,7 @@ if __name__ == '__main__':
     print(msg)
 
 
-    torch.multiprocessing.freeze_support()
+    # torch.multiprocessing.freeze_support()
     print("Let's Play!")
     ## load data
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
