@@ -164,42 +164,34 @@ if __name__ == '__main__':
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
-                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior, reg_loss = resswin.forward(images,depths,gts)
+                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = resswin.forward(images,
+                                                                                                          depths, gts)
 
-                x = F.interpolate(images, size=64)
-                depth = F.interpolate(depths, size=64)
-                x_swin_features = swinmodel(x)
-                # d_swin_features = swinmodel(depth)
-
-                x_swin_features = TrippleConv2(x_swin_features)
-                # d_swin_features = TrippleConv2(d_swin_features)
-                #
-                x_swin = upsample(x_swin_features)
-                # d_swin = upsample(d_swin_features)
-
-
-                smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(x_swin), gts)
+                ## l2 regularizer the inference model
+                reg_loss = l2_regularisation(resswin.xy_encoder) + \
+                           l2_regularisation(resswin.x_encoder) + l2_regularisation(resswin.sal_encoder)
+                smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
                 reg_loss = opt.reg_weight * reg_loss
                 latent_loss = latent_loss
-                depth_loss_post = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_post),depths)
-                sal_loss = structure_loss(x_swin, gts) + smoothLoss_post + depth_loss_post
+                depth_loss_post = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
+                sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
                 anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                latent_loss = opt.lat_weight*anneal_reg *latent_loss
+                latent_loss = opt.lat_weight * anneal_reg * latent_loss
                 gen_loss_cvae = sal_loss + latent_loss
-                gen_loss_cvae = opt.vae_loss_weight*gen_loss_cvae
+                gen_loss_cvae = opt.vae_loss_weight * gen_loss_cvae
 
-                #smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
-                depth_loss_prior = opt.depth_loss_weight*mse_loss(torch.sigmoid(depth_pred_prior),depths)
-                gen_loss_gsnn = structure_loss(x_swin, gts) + depth_loss_prior #+ smoothLoss_prior + depth_loss_prior
-                gen_loss_gsnn = (1-opt.vae_loss_weight)*gen_loss_gsnn
+                smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
+                depth_loss_prior = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_prior), depths)
+                gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
+                gen_loss_gsnn = (1 - opt.vae_loss_weight) * gen_loss_gsnn
                 gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
 
                 resswin_optimizer.zero_grad()
                 gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(x_swin))
-                visualize_uncertainty_prior_init(torch.sigmoid(pred_post))
+                visualize_uncertainty_post_init(torch.sigmoid(pred_post))
+                visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
 
                 if i % 50 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
