@@ -783,7 +783,7 @@ class SwinIR(nn.Module):
         # x = self.upsample(x)
         #
         # x = x / self.img_range + self.mean
-        print (x_features.shape)
+        # print (x_features.shape)
 
         return x_features
 

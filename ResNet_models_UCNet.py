@@ -417,6 +417,9 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
         x = self.conv_depth1(x)
+        swin_input = x
+        swin_features = self.swinmodel(swin_input)
+        print (swin_features.shape, "swin features shape")
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
