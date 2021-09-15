@@ -339,7 +339,7 @@ class multi_scale_aspp(nn.Sequential):
 
         return aspp_feat
 
-from main_Residual_swin import SwinIR
+
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
     def __init__(self, channel, latent_dim):
@@ -356,8 +356,8 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv1 = Triple_Conv(60, 3)
-        self.conv2 = Triple_Conv(3, 1)
+        self.conv1 = Triple_Conv(256, channel)
+        self.conv2 = Triple_Conv(512, channel)
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
 
@@ -381,13 +381,6 @@ class Saliency_feat_encoder(nn.Module):
         self.conv2_depth = Triple_Conv(512, channel)
         self.conv3_depth = Triple_Conv(1024, channel)
         self.conv4_depth = Triple_Conv(2048, channel)
-        self.upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
-        model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-        self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
-                                img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-                                mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-        msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
-        self.swinmodel = self.swinmodel.to(device)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
         if self.training:
@@ -409,68 +402,55 @@ class Saliency_feat_encoder(nn.Module):
         return torch.index_select(a, dim, order_index)
 
     def forward(self, x,depth,z):
-        x = F.interpolate(x, size=64)
-        depth = F.interpolate(depth, size=64)
-        x_swin_features = self.swinmodel(x)
-        d_swin_features = self.swinmodel(depth)
-        print (x_swin_features.shape)
+        z = torch.unsqueeze(z, 2)
+        z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
+        z = torch.unsqueeze(z, 3)
+        z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
+        x = torch.cat((x, depth, z), 1)
+        x = self.conv_depth1(x)
+        x = self.resnet.conv1(x)
+        x = self.resnet.bn1(x)
+        x = self.resnet.relu(x)
+        x = self.resnet.maxpool(x)
+        x1 = self.resnet.layer1(x)  # 256 x 64 x 64
+        x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
+        x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
+        x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
 
-        x_swin_features = self.conv2(self.conv1(x_swin_features))
-        d_swin_features = self.conv1(d_swin_features)
+        ## depth estimation
+        conv1_depth = self.conv1_depth(x1)
+        conv2_depth = self.upsample2(self.conv2_depth(x2))
+        conv3_depth = self.upsample4(self.conv3_depth(x3))
+        conv4_depth = self.upsample8(self.conv4_depth(x4))
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        depth_pred = self.layer_depth(conv_depth)
 
-        x_swin = self.upsample(self.upsample4(x_swin_features))
-        d_swin = self.upsample(self.upsample4(d_swin_features))
-        print (x_swin.shape, d_swin.shape)
-        # z = torch.unsqueeze(z, 2)
-        # z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
-        # z = torch.unsqueeze(z, 3)
-        # z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
-        # x = torch.cat((x, depth, z), 1)
-        # x = self.conv_depth1(x)
-        # x = self.resnet.conv1(x)
-        # x = self.resnet.bn1(x)
-        # x = self.resnet.relu(x)
-        # x = self.resnet.maxpool(x)
-        # x1 = self.resnet.layer1(x)  # 256 x 64 x 64
-        # x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
-        # x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
-        # x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
-        #
-        # ## depth estimation
-        # conv1_depth = self.conv1_depth(x1)
-        # conv2_depth = self.upsample2(self.conv2_depth(x2))
-        # conv3_depth = self.upsample4(self.conv3_depth(x3))
-        # conv4_depth = self.upsample8(self.conv4_depth(x4))
-        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        # depth_pred = self.layer_depth(conv_depth)
-        #
-        #
-        # conv1_feat = self.conv1(x1)
-        # conv1_feat = self.asppconv1(conv1_feat)
-        # conv2_feat = self.conv2(x2)
-        # conv2_feat = self.asppconv2(conv2_feat)
-        # conv3_feat = self.conv3(x3)
-        # conv3_feat = self.asppconv3(conv3_feat)
-        # conv4_feat = self.conv4(x4)
-        # conv4_feat = self.asppconv4(conv4_feat)
-        # conv4_feat = self.upsample2(conv4_feat)
-        #
-        # conv43 = torch.cat((conv4_feat, conv3_feat), 1)
-        # conv43 = self.racb_43(conv43)
-        # conv43 = self.conv43(conv43)
-        #
-        # conv43 = self.upsample2(conv43)
-        # conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
-        # conv432 = self.racb_432(conv432)
-        # conv432 = self.conv432(conv432)
-        #
-        # conv432 = self.upsample2(conv432)
-        # conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
-        # conv4321 = self.racb_4321(conv4321)
-        # conv4321 = self.conv4321(conv4321)
-        #
-        # sal_init = self.layer6(conv4321)
-        # print (sal_init.shape, depth_pred.shape)
+
+        conv1_feat = self.conv1(x1)
+        conv1_feat = self.asppconv1(conv1_feat)
+        conv2_feat = self.conv2(x2)
+        conv2_feat = self.asppconv2(conv2_feat)
+        conv3_feat = self.conv3(x3)
+        conv3_feat = self.asppconv3(conv3_feat)
+        conv4_feat = self.conv4(x4)
+        conv4_feat = self.asppconv4(conv4_feat)
+        conv4_feat = self.upsample2(conv4_feat)
+
+        conv43 = torch.cat((conv4_feat, conv3_feat), 1)
+        conv43 = self.racb_43(conv43)
+        conv43 = self.conv43(conv43)
+
+        conv43 = self.upsample2(conv43)
+        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
+        conv432 = self.racb_432(conv432)
+        conv432 = self.conv432(conv432)
+
+        conv432 = self.upsample2(conv432)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
+        conv4321 = self.racb_4321(conv4321)
+        conv4321 = self.conv4321(conv4321)
+
+        sal_init = self.layer6(conv4321)
 
         return self.upsample4(sal_init), self.upsample4(depth_pred)
 
