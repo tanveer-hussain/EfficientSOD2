@@ -339,20 +339,11 @@ class multi_scale_aspp(nn.Sequential):
 
         return aspp_feat
 
-from main_Residual_swin import SwinIR
+
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
-
-        model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-        self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
-                                img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-                                mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-        msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
-        self.swinmodel = self.swinmodel.to(device)
-
-
         self.resnet = B2_ResNet()
         self.relu = nn.ReLU(inplace=True)
         self.dropout = nn.Dropout(0.3)
@@ -417,9 +408,6 @@ class Saliency_feat_encoder(nn.Module):
         z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         x = torch.cat((x, depth, z), 1)
         x = self.conv_depth1(x)
-        swin_input = x
-        swin_features = self.swinmodel(swin_input)
-        print (swin_features.shape, "swin features shape")
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)

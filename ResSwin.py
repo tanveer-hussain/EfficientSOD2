@@ -4,7 +4,7 @@ from  ResNet_models_Custom import Saliency_feat_encoder, Encoder_x, Encoder_xy, 
 import torch.nn as nn
 device = torch.device('cuda' if torch.cuda.is_available else "cpud")
 from torch.distributions import Normal, Independent, kl
-from ResNet_models_UCNet import Saliency_feat_encoder, Encoder_x, Encoder_xy
+from ResNet_models_Custom import Saliency_feat_encoder, Encoder_x, Encoder_xy
 
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
