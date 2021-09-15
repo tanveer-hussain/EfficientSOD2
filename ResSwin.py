@@ -14,11 +14,11 @@ class ResSwinModel(nn.Module):
         self.xy_encoder = Encoder_xy(7, channel, latent_dim)
         self.x_encoder = Encoder_x(6, channel, latent_dim)
 
-
-        self.TrippleConv1 = Triple_Conv(60,30)
-        self.TrippleConv2 = Triple_Conv(30, 1)
-        self.upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False)
-        self.upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
+        #
+        # self.TrippleConv1 = Triple_Conv(60,30)
+        # self.TrippleConv2 = Triple_Conv(30, 1)
+        # self.upsample3 = nn.Upsample(scale_factor=3, mode='bilinear', align_corners=False)
+        # self.upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
 
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
