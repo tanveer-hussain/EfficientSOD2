@@ -408,7 +408,7 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x,depth,z):
+    def forward(self, x,depth):
         x = F.interpolate(x, size=64)
         depth = F.interpolate(depth, size=64)
         x_swin_features = self.swinmodel(x)
