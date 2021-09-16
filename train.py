@@ -117,10 +117,6 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-# dataset_name = datasets[5]
-
-import torch.nn as nn
-from main_Residual_swin import SwinIR
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 if __name__ == '__main__':
     #
