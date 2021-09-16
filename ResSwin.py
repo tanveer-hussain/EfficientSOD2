@@ -35,13 +35,13 @@ class ResSwinModel(nn.Module):
 
     def forward(self, x, depth, y=None, training=True):
         if training:
-            self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
-            self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
-            lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
-            z_noise_post = self.reparametrize(muxy, logvarxy)
-            z_noise_prior = self.reparametrize(mux, logvarx)
-            self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_prior)
-            self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_post)
+            # self.posterior, muxy, logvarxy = self.xy_encoder(torch.cat((x,depth,y),1))
+            # self.prior, mux, logvarx = self.x_encoder(torch.cat((x,depth),1))
+            # lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
+            # z_noise_post = self.reparametrize(muxy, logvarxy)
+            # z_noise_prior = self.reparametrize(mux, logvarx)
+            # self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_prior)
+            # self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_post)
 
             return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:

@@ -160,38 +160,40 @@ if __name__ == '__main__':
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
-                pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = resswin.forward(images,
-                                                                                                          depths, gts)
 
-                ## l2 regularizer the inference model
-                reg_loss = l2_regularisation(resswin.xy_encoder) + \
-                           l2_regularisation(resswin.x_encoder) + l2_regularisation(resswin.sal_encoder)
-                smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
-                reg_loss = opt.reg_weight * reg_loss
-                latent_loss = latent_loss
-                depth_loss_post = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
-                sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
-                anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                latent_loss = opt.lat_weight * anneal_reg * latent_loss
-                gen_loss_cvae = sal_loss + latent_loss
-                gen_loss_cvae = opt.vae_loss_weight * gen_loss_cvae
 
-                smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
-                depth_loss_prior = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_prior), depths)
-                gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
-                gen_loss_gsnn = (1 - opt.vae_loss_weight) * gen_loss_gsnn
-                gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
-
-                resswin_optimizer.zero_grad()
-                gen_loss.backward()
-                resswin_optimizer.step()
-                visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(pred_post))
-                visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
-
-                if i % 50 == 0 or i == total_step:
-                    print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
-                        format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
+                # pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = resswin.forward(images,
+                #                                                                                           depths, gts)
+                #
+                # ## l2 regularizer the inference model
+                # reg_loss = l2_regularisation(resswin.xy_encoder) + \
+                #            l2_regularisation(resswin.x_encoder) + l2_regularisation(resswin.sal_encoder)
+                # smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
+                # reg_loss = opt.reg_weight * reg_loss
+                # latent_loss = latent_loss
+                # depth_loss_post = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
+                # sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
+                # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+                # latent_loss = opt.lat_weight * anneal_reg * latent_loss
+                # gen_loss_cvae = sal_loss + latent_loss
+                # gen_loss_cvae = opt.vae_loss_weight * gen_loss_cvae
+                #
+                # smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
+                # depth_loss_prior = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_prior), depths)
+                # gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
+                # gen_loss_gsnn = (1 - opt.vae_loss_weight) * gen_loss_gsnn
+                # gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
+                #
+                # resswin_optimizer.zero_grad()
+                # gen_loss.backward()
+                # resswin_optimizer.step()
+                # visualize_gt(gts)
+                # visualize_uncertainty_post_init(torch.sigmoid(pred_post))
+                # visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
+                #
+                # if i % 50 == 0 or i == total_step:
+                #     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
+                #         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0:
