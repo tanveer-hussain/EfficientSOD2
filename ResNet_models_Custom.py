@@ -472,7 +472,7 @@ class Saliency_feat_encoder(nn.Module):
         conv432 = self.upsample2(conv432)
 
         conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat,self.upsample56(swin_features)), 1)
-        print(conv4321.shape)
+        conv4321 = self.conv128(conv4321)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
