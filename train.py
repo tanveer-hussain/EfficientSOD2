@@ -196,7 +196,7 @@ if __name__ == '__main__':
                 gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
-                print (d_sal.shape)
+                print (x_sal.shape)
                 visualize_uncertainty_post_init(torch.sigmoid(d_sal))
                 visualize_uncertainty_prior_init(torch.sigmoid(x_sal))
                 #
