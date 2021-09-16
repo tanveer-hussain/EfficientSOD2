@@ -364,6 +364,9 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.upsample14 = nn.Upsample(size=(14, 14), mode='bilinear', align_corners=True)
+        self.upsample28 = nn.Upsample(size=(28, 28), mode='bilinear', align_corners=True)
+        self.upsample56 = nn.Upsample(size=(56, 56), mode='bilinear', align_corners=True)
 
         self.conv1 = Triple_Conv(256, channel)
         self.conv2 = Triple_Conv(512, channel)
@@ -420,7 +423,7 @@ class Saliency_feat_encoder(nn.Module):
         swin_input = x
         swin_input = torch.nn.functional.interpolate(swin_input, size=64)
         swin_features = self.swinmodel(swin_input)
-        print (swin_features.shape, "swin features shape")
+        # print (swin_features.shape, "swin features shape")
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
@@ -450,21 +453,20 @@ class Saliency_feat_encoder(nn.Module):
 
         conv4_feat = self.upsample2(conv4_feat)
 
-        conv43 = torch.cat((conv4_feat, conv3_feat), 1)
-        print (conv4_feat.shape, conv3_feat.shape)
+        conv43 = torch.cat((conv4_feat, conv3_feat, self.upsample14(swin_features)), 1)
         conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
 
 
         conv43 = self.upsample2(conv43)
-        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
+        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat,self.upsample28(swin_features)), 1)
 
         conv432 = self.racb_432(conv432)
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
 
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat,self.upsample56(swin_features)), 1)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
