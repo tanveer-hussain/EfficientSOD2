@@ -118,7 +118,7 @@ def count_parameters(model):
 
 
 # dataset_name = datasets[5]
-from  ResNet_models_Custom import Triple_Conv
+
 import torch.nn as nn
 from main_Residual_swin import SwinIR
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
