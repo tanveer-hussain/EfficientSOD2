@@ -12,3 +12,4 @@ DUT-RGBD  Epoch [100/100] Step [100/100], gen vae Loss:0.2413, gen_loss_gsnn:0.3
 NLPR  Epoch [50/100] Step [88/88], gen vae Loss:0.2795, gen_loss_gsnn:0.3999, reg_loss:0.343
 NLPR  Epoch [100/100] Step [88/88], gen vae Loss:0.1849, gen_loss_gsnn:0.2642, reg_loss:0.3418
 NJU2K  Epoch [50/100] Step [186/186], gen vae Loss:0.5292, gen_loss_gsnn:0.7859, reg_loss:0.3417
+NJU2K  Epoch [100/100] Step [186/186], gen vae Loss:0.5008, gen_loss_gsnn:0.7516, reg_loss:0.3415
