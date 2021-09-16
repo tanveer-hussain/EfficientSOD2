@@ -165,8 +165,9 @@ if __name__ == '__main__':
                 reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
                 d_loss = structure_loss(x_sal, gts) + opt.depth_loss_weight * mse_loss(torch.sigmoid(d_sal), depths)
-                x_loss = structure_loss(x_sal, gts)
+                x_loss = structure_loss(x_sal, gts) + opt.sm_weight * smooth_loss(torch.sigmoid(x_sal), gts)
                 anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+                gen_loss = reg_loss + d_loss + x_loss
 
 
                 # pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = resswin.forward(images,
@@ -192,7 +193,7 @@ if __name__ == '__main__':
                 # gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
                 #
                 resswin_optimizer.zero_grad()
-                # gen_loss.backward()
+                gen_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
