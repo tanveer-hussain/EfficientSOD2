@@ -45,7 +45,10 @@ class ResSwinModel(nn.Module):
 
             return self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
-            pass
+            _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
+            z_noise = self.reparametrize(mux, logvarx)
+            self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
+            return self.prob_pred
 
 # x = torch.randn((12, 3, 224, 224)).to(device)
 # depth = torch.randn((12, 3, 224, 224)).to(device)
