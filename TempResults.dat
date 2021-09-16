@@ -7,3 +7,7 @@ NJU2K  Epoch [50/100] Step [186/186], gen vae Loss:0.4823, gen_loss_gsnn:0.6979,
 NJU2K  Epoch [100/100] Step [186/186], gen vae Loss:0.385, gen_loss_gsnn:0.5729, reg_loss:0.1784
 SIP  Epoch [50/100] Step [98/98], gen vae Loss:0.5666, gen_loss_gsnn:0.8921, reg_loss:0.1784
 SIP  Epoch [100/100] Step [98/98], gen vae Loss:0.5931, gen_loss_gsnn:0.8855, reg_loss:0.1784
+DUT-RGBD  Epoch [50/100] Step [100/100], gen vae Loss:9.4739, gen_loss_gsnn:0.7793, reg_loss:0.376
+DUT-RGBD  Epoch [100/100] Step [100/100], gen vae Loss:0.2413, gen_loss_gsnn:0.3396, reg_loss:0.3444
+NLPR  Epoch [50/100] Step [88/88], gen vae Loss:0.2795, gen_loss_gsnn:0.3999, reg_loss:0.343
+NLPR  Epoch [100/100] Step [88/88], gen vae Loss:0.1849, gen_loss_gsnn:0.2642, reg_loss:0.3418
