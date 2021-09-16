@@ -161,6 +161,13 @@ if __name__ == '__main__':
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
 
+                x_sal, d_sal = resswin.forward(images,depths,gts)
+                reg_loss = l2_regularisation(resswin.sal_encoder)
+                reg_loss = opt.reg_weight * reg_loss
+                d_loss = structure_loss(x_sal, gts) + opt.depth_loss_weight * mse_loss(torch.sigmoid(d_sal), depths)
+                x_loss = structure_loss(x_sal, gts)
+                anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
+
 
                 # pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = resswin.forward(images,
                 #                                                                                           depths, gts)
@@ -184,12 +191,12 @@ if __name__ == '__main__':
                 # gen_loss_gsnn = (1 - opt.vae_loss_weight) * gen_loss_gsnn
                 # gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
                 #
-                # resswin_optimizer.zero_grad()
+                resswin_optimizer.zero_grad()
                 # gen_loss.backward()
-                # resswin_optimizer.step()
-                # visualize_gt(gts)
-                # visualize_uncertainty_post_init(torch.sigmoid(pred_post))
-                # visualize_uncertainty_prior_init(torch.sigmoid(pred_prior))
+                resswin_optimizer.step()
+                visualize_gt(gts)
+                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
                 #
                 # if i % 50 == 0 or i == total_step:
                 #     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
