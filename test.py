@@ -25,7 +25,7 @@ resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.cuda()
 resswin.load_state_dict(torch.load("models/" + dataset_name+ 'SWIN' + '_%d' % epoch + '_UCNet.pth'))
 print ('Model loaded')
-generator.eval()
+resswin.eval()
 
 
 save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
