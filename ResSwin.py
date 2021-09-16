@@ -40,14 +40,16 @@ class ResSwinModel(nn.Module):
             # lattent_loss = torch.mean(self.kl_divergence(self.posterior, self.prior))
             # z_noise_post = self.reparametrize(muxy, logvarxy)
             # z_noise_prior = self.reparametrize(mux, logvarx)
+            self.x_sal, self.d_sal = self.sal_encoder(x, depth)
             # self.prob_pred_post, self.depth_pred_post  = self.sal_encoder(x,depth,z_noise_prior)
             # self.prob_pred_prior, self.depth_pred_prior = self.sal_encoder(x, depth, z_noise_post)
 
-            return #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+            return self.x_sal, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
-            _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
-            z_noise = self.reparametrize(mux, logvarx)
-            self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
+            # _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
+            # z_noise = self.reparametrize(mux, logvarx)
+            # self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
+            self.prob_pred, _ = self.sal_encoder(x, depth)
             return self.prob_pred
 
 # x = torch.randn((12, 3, 224, 224)).to(device)
