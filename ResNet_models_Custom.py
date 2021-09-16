@@ -451,16 +451,19 @@ class Saliency_feat_encoder(nn.Module):
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
+        print (conv4_feat.shape, conv3_feat.shape)
         conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
-        print(conv43.shape)
+
 
         conv43 = self.upsample2(conv43)
         conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
+
         conv432 = self.racb_432(conv432)
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
+
         conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
