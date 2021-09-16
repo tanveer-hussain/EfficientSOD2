@@ -16,7 +16,7 @@ parser.add_argument('--feat_channel', type=int, default=32, help='reduced channe
 opt = parser.parse_args()
 
 datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-dataset_name = datasets[3]
+dataset_name = datasets[0]
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
 epoch = 100
@@ -36,6 +36,7 @@ test_loader = test_dataset(image_root, depth_root, opt.testsize)
 for i in range(test_loader.size):
 
     image, depth, HH, WW, name = test_loader.load_data()
+
 
     image = image.cuda()
     depth = depth.cuda()
