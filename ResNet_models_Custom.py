@@ -370,6 +370,7 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample56 = nn.Upsample(size=(56, 56), mode='bilinear', align_corners=True)
         self.conv64 = Triple_Conv(124,64)
         self.conv96 = Triple_Conv(156,96)
+        self.conv128 = Triple_Conv(188,128)
 
         self.conv1 = Triple_Conv(256, channel)
         self.conv2 = Triple_Conv(512, channel)
