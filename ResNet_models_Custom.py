@@ -418,6 +418,7 @@ class Saliency_feat_encoder(nn.Module):
         x = torch.cat((x, depth, z), 1)
         x = self.conv_depth1(x)
         swin_input = x
+        swin_input = torch.nn.functional.interpolate(swin_input, size=64)
         swin_features = self.swinmodel(swin_input)
         print (swin_features.shape, "swin features shape")
         x = self.resnet.conv1(x)
@@ -446,11 +447,13 @@ class Saliency_feat_encoder(nn.Module):
         conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
         conv4_feat = self.asppconv4(conv4_feat)
+
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
         conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
+        print(conv43.shape)
 
         conv43 = self.upsample2(conv43)
         conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
