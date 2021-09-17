@@ -200,9 +200,9 @@ if __name__ == '__main__':
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
                 #
-                # if i % 50 == 0 or i == total_step:
-                #     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}, gen gsnn Loss: {:.4f}, reg Loss: {:.4f}'.
-                #         format(epoch, opt.epoch, i, total_step, gen_loss_cvae.data, gen_loss_gsnn.data, reg_loss.data))
+                if i % 50 == 0 or i == total_step:
+                    print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
+                        format(epoch, opt.epoch, i, total_step, gen_loss.data))
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 1 == 0:
