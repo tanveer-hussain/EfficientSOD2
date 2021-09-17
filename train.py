@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=2, help='epoch number')
+parser.add_argument('--epoch', type=int, default=50, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=8, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -35,12 +35,6 @@ parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight
 
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
-# build models
-# generator = Generator(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-# generator.cuda()
-#
-# generator_params = generator.parameters()
-# generator_optimizer = torch.optim.Adam(generator_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
