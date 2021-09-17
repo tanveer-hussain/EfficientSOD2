@@ -16,10 +16,10 @@ parser.add_argument('--feat_channel', type=int, default=32, help='reduced channe
 opt = parser.parse_args()
 
 datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-dataset_name = datasets[0]
+dataset_name = datasets[1]
 dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
-epoch = 31
+epoch = 50
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.cuda()
