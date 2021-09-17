@@ -153,9 +153,9 @@ if __name__ == '__main__':
                 d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
 
                 sal_loss = l1_criterion(x_sal, gts)
-                #x_ssim_loss = torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
+                x_ssim_loss = torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
 
-                x_loss = structure_loss(x_sal, gts) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts))  (0.2 * sal_loss)
+                x_loss = structure_loss(x_sal, gts) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) + (0.5 * x_ssim_loss) + (0.2 * sal_loss)
                 d_loss = structure_loss(d_sal, gts) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.5 * d_ssim_loss) + (0.2 * depth_loss)
 
                 anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
