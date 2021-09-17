@@ -5,10 +5,8 @@ import numpy as np
 from ResNet import *
 from utils import init_weights,init_weights_orthogonal_normal
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-from torch.autograd import Variable
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
-from torch.distributions import Normal, Independent, kl
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
