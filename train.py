@@ -173,7 +173,7 @@ if __name__ == '__main__':
                         format(epoch, opt.epoch, i, total_step, total_loss.data))
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
-            if epoch % 1 == 0:
+            if epoch % 25 == 0:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
                 with open(save_results_path, "a+") as ResultsFile:
                     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
