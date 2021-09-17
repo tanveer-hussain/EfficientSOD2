@@ -397,7 +397,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv2_depth = Triple_Conv(512, channel)
         self.conv3_depth = Triple_Conv(1024, channel)
         self.conv4_depth = Triple_Conv(2048, channel)
-        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
+        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel * 4)
 
         if self.training:
             self.initialize_weights()
