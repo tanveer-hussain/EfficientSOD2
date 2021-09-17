@@ -1,9 +1,6 @@
 import torch
-from torch.autograd import Variable
-from  ResNet_models_Custom import Saliency_feat_encoder, Encoder_x, Encoder_xy, Triple_Conv
 import torch.nn as nn
-device = torch.device('cuda' if torch.cuda.is_available else "cpud")
-from torch.distributions import Normal, Independent, kl
+device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 from ResNet_models_Custom import Saliency_feat_encoder
 
 class ResSwinModel(nn.Module):
