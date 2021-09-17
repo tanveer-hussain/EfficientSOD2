@@ -207,6 +207,6 @@ if __name__ == '__main__':
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0:
                 with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], gen vae Loss:" + str(round(gen_loss_cvae.data.item(),4)) + ", gen_loss_gsnn:" + str(round(gen_loss_gsnn.data.item(),4)) + ", reg_loss:" + str(round(reg_loss.data.item(),4)) + "\n"
+                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(gen_loss.data.item(),4))  + "\n"
                     ResultsFile.write(writing_string)
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
