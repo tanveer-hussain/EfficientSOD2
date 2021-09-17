@@ -147,6 +147,8 @@ if __name__ == '__main__':
                 reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
 
+                print (d_sal.shape, gts.shape)
+
                 depth_loss = l1_criterion(d_sal, gts)
                 d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
 
