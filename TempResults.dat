@@ -17,3 +17,5 @@ SIP  Epoch [50/100] Step [98/98], gen vae Loss:1.2897, gen_loss_gsnn:1.882, reg_
 SIP  Epoch [100/100] Step [98/98], gen vae Loss:0.5294, gen_loss_gsnn:0.7787, reg_loss:0.3415
 DUT-RGBD  Epoch [1/2] Step [100/100], Loss:18.1779
 DUT-RGBD  Epoch [2/2] Step [100/100], Loss:11.1696
+DUT-RGBD  Epoch [1/2] Step [100/100], Loss:15.1161
+DUT-RGBD  Epoch [2/2] Step [100/100], Loss:11.7011
