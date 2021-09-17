@@ -1,9 +1,7 @@
 import torch
-import torch.nn as nn
 import torchvision.models as models
 import numpy as np
 from ResNet import *
-from utils import init_weights,init_weights_orthogonal_normal
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
