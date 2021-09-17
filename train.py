@@ -11,6 +11,8 @@ from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
 import imageio
+import torch.nn as nn
+from customlosses import ssim
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
@@ -46,6 +48,7 @@ resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta
 CE = torch.nn.BCELoss()
 mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
 smooth_loss = smoothness.smoothness_loss(size_average=True)
+l1_criterion = nn.L1Loss()
 
 def structure_loss(pred, mask):
     weit  = 1+5*torch.abs(F.avg_pool2d(mask, kernel_size=31, stride=1, padding=15)-mask)
@@ -143,36 +146,22 @@ if __name__ == '__main__':
                 x_sal, d_sal = resswin.forward(images,depths,gts)
                 reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
-                d_loss = structure_loss(x_sal, gts) + opt.depth_loss_weight * mse_loss(torch.sigmoid(d_sal), depths)
-                x_loss = structure_loss(x_sal, gts) + opt.sm_weight * smooth_loss(torch.sigmoid(x_sal), gts)
+
+                depth_loss = l1_criterion(d_sal, gts)
+                d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
+
+                sal_loss = l1_criterion(x_sal, gts)
+                x_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
+
+                x_loss = structure_loss(x_sal, gts) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts))  + (0.5 * x_ssim_loss) + (0.2 * sal_loss)
+                d_loss = structure_loss(d_sal, gts) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.5 * d_ssim_loss) + (0.2 * depth_loss)
+
                 anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                gen_loss = reg_loss + d_loss + x_loss
+                total_loss = reg_loss + d_loss + x_loss
 
-
-                # pred_post, pred_prior, latent_loss, depth_pred_post, depth_pred_prior = resswin.forward(images,
-                #                                                                                           depths, gts)
-                #
-                # ## l2 regularizer the inference model
-                # reg_loss = l2_regularisation(resswin.xy_encoder) + \
-                #            l2_regularisation(resswin.x_encoder) + l2_regularisation(resswin.sal_encoder)
-                # smoothLoss_post = opt.sm_weight * smooth_loss(torch.sigmoid(pred_post), gts)
-                # reg_loss = opt.reg_weight * reg_loss
-                # latent_loss = latent_loss
-                # depth_loss_post = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_post), depths)
-                # sal_loss = structure_loss(pred_post, gts) + smoothLoss_post + depth_loss_post
-                # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                # latent_loss = opt.lat_weight * anneal_reg * latent_loss
-                # gen_loss_cvae = sal_loss + latent_loss
-                # gen_loss_cvae = opt.vae_loss_weight * gen_loss_cvae
-                #
-                # smoothLoss_prior = opt.sm_weight * smooth_loss(torch.sigmoid(pred_prior), gts)
-                # depth_loss_prior = opt.depth_loss_weight * mse_loss(torch.sigmoid(depth_pred_prior), depths)
-                # gen_loss_gsnn = structure_loss(pred_prior, gts) + smoothLoss_prior + depth_loss_prior
-                # gen_loss_gsnn = (1 - opt.vae_loss_weight) * gen_loss_gsnn
-                # gen_loss = gen_loss_cvae + gen_loss_gsnn + reg_loss
                 #
                 resswin_optimizer.zero_grad()
-                gen_loss.backward()
+                total_loss.backward()
                 resswin_optimizer.step()
                 visualize_gt(gts)
                 # print (x_sal.shape)
@@ -181,12 +170,12 @@ if __name__ == '__main__':
                 #
                 if i % 50 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
-                        format(epoch, opt.epoch, i, total_step, gen_loss.data))
+                        format(epoch, opt.epoch, i, total_step, total_loss.data))
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 1 == 0:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
                 with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(gen_loss.data.item(),4))  + "\n"
+                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                     ResultsFile.write(writing_string)
 
