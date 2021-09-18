@@ -5,5 +5,6 @@
 (SIP Dataset)Emeasure: 0.978; Smeasure 0.928; weightedF: 0.907; Fmeasure 0.916; MAE: 0.018.
 
 100 epochs
+(NLPR Dataset)Emeasure: 0.943; Smeasure 0.892; weightedF: 0.853; Fmeasure 0.869; MAE: 0.029.
 (NJU2K Dataset)Emeasure: 0.881; Smeasure 0.857; weightedF: 0.820; Fmeasure 0.840; MAE: 0.057.
 (SIP Dataset)Emeasure: 0.924; Smeasure 0.865; weightedF: 0.789; Fmeasure 0.810; MAE: 0.047.
