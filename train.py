@@ -127,10 +127,16 @@ if __name__ == '__main__':
 
     for dataset_name in datasets:
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
-        image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-        gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
-        depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
-        gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
+        # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
+        # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
+        # depth_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
+        # gray_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
+
+        image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
+        gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
+        depth_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
+        gray_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
+
         train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
         total_step = len(train_loader)
 
@@ -175,7 +181,7 @@ if __name__ == '__main__':
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 25 == 0:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
-                with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
-                    ResultsFile.write(writing_string)
+                # with open(save_results_path, "a+") as ResultsFile:
+                #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
+                #     ResultsFile.write(writing_string)
 
