@@ -314,8 +314,8 @@ class Saliency_feat_encoder(nn.Module):
         conv3_depth = self.upsample4(self.conv3_depth(x3))
         conv4_depth = self.upsample8(self.conv4_depth(x4))
         print (conv4_depth.shape, "conv shape")
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth,self.upsample56(swin_features)), 1)
+        conv_depth = self.conv128(conv_depth)
         depth_pred = self.layer_depth(conv_depth)
         print (depth_pred.shape)
 
@@ -363,7 +363,7 @@ class Saliency_feat_encoder(nn.Module):
 
         sal_init = self.layer6(conv4321)
 
-        return self.upsample4(sal_init), self.upsample8(depth_pred)
+        return self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
