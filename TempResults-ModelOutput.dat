@@ -15,3 +15,8 @@
 (NLPR Dataset)Emeasure: 0.937; Smeasure 0.886; weightedF: 0.844; Fmeasure 0.858; MAE: 0.032.
 (NJU2K Dataset)Emeasure: 0.874; Smeasure 0.851; weightedF: 0.813; Fmeasure 0.832; MAE: 0.059.
 (SIP Dataset)Emeasure: 0.922; Smeasure 0.861; weightedF: 0.785; Fmeasure 0.805; MAE: 0.048.
+
+
+(DUTRGB-D Dataset)Emeasure: 0.939; Smeasure 0.889; weightedF: 0.879; Fmeasure 0.892; MAE: 0.040.
+(NLPR Dataset)Emeasure: 0.943; Smeasure 0.886; weightedF: 0.843; Fmeasure 0.857; MAE: 0.031.
+(NJU2K Dataset)Emeasure: 0.878; Smeasure 0.851; weightedF: 0.813; Fmeasure 0.831; MAE: 0.059.
