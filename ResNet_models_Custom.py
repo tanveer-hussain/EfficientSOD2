@@ -263,8 +263,8 @@ class Saliency_feat_encoder(nn.Module):
         self.conv1_depth = Triple_Conv(3, 64)
         self.conv2_depth = Triple_Conv(64, 128)
         self.maxpool = nn.MaxPool2d(3,2,1)
-        self.conv3_depth = Triple_Conv(256, 512)
-        self.conv4_depth = Triple_Conv(2048, channel)
+        self.conv3_depth = Triple_Conv(128, 128)
+        self.conv4_depth = Triple_Conv(256, 128)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel * 4)
 
         if self.training:
@@ -306,12 +306,12 @@ class Saliency_feat_encoder(nn.Module):
         x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
 
         ## depth estimation
-        conv1_depth = self.conv1_depth(depth) # ]8, 3, 224, 224]
-        conv1_depth = self.maxpool1(conv1_depth)
+        conv1_depth = self.conv1_depth(depth) # [8, 64, 224, 224]
+        conv1_depth = self.maxpool(conv1_depth)
         conv2_depth = self.conv2_depth(conv1_depth) # [8, 64, 224, 224]
-        conv2_depth = self.maxpool1(conv2_depth)
-        conv3_depth = self.conv3_depth(conv2_depth) # [8, 128, 448, 448]
-        depth_pred = self.layer_depth(conv3_depth)
+        conv2_depth = self.maxpool(conv2_depth)
+        conv3_depth = self.conv3_depth(conv2_depth) # [8, 128, 56, 56]
+        depth_pred = self.layer_depth(conv3_depth) # [8, 256, 56, 56]
 
 
         conv1_feat = self.conv1(x1)
