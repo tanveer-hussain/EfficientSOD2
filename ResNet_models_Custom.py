@@ -211,7 +211,8 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+        # model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+        model_path = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
         self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
                                 img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
                                 mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
@@ -259,10 +260,11 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv1_depth = Triple_Conv(256, channel)
-        self.conv2_depth = Triple_Conv(512, channel)
-        self.conv3_depth = Triple_Conv(1024, channel)
-        self.conv4_depth = Triple_Conv(2048, channel)
+        self.conv1_depth = Triple_Conv(3, 64)
+        self.conv2_depth = Triple_Conv(64, 128)
+        self.maxpool = nn.MaxPool2d(3,2,1)
+        self.conv3_depth = Triple_Conv(128, 128)
+        self.conv4_depth = Triple_Conv(256, 128)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel * 4)
 
         if self.training:
@@ -304,12 +306,12 @@ class Saliency_feat_encoder(nn.Module):
         x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
 
         ## depth estimation
-        conv1_depth = self.conv1_depth(x1)
-        conv2_depth = self.upsample2(self.conv2_depth(x2))
-        conv3_depth = self.upsample4(self.conv3_depth(x3))
-        conv4_depth = self.upsample8(self.conv4_depth(x4))
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        depth_pred = self.layer_depth(conv_depth)
+        conv1_depth = self.conv1_depth(depth) # [8, 64, 224, 224]
+        conv1_depth = self.maxpool(conv1_depth)
+        conv2_depth = self.conv2_depth(conv1_depth) # [8, 64, 224, 224]
+        conv2_depth = self.maxpool(conv2_depth)
+        conv3_depth = self.conv3_depth(conv2_depth) # [8, 128, 56, 56]
+        depth_pred = self.layer_depth(conv3_depth) # [8, 256, 56, 56]
 
 
         conv1_feat = self.conv1(x1)
