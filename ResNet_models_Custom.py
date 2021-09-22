@@ -240,6 +240,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv128 = Triple_Conv(188,128)
 
         self.preconv = Triple_Conv(6,3)
+        self.postconv = Triple_Conv(3,1)
         self.conv1 = Triple_Conv(256, channel)
         self.conv2 = Triple_Conv(512, channel)
         self.conv3 = Triple_Conv(1024, channel)
@@ -315,17 +316,18 @@ class Saliency_feat_encoder(nn.Module):
         conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth,self.upsample56(swin_features)), 1)
         conv_depth = self.conv128(conv_depth)
         depth_pred = self.layer_depth(conv_depth)
-        print (depth_pred.shape)
+        depth_pred = self.postconv(depth_pred)
 
-        for kk in range(depth_pred.shape[0]):
-            pred_edge_kk = depth_pred[kk, 1, :, :]
-            pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-            # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-            pred_edge_kk *= 255.0
-            pred_edge_kk = pred_edge_kk.astype(np.uint8)
-            save_path = './layers/'
-            name = '{:02d}_gt.png'.format(kk)
-            imageio.imwrite(save_path + name, pred_edge_kk)
+        #
+        # for kk in range(depth_pred.shape[0]):
+        #     pred_edge_kk = depth_pred[kk, 0, :, :]
+        #     pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+        #     # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+        #     pred_edge_kk *= 255.0
+        #     pred_edge_kk = pred_edge_kk.astype(np.uint8)
+        #     save_path = './layers/'
+        #     name = '{:02d}_gt.png'.format(kk)
+        #     imageio.imwrite(save_path + name, pred_edge_kk)
         # depth_pred = self.layer_depth(conv4_depth) # [8, 256, 56, 56]
 
 
