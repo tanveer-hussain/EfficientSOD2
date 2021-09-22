@@ -204,7 +204,7 @@ class multi_scale_aspp(nn.Sequential):
         aspp_feat = self.classification(feature)
 
         return aspp_feat
-
+import imageio
 from main_Residual_swin import SwinIR
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
@@ -239,6 +239,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv96 = Triple_Conv(156,96)
         self.conv128 = Triple_Conv(188,128)
 
+        self.preconv = Triple_Conv(6,3)
         self.conv1 = Triple_Conv(256, channel)
         self.conv2 = Triple_Conv(512, channel)
         self.conv3 = Triple_Conv(1024, channel)
@@ -260,12 +261,11 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv1_depth = Triple_Conv(3, 64)
-        self.conv2_depth = Triple_Conv(64, 128)
-        self.maxpool = nn.MaxPool2d(3,2,1)
-        self.conv3_depth = Triple_Conv(128, 128)
-        self.conv4_depth = Triple_Conv(256, 128)
-        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel * 4)
+        self.conv1_depth = Triple_Conv(256, channel)
+        self.conv2_depth = Triple_Conv(512, channel)
+        self.conv3_depth = Triple_Conv(1024, channel)
+        self.conv4_depth = Triple_Conv(2048, channel)
+        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
         if self.training:
             self.initialize_weights()
@@ -290,12 +290,14 @@ class Saliency_feat_encoder(nn.Module):
         # z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
         # z = torch.unsqueeze(z, 3)
         # z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
-        # x = torch.cat((x, depth, z), 1)
+        x = torch.cat((x, depth), 1)
+        # print (x.shape)
+        x = self.preconv(x)
         # x = self.conv_depth1(x)
         swin_input = x
         swin_input = torch.nn.functional.interpolate(swin_input, size=64)
         swin_features = self.swinmodel(swin_input)
-        # print (swin_features.shape, "swin features shape")
+        print (swin_features.shape, "swin features shape")
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
@@ -304,14 +306,29 @@ class Saliency_feat_encoder(nn.Module):
         x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
         x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
         x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
+        # print (x_copy.shape)
 
         ## depth estimation
-        conv1_depth = self.conv1_depth(depth) # [8, 64, 224, 224]
-        conv1_depth = self.maxpool(conv1_depth)
-        conv2_depth = self.conv2_depth(conv1_depth) # [8, 64, 224, 224]
-        conv2_depth = self.maxpool(conv2_depth)
-        conv3_depth = self.conv3_depth(conv2_depth) # [8, 128, 56, 56]
-        depth_pred = self.layer_depth(conv3_depth) # [8, 256, 56, 56]
+        conv1_depth = self.conv1_depth(x1)
+        conv2_depth = self.upsample2(self.conv2_depth(x2))
+        conv3_depth = self.upsample4(self.conv3_depth(x3))
+        conv4_depth = self.upsample8(self.conv4_depth(x4))
+        print (conv4_depth.shape, "conv shape")
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+
+        depth_pred = self.layer_depth(conv_depth)
+        print (depth_pred.shape)
+
+        for kk in range(depth_pred.shape[0]):
+            pred_edge_kk = depth_pred[kk, 1, :, :]
+            pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+            # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+            pred_edge_kk *= 255.0
+            pred_edge_kk = pred_edge_kk.astype(np.uint8)
+            save_path = './layers/'
+            name = '{:02d}_gt.png'.format(kk)
+            imageio.imwrite(save_path + name, pred_edge_kk)
+        # depth_pred = self.layer_depth(conv4_depth) # [8, 256, 56, 56]
 
 
         conv1_feat = self.conv1(x1)
@@ -346,7 +363,7 @@ class Saliency_feat_encoder(nn.Module):
 
         sal_init = self.layer6(conv4321)
 
-        return self.upsample4(sal_init), self.upsample4(depth_pred)
+        return self.upsample4(sal_init), self.upsample8(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
