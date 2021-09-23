@@ -24,3 +24,4 @@
 100 epochs with custom losses modified and depth working
 (DUTRGB-D Dataset)Emeasure: 0.909; Smeasure 0.856; weightedF: 0.830; Fmeasure 0.846; MAE: 0.053.
 (NLPR Dataset)Emeasure: 0.927; Smeasure 0.872; weightedF: 0.819; Fmeasure 0.833; MAE: 0.037.
+(NJU2K Dataset)Emeasure: 0.837; Smeasure 0.824; weightedF: 0.776; Fmeasure 0.795; MAE: 0.074.
