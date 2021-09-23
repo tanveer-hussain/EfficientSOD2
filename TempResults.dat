@@ -1,4 +1,8 @@
-DUT-RGBD  Epoch [1/1] Step [100/100], Loss:5.0932
-NLPR  Epoch [1/1] Step [88/88], Loss:3.2586
-NJU2K  Epoch [1/1] Step [186/186], Loss:3.3521
-SIP  Epoch [1/1] Step [98/98], Loss:3.0287
+DUT-RGBD  Epoch [50/100] Step [100/100], Loss:3.4113
+DUT-RGBD  Epoch [100/100] Step [100/100], Loss:3.1832
+NLPR  Epoch [50/100] Step [88/88], Loss:2.7548
+NLPR  Epoch [100/100] Step [88/88], Loss:2.3386
+NJU2K  Epoch [50/100] Step [186/186], Loss:2.8386
+NJU2K  Epoch [100/100] Step [186/186], Loss:2.9549
+SIP  Epoch [50/100] Step [98/98], Loss:2.7045
+SIP  Epoch [100/100] Step [98/98], Loss:2.7122
