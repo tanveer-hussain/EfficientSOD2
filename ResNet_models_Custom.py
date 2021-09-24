@@ -313,8 +313,8 @@ class Saliency_feat_encoder(nn.Module):
         conv2_depth = self.upsample2(self.conv2_depth(x2))
         conv3_depth = self.upsample4(self.conv3_depth(x3))
         conv4_depth = self.upsample8(self.conv4_depth(x4))
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        # conv_depth = self.conv128(conv_depth)
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth,self.upsample56(swin_features)), 1)
+        conv_depth = self.conv128(conv_depth)
         depth_pred = self.layer_depth(conv_depth)
         depth_pred = self.postconv(depth_pred)
 
@@ -328,7 +328,7 @@ class Saliency_feat_encoder(nn.Module):
         #     save_path = './layers/'
         #     name = '{:02d}_gt.png'.format(kk)
         #     imageio.imwrite(save_path + name, pred_edge_kk)
-        # # depth_pred = self.layer_depth(conv4_depth) # [8, 256, 56, 56]
+        # depth_pred = self.layer_depth(conv4_depth) # [8, 256, 56, 56]
 
 
         conv1_feat = self.conv1(x1)
@@ -342,22 +342,22 @@ class Saliency_feat_encoder(nn.Module):
 
         conv4_feat = self.upsample2(conv4_feat)
 
-        conv43 = torch.cat((conv4_feat, conv3_feat), 1)
-        # conv43 = self.conv64(conv43)
+        conv43 = torch.cat((conv4_feat, conv3_feat, self.upsample14(swin_features)), 1)
+        conv43 = self.conv64(conv43)
         conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
 
 
         conv43 = self.upsample2(conv43)
-        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
-        # conv432 = self.conv96(conv432)
+        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat,self.upsample28(swin_features)), 1)
+        conv432 = self.conv96(conv432)
         conv432 = self.racb_432(conv432)
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
 
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
-        # conv4321 = self.conv128(conv4321)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat,self.upsample56(swin_features)), 1)
+        conv4321 = self.conv128(conv4321)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
