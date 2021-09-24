@@ -29,3 +29,4 @@
 
 100 epochs with custom losses modified and depth working without SWIN features
 (DUTRGB-D Dataset)Emeasure: 0.917; Smeasure 0.869; weightedF: 0.853; Fmeasure 0.871; MAE: 0.049.
+(NLPR Dataset)Emeasure: 0.848; Smeasure 0.793; weightedF: 0.677; Fmeasure 0.703; MAE: 0.070.
