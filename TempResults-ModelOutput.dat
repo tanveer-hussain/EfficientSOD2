@@ -16,13 +16,16 @@
 (NJU2K Dataset)Emeasure: 0.874; Smeasure 0.851; weightedF: 0.813; Fmeasure 0.832; MAE: 0.059.
 (SIP Dataset)Emeasure: 0.922; Smeasure 0.861; weightedF: 0.785; Fmeasure 0.805; MAE: 0.048.
 
-100 epochs with custom losses modified and depth not working yet
+100 epochs with custom losses modified and depth not working yet with SWIN features
 (DUTRGB-D Dataset)Emeasure: 0.939; Smeasure 0.889; weightedF: 0.879; Fmeasure 0.892; MAE: 0.040.
 (NLPR Dataset)Emeasure: 0.943; Smeasure 0.886; weightedF: 0.843; Fmeasure 0.857; MAE: 0.031.
 (NJU2K Dataset)Emeasure: 0.878; Smeasure 0.851; weightedF: 0.813; Fmeasure 0.831; MAE: 0.059.
 
-100 epochs with custom losses modified and depth working
+100 epochs with custom losses modified and depth working without SWIN features
 (DUTRGB-D Dataset)Emeasure: 0.909; Smeasure 0.856; weightedF: 0.830; Fmeasure 0.846; MAE: 0.053.
 (NLPR Dataset)Emeasure: 0.927; Smeasure 0.872; weightedF: 0.819; Fmeasure 0.833; MAE: 0.037.
 (NJU2K Dataset)Emeasure: 0.837; Smeasure 0.824; weightedF: 0.776; Fmeasure 0.795; MAE: 0.074.
 (SIP Dataset)Emeasure: 0.909; Smeasure 0.849; weightedF: 0.762; Fmeasure 0.781; MAE: 0.051.
+
+100 epochs with custom losses modified and depth working without SWIN features
+(DUTRGB-D Dataset)Emeasure: 0.917; Smeasure 0.869; weightedF: 0.853; Fmeasure 0.871; MAE: 0.049.
