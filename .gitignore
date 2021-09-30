@@ -13,3 +13,4 @@ dataset
 ./dataset
 *.mp4
 *.lst\
+*.pkl
