@@ -760,9 +760,8 @@ img_ = np.empty([128,416])
 img_[:,:] = result[0,:,:]
 img_ = resize(img_, (128, 416), 'rgb')
 
-
-cv2.imshow('', img_)
-cv2.waitKey(10000)
+import imageio
+imageio.imwrite("temp.png",img_)
 print ("Done")
 
 
