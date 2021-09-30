@@ -696,6 +696,8 @@ class AutoEncoder_Resnet(nn.Module):
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
 import collections
+import scipy.misc
+
 class Resize(object):
     """Resize the the given ``numpy.ndarray`` to the given size.
     Args:
@@ -715,9 +717,9 @@ class Resize(object):
                (isinstance(size, collections.Iterable) and len(size) == 2)
         if img_type == 'rgb':
             if img.ndim == 3:
-                return scipy.misc.imresize(img, size, self.interpolation)
+                return cv2.resize(img, size)
             elif img.ndim == 2:
-                img = scipy.misc.imresize(img, size, self.interpolation)
+                img = cv2.resize(img, size)
                 img_tmp = np.zeros((img.shape[0], img.shape[1],1),dtype=np.float32)
                 img_tmp[:,:,0] = img[:,:]
                 img = img_tmp
