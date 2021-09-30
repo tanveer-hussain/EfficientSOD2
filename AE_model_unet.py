@@ -695,8 +695,46 @@ class AutoEncoder_Resnet(nn.Module):
             elif isinstance(m, nn.Linear):
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
-
+import collections
+class Resize(object):
+    """Resize the the given ``numpy.ndarray`` to the given size.
+    Args:
+        size (sequence or int): Desired output size. If size is a sequence like
+            (h, w), output size will be matched to this. If size is an int,
+            smaller edge of the image will be matched to this number.
+            i.e, if height > width, then image will be rescaled to
+            (size * height / width, size)
+        interpolation (int, optional): Desired interpolation. Default is
+            ``PIL.Image.BILINEAR``
+    'nearest' or 'bilinear'
+    """
+    def __init__(self, interpolation='bilinear'):
+        self.interpolation = interpolation
+    def __call__(self, img,size, img_type = 'rgb'):
+        assert isinstance(size, int) or isinstance(size, float) or \
+               (isinstance(size, collections.Iterable) and len(size) == 2)
+        if img_type == 'rgb':
+            if img.ndim == 3:
+                return scipy.misc.imresize(img, size, self.interpolation)
+            elif img.ndim == 2:
+                img = scipy.misc.imresize(img, size, self.interpolation)
+                img_tmp = np.zeros((img.shape[0], img.shape[1],1),dtype=np.float32)
+                img_tmp[:,:,0] = img[:,:]
+                img = img_tmp
+                return img
+        elif img_type == 'depth':
+            if img.ndim == 2:
+                img = scipy.misc.imresize(img, size, self.interpolation, 'F')
+            elif img.ndim == 3:
+                img = scipy.misc.imresize(img[:,:,0], size, self.interpolation, 'F')
+            img_tmp = np.zeros((img.shape[0], img.shape[1],1),dtype=np.float32)
+            img_tmp[:,:,0] = img[:,:]
+            img = img_tmp
+            return img
+        else:
+            RuntimeError('img should be ndarray with 2 or 3 dimensions. Got {}'.format(img.ndim))
 import cv2
+resize = Resize()
 ae = AutoEncoder()
 ae = ae.cuda()
 ae = nn.DataParallel(ae)
@@ -712,8 +750,16 @@ img = img/255
 img = (img-0.5)/0.5
 img = Variable(img)
 result = ae(img, istrain=False)
-result = result.cpu().detach().numpy()
-cv2.imshow(result, '')
+result = result[0].cpu().detach().numpy()
+print (result.shape)
+
+
+img_ = np.empty([128,416])
+img_[:,:] = result[0,:,:]
+img_ = resize(img_, (128, 416), 'rgb')
+
+
+cv2.imshow('', img_)
 cv2.waitKey(10000)
 print ("Done")
 
