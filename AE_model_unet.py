@@ -713,6 +713,8 @@ img = (img-0.5)/0.5
 img = Variable(img)
 result = ae(img, istrain=False)
 result = result.cpu().detach().numpy()
+cv2.imshow(result, '')
+cv2.waitKey(10000)
 print ("Done")
 
 
