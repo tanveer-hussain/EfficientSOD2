@@ -769,18 +769,19 @@ img_tensor = img_tensor.unsqueeze(0)
 img_tensor = Variable(img_tensor)
 
 output = ae(img_tensor, istrain=False)
-output = output[0].cpu().detach().numpy()
+# output = output[0].cpu().detach().numpy()
+visualize_uncertainty_post_init(output)
 
-img_ = np.empty([128,416])
-img_[:,:] = output[0,:,:]
+#
+# img_ = np.empty([128,416])
+# img_[:,:] = output[0,:,:]
+#
+# img_ = cv2.resize(img_, (224,224))
+# # img_temp = np.zeros((img_.shape[0], img_.shape[1], 1))
+# # img_temp[:,:,0] = img_[:,:]
 
-img_ = cv2.resize(img_, (224,224))
-img_temp = np.zeros((img_.shape[0], img_.shape[1], 1))
-img_temp[:,:,0] = img_[:,:]
-img_ = img_temp
-
-img_ = img_.transpose(2,0,1)
-print (cv2.imwrite('hikmat.jpg', img_))
+# pil_img = Image.fromarray(output)
+# output.save('hikmat.jpg')
 
 
         

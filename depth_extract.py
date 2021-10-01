@@ -1,7 +1,8 @@
 from AE_model_unet import *
 import os
 import torch.backends.cudnn as cudnn
-
+import time
+from path import Path
 from imageio import imread
 from PIL import Image
 import scipy.misc
@@ -9,6 +10,8 @@ from torch.autograd import Variable
 import collections
 import argparse
 import cv2
+import imageio
+import numpy
 
 parser = argparse.ArgumentParser(description='Pretrained Depth AutoEncoder',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -59,7 +62,7 @@ ae = ae.eval()
 cudnn.benchmark = True
 torch.cuda.synchronize()
 sum = 0.0
-images = cv2.imread("1.jpg")
+images = cv2.imread("2.jpg")
 
 
 sample = []
@@ -70,8 +73,7 @@ org_W_list = []
 img = images#load_as_float(filename)
 org_H_list.append(img.shape[0])
 org_W_list.append(img.shape[1])
-
-img = cv2.resize(img,(128,416))
+img = resize(img,(128,416),'rgb')
 img = img.transpose(2,0,1)
 img = torch.tensor(img,dtype=torch.float32)
 img = img.unsqueeze(0)
@@ -102,15 +104,6 @@ for tens in sample:
     #print(img.size())
     img = upsampling(img, (128,416),mode='bilinear', align_corners = False)
     img = img[0].cpu().detach().numpy()
-    img = img.astype(np.uint8)
-    img_tmp = np.zeros((img.shape[1], img.shape[2], 1), dtype=np.float32)
-    print ("img temp > ", img_tmp.shape, ", img shape ", img.shape)
-    cv2.imshow('sample image 1', img_tmp)
-    cv2.waitKey(5000)
-    img_tmp[:, :, 0] = img[:, :]
-    img = img_tmp
-    cv2.imshow('sample image', img_tmp)
-    cv2.waitKey(5000)
     #print(img.shape)
     if img.shape[0] == 3:
         img_ = np.empty([128,416,3])
@@ -120,10 +113,9 @@ for tens in sample:
     elif img.shape[0] == 1:
         img_ = np.empty([128,416])
         img_[:,:] = img[0,:,:]
-    img_ = cv2.resize(img_, (org_H, org_W))
-    print (img_.shape)
-    # if img_.shape[2] == 1:
-    img_ = img_[:,:,0]
+    img_ = resize(img_, (org_H, org_W), 'rgb')
+    if img_.shape[2] == 1:
+        img_ = img_[:,:,0]
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     #print(result_dir)
