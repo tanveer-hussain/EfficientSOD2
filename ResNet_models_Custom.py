@@ -204,20 +204,32 @@ class multi_scale_aspp(nn.Sequential):
         aspp_feat = self.classification(feature)
 
         return aspp_feat
-import imageio
-from main_Residual_swin import SwinIR
+class ResidualBlock(nn.Module):
+    """Residual Block with instance normalization."""
+    def __init__(self, dim_in, dim_out, kernel_size,padding):
+        super(ResidualBlock, self).__init__()
+        self.main = nn.Sequential(
+            nn.Conv2d(dim_in, dim_out, kernel_size, 1, padding, bias=False),
+            nn.BatchNorm2d(dim_out, affine=True, track_running_stats=True),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(dim_out, dim_out, kernel_size, 1, padding, bias=False),
+            nn.BatchNorm2d(dim_out, affine=True, track_running_stats=True))
+
+    def forward(self, x):
+        return x + self.main(x)
+
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
+        # model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
         # model_path = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-        self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
-                                img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-                                mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-        msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
-        self.swinmodel = self.swinmodel.to(device)
+        # self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
+        #                         img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
+        #                         mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
+        # msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
+        # self.swinmodel = self.swinmodel.to(device)
 
 
         self.resnet = B2_ResNet()
@@ -312,7 +324,7 @@ class Saliency_feat_encoder(nn.Module):
         conv2_depth = self.upsample2(self.conv2_depth(x2))
         conv3_depth = self.upsample4(self.conv3_depth(x3))
         conv4_depth = self.upsample8(self.conv4_depth(x4))
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth,self.upsample56(swin_features)), 1)
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
         conv_depth = self.conv128(conv_depth)
         depth_pred = self.layer_depth(conv_depth)
         depth_pred = self.postconv(depth_pred)
@@ -328,21 +340,21 @@ class Saliency_feat_encoder(nn.Module):
 
         conv4_feat = self.upsample2(conv4_feat)
 
-        conv43 = torch.cat((conv4_feat, conv3_feat, self.upsample14(swin_features)), 1)
+        conv43 = torch.cat((conv4_feat, conv3_feat), 1)
         conv43 = self.conv64(conv43)
         conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
 
 
         conv43 = self.upsample2(conv43)
-        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat,self.upsample28(swin_features)), 1)
+        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
         conv432 = self.conv96(conv432)
         conv432 = self.racb_432(conv432)
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
 
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat,self.upsample56(swin_features)), 1)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
         conv4321 = self.conv128(conv4321)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
