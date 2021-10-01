@@ -8,10 +8,10 @@ import itertools
 import torchvision
 import torchvision.transforms as transforms
 import numpy as np
-import matplotlib as mpl
-if os.environ.get('DISPLAY','') == '':
-        print('no display found. Using non-interactive Agg backend')
-        mpl.use('Agg')
+# import matplotlib as mpl
+# if os.environ.get('DISPLAY','') == '':
+#         print('no display found. Using non-interactive Agg backend')
+#         mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 '''
@@ -770,7 +770,6 @@ img_tensor = Variable(img_tensor)
 
 output = ae(img_tensor, istrain=False)
 # output = output[0].cpu().detach().numpy()
-visualize_uncertainty_post_init(output)
 
 #
 # img_ = np.empty([128,416])

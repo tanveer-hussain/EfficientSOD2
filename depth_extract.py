@@ -1,17 +1,14 @@
-from AE_model_unet import *
+from AE_model_unet import AutoEncoder
 import os
 import torch.backends.cudnn as cudnn
-import time
-from path import Path
+import numpy as np
 from imageio import imread
-from PIL import Image
 import scipy.misc
 from torch.autograd import Variable
 import collections
 import argparse
 import cv2
-import imageio
-import numpy
+
 
 parser = argparse.ArgumentParser(description='Pretrained Depth AutoEncoder',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -30,24 +27,28 @@ class Resize(object):
                (isinstance(size, collections.Iterable) and len(size) == 2)
         if img_type == 'rgb':
             if img.ndim == 3:
-                return scipy.misc.imresize(img, size, self.interpolation)
-            elif img.ndim == 2:
-                img = scipy.misc.imresize(img, size, self.interpolation)
+                print('img type', type(img))
+                return cv2.resize(img, size)
+            if img.ndim == 2:
+                print ('img type', type(img))
+                img = cv2.resize(img, size)
                 img_tmp = np.zeros((img.shape[0], img.shape[1],1),dtype=np.float32)
                 img_tmp[:,:,0] = img[:,:]
                 img = img_tmp
                 return img
-        elif img_type == 'depth':
-            if img.ndim == 2:
-                img = scipy.misc.imresize(img, size, self.interpolation, 'F')
-            elif img.ndim == 3:
-                img = scipy.misc.imresize(img[:,:,0], size, self.interpolation, 'F')
-            img_tmp = np.zeros((img.shape[0], img.shape[1],1),dtype=np.float32)
-            img_tmp[:,:,0] = img[:,:]
-            img = img_tmp
-            return img
+        # elif img_type == 'depth':
+        #     if img.ndim == 2:
+        #         img = scipy.misc.imresize(img, size, self.interpolation, 'F')
+        #     elif img.ndim == 3:
+        #         img = scipy.misc.imresize(img[:,:,0], size, self.interpolation, 'F')
+        #     img_tmp = np.zeros((img.shape[0], img.shape[1],1),dtype=np.float32)
+        #     img_tmp[:,:,0] = img[:,:]
+        #     img = img_tmp
+        #     return img
         else:
             RuntimeError('img should be ndarray with 2 or 3 dimensions. Got {}'.format(img.ndim))
+import torch.nn as nn
+import torch
 
 os.environ["CUDA_VISIBLE_DEVICES"]= args.gpu_num
 upsampling = nn.functional.interpolate
@@ -62,15 +63,15 @@ ae = ae.eval()
 cudnn.benchmark = True
 torch.cuda.synchronize()
 sum = 0.0
-images = cv2.imread("2.jpg")
+img = cv2.imread("2.jpg")
 
 
 sample = []
 #filenames = []
 org_H_list = []
 org_W_list = []
-#for filename in img_list:
-img = images#load_as_float(filename)
+
+
 org_H_list.append(img.shape[0])
 org_W_list.append(img.shape[1])
 img = resize(img,(128,416),'rgb')
@@ -85,20 +86,19 @@ sample.append(img)
 #filenames.append(filename.split('/')[-1])
 
 print("sample len: ",len(sample))
-
+from torchvision.utils import save_image
 i=0
 result_dir = "/home/tinu/PycharmProjects/EfficientSOD2"
 k=0
 t=0
 img_ = None
 for tens in sample:
-    #print (tens)
-    filename = images
     org_H = org_H_list[i]
     org_W = org_W_list[i]
     torch.cuda.synchronize()
     #print(tens.size())
     img = ae(tens,istrain=False)
+    save_image(img[0],'tinu.png')
     if i>0:
         sum += tmp
     #print(img.size())
@@ -122,8 +122,8 @@ for tens in sample:
     #print(img_.shape)
     print (img_.shape)
     img1=img_.astype(np.uint8)
-    #cv2.imwrite('lena_bgr_cv.jpg', img1)
+    cv2.imwrite('lena_bgr_cv.jpg', img1)
     #imageio.imsave('Depth.jpg', img1)
-cv2.imshow('sample image',img1)
-cv2.waitKey(0)
+# cv2.imshow('sample image',img1)
+# cv2.waitKey(0)
 
