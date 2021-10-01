@@ -103,10 +103,13 @@ for tens in sample:
     img = upsampling(img, (128,416),mode='bilinear', align_corners = False)
     img = img[0].cpu().detach().numpy()
     img = img.astype(np.uint8)
-    img_tmp = np.zeros((img.shape[0], img.shape[1], 1), dtype=np.float32)
+    img_tmp = np.zeros((img.shape[1], img.shape[2], 1), dtype=np.float32)
+    print ("img temp > ", img_tmp.shape, ", img shape ", img.shape)
+    cv2.imshow('sample image 1', img_tmp)
+    cv2.waitKey(5000)
     img_tmp[:, :, 0] = img[:, :]
     img = img_tmp
-    cv2.imshow('sample image', img)
+    cv2.imshow('sample image', img_tmp)
     cv2.waitKey(5000)
     #print(img.shape)
     if img.shape[0] == 3:

@@ -744,25 +744,6 @@ print (msg)
 ae = ae.eval()
 img = cv2.imread('1.jpg')
 img = cv2.resize(img, (128,416))
-img = img.transpose(2,0,1)
-img = torch.tensor(img, dtype=torch.float32)
-img = img. unsqueeze(0)
-img = img/255
-img = (img-0.5)/0.5
-img = Variable(img)
-result = ae(img, istrain=False)
-result = result[0].cpu().detach().numpy()
-print (result.shape)
-
-
-img_ = np.empty([128,416])
-img_[:,:] = result[0,:,:]
-img_ = resize(img_, (128, 416), 'rgb')
-img1=img_.astype(np.uint8)
-
-
-cv2.imwrite("temp.png",img1)
-print ("Done")
 
 
         
