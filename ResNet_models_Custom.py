@@ -295,9 +295,9 @@ class Saliency_feat_encoder(nn.Module):
         # print (x.shape)
         x = self.preconv(x)
         # x = self.conv_depth1(x)
-        swin_input = x
-        swin_input = torch.nn.functional.interpolate(swin_input, size=64)
-        swin_features = self.swinmodel(swin_input)
+        # swin_input = x
+        # swin_input = torch.nn.functional.interpolate(swin_input, size=64)
+        # swin_features = self.swinmodel(swin_input)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
@@ -306,7 +306,6 @@ class Saliency_feat_encoder(nn.Module):
         x2 = self.resnet.layer2(x1)  # 512 x 32 x 32
         x3 = self.resnet.layer3(x2)  # 1024 x 16 x 16
         x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
-        # print (x_copy.shape)
 
         ## depth estimation
         conv1_depth = self.conv1_depth(x1)
