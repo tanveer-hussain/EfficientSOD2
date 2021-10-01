@@ -318,19 +318,6 @@ class Saliency_feat_encoder(nn.Module):
         depth_pred = self.layer_depth(conv_depth)
         depth_pred = self.postconv(depth_pred)
 
-        #
-        # for kk in range(depth_pred.shape[0]):
-        #     pred_edge_kk = depth_pred[kk, 0, :, :]
-        #     pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-        #     # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-        #     pred_edge_kk *= 255.0
-        #     pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        #     save_path = './layers/'
-        #     name = '{:02d}_gt.png'.format(kk)
-        #     imageio.imwrite(save_path + name, pred_edge_kk)
-        # depth_pred = self.layer_depth(conv4_depth) # [8, 256, 56, 56]
-
-
         conv1_feat = self.conv1(x1)
         conv1_feat = self.asppconv1(conv1_feat)
         conv2_feat = self.conv2(x2)
