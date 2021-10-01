@@ -1,8 +1,7 @@
 from AE_model_unet import *
 import os
 import torch.backends.cudnn as cudnn
-import time
-from path import Path
+
 from imageio import imread
 from PIL import Image
 import scipy.misc
@@ -10,8 +9,6 @@ from torch.autograd import Variable
 import collections
 import argparse
 import cv2
-import imageio
-import numpy
 
 parser = argparse.ArgumentParser(description='Pretrained Depth AutoEncoder',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -56,13 +53,13 @@ resize = Resize()
 ae = AutoEncoder()
 ae = ae.cuda()
 ae = nn.DataParallel(ae)
-ae.load_state_dict(torch.load(args.model_dir))
+ae.load_state_dict(torch.load("GDN_RtoD_pretrained.pkl"))
 ae = ae.eval()
 
 cudnn.benchmark = True
 torch.cuda.synchronize()
 sum = 0.0
-images = cv2.imread("C:/Users/IMLab/Desktop/tai_dataset/depth/GDN-Pytorch-master/example/demo_input/a (116).jpg")
+images = cv2.imread("1.jpg")
 
 
 sample = []
@@ -87,7 +84,7 @@ sample.append(img)
 print("sample len: ",len(sample))
 
 i=0
-result_dir = "C:/Users/IMLab/Desktop/tai_dataset/depth/GDN-Pytorch-master/output/"
+result_dir = "/home/tinu/PycharmProjects/EfficientSOD2"
 k=0
 t=0
 img_ = None
