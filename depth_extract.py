@@ -70,7 +70,8 @@ org_W_list = []
 img = images#load_as_float(filename)
 org_H_list.append(img.shape[0])
 org_W_list.append(img.shape[1])
-img = resize(img,(128,416),'rgb')
+
+img = cv2.resize(img,(128,416))
 img = img.transpose(2,0,1)
 img = torch.tensor(img,dtype=torch.float32)
 img = img.unsqueeze(0)
@@ -110,9 +111,10 @@ for tens in sample:
     elif img.shape[0] == 1:
         img_ = np.empty([128,416])
         img_[:,:] = img[0,:,:]
-    img_ = resize(img_, (org_H, org_W), 'rgb')
-    if img_.shape[2] == 1:
-        img_ = img_[:,:,0]
+    img_ = cv2.resize(img_, (org_H, org_W))
+    print (img_.shape)
+    # if img_.shape[2] == 1:
+    #     img_ = img_[:,:,0]
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     #print(result_dir)
