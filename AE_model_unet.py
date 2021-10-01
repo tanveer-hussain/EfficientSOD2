@@ -8,7 +8,6 @@ import itertools
 import torchvision
 import torchvision.transforms as transforms
 import numpy as np
-from IPython import display
 import matplotlib as mpl
 if os.environ.get('DISPLAY','') == '':
         print('no display found. Using non-interactive Agg backend')
@@ -759,9 +758,10 @@ print (result.shape)
 img_ = np.empty([128,416])
 img_[:,:] = result[0,:,:]
 img_ = resize(img_, (128, 416), 'rgb')
+img1=img_.astype(np.uint8)
 
-import imageio
-imageio.imwrite("temp.png",img_)
+
+cv2.imwrite("temp.png",img1)
 print ("Done")
 
 
