@@ -744,6 +744,8 @@ print (msg)
 ae = ae.eval()
 img = cv2.imread('1.jpg')
 img = cv2.resize(img, (128,416))
+img = cv2.cvtColor(img, cv2.COLOR_BAYER_BG2RGB)
+print (img.shape)
 
 
         
