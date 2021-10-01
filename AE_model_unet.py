@@ -757,19 +757,40 @@ msg = ae.load_state_dict(torch.load("GDN_RtoD_pretrained.pkl"))
 print (msg)
 ae = ae.eval()
 from PIL import Image
-img = Image.open('2.jpg').convert('RGB')
-
-my_transform = transforms.Compose([
-            transforms.Resize((128,416)),
-            transforms.ToTensor()])
-img_tensor = my_transform(img).to('cuda')
+img = np.array(Image.open('2.jpg'),dtype=np.float32)
+print (img.shape)
+img = cv2.resize(img, (148,416))
+print (img.shape)
+img_tensor = torch.tensor(img)
 img_tensor = img_tensor/255
 img_tensor = (img_tensor - 0.5)/0.5
 img_tensor = img_tensor.unsqueeze(0)
 img_tensor = Variable(img_tensor)
 
+from torchvision.utils import save_image
 output = ae(img_tensor, istrain=False)
-# output = output[0].cpu().detach().numpy()
+output = output.cpu().detach().numpy()
+
+def save_image_tensor(tensor_img):
+    input_ = tensor_img[0]
+    if(tensor_img.shape[1]==1):
+        input__ = np.empty([tensor_img.shape[2],tensor_img.shape[3]])
+        input__[:,:] = input_[0,:,:]
+    elif(tensor_img.shape[1]==3):
+        input__ = np.empty([tensor_img.shape[2], tensor_img.shape[3],3])
+        input__[:,:,0] = input_[0,:,:]
+        input__[:,:,1] = input_[1,:,:]
+        input__[:,:,2] = input_[2,:,:]
+    else:
+        print("file dimension is not proper!!")
+        exit()
+    return input_
+    #scipy.misc.imsave(img_dir + '/' + filename,input__)
+tt = save_image_tensor(output).astype(np.uint8)
+
+tt = tt.transpose(2,1,0)
+print (tt.shape)
+cv2.imwrite('hh.jpg', save_image_tensor(output))
 
 #
 # img_ = np.empty([128,416])

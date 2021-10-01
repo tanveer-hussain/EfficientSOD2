@@ -87,6 +87,9 @@ sample.append(img)
 
 print("sample len: ",len(sample))
 from torchvision.utils import save_image
+import torchvision
+
+
 i=0
 result_dir = "/home/tinu/PycharmProjects/EfficientSOD2"
 k=0
@@ -98,7 +101,9 @@ for tens in sample:
     torch.cuda.synchronize()
     #print(tens.size())
     img = ae(tens,istrain=False)
-    save_image(img[0],'tinu.png')
+
+
+
     if i>0:
         sum += tmp
     #print(img.size())
