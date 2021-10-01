@@ -102,6 +102,12 @@ for tens in sample:
     #print(img.size())
     img = upsampling(img, (128,416),mode='bilinear', align_corners = False)
     img = img[0].cpu().detach().numpy()
+    img = img.astype(np.uint8)
+    img_tmp = np.zeros((img.shape[0], img.shape[1], 1), dtype=np.float32)
+    img_tmp[:, :, 0] = img[:, :]
+    img = img_tmp
+    cv2.imshow('sample image', img)
+    cv2.waitKey(5000)
     #print(img.shape)
     if img.shape[0] == 3:
         img_ = np.empty([128,416,3])
@@ -114,7 +120,7 @@ for tens in sample:
     img_ = cv2.resize(img_, (org_H, org_W))
     print (img_.shape)
     # if img_.shape[2] == 1:
-    #     img_ = img_[:,:,0]
+    img_ = img_[:,:,0]
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     #print(result_dir)
