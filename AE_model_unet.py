@@ -734,6 +734,20 @@ class Resize(object):
             return img
         else:
             RuntimeError('img should be ndarray with 2 or 3 dimensions. Got {}'.format(img.ndim))
+import imageio
+def visualize_uncertainty_post_init(var_map):
+
+    for kk in range(var_map.shape[0]):
+        pred_edge_kk = var_map[kk,:,:,:]
+        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+        pred_edge_kk *= 255.0
+        pred_edge_kk = pred_edge_kk.astype(np.uint8)
+        # print ('pred_edge_kk shape', pred_edge_kk.shape)
+        save_path = './tinu/'
+        name = '{:02d}_post_int.png'.format(kk)
+        imageio.imwrite(save_path + name, pred_edge_kk)
+
 import cv2
 resize = Resize()
 ae = AutoEncoder()
@@ -742,10 +756,31 @@ ae = nn.DataParallel(ae)
 msg = ae.load_state_dict(torch.load("GDN_RtoD_pretrained.pkl"))
 print (msg)
 ae = ae.eval()
-img = cv2.imread('1.jpg')
-img = cv2.resize(img, (128,416))
-img = cv2.cvtColor(img, cv2.COLOR_BAYER_BG2RGB)
-print (img.shape)
+from PIL import Image
+img = Image.open('2.jpg').convert('RGB')
+
+my_transform = transforms.Compose([
+            transforms.Resize((128,416)),
+            transforms.ToTensor()])
+img_tensor = my_transform(img).to('cuda')
+img_tensor = img_tensor/255
+img_tensor = (img_tensor - 0.5)/0.5
+img_tensor = img_tensor.unsqueeze(0)
+img_tensor = Variable(img_tensor)
+
+output = ae(img_tensor, istrain=False)
+output = output[0].cpu().detach().numpy()
+
+img_ = np.empty([128,416])
+img_[:,:] = output[0,:,:]
+
+img_ = cv2.resize(img_, (224,224))
+img_temp = np.zeros((img_.shape[0], img_.shape[1], 1))
+img_temp[:,:,0] = img_[:,:]
+img_ = img_temp
+
+img_ = img_.transpose(2,0,1)
+print (cv2.imwrite('hikmat.jpg', img_))
 
 
         
