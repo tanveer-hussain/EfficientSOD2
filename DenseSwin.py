@@ -633,6 +633,11 @@ class SwinSaliency(nn.Module):
         self.conv_channel_balance4 = nn.Conv2d(embed_dim * 4, embed_dim, 3, 1, 1)
         self.conv_channel_balance5 = nn.Conv2d(embed_dim * 5, embed_dim, 3, 1, 1)
 
+        # self.features = nn.Sequential(
+        #     nn.Flatten(start_dim=1),
+        #     nn.ReLU(),
+        #     nn.Linear(embed_dim*img_size*img_size,)
+        # )
 
             # build the last conv layer in deep feature extraction
         if dense_connection == '1conv':
@@ -642,6 +647,7 @@ class SwinSaliency(nn.Module):
             self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
                                                  nn.Conv2d(embed_dim // 4, embed_dim // 4, 1, 1, 0),
+                                                 nn.MaxPool2d(kernel_size=3,stride=3),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
                                                  nn.Conv2d(embed_dim // 4, embed_dim, 3, 1, 1))
 
@@ -681,10 +687,9 @@ class SwinSaliency(nn.Module):
         # print(x33.shape, 'x33')
         #
         x4 = self.layers[3](x33, x_size)
-        x = torch.flatten(x4, start_dim=1)
-        print(x.shape, 'x4')
 
-        # x = self.patch_unembed(x33, x_size)
+        x = self.patch_unembed(x4, x_size)
+        print (x.shape)
         torch.cuda.empty_cache()
 
         return x
