@@ -624,6 +624,9 @@ class SwinSaliency(nn.Module):
             )
             self.layers.append(layer)
 
+        self.conv_channel_balance2 = nn.Conv2d(embed_dim * 2, embed_dim, 3, 1, 1)
+        self.conv_channel_balance3 = nn.Conv2d(embed_dim * 3, embed_dim, 3, 1, 1)
+
             # build the last conv layer in deep feature extraction
         if dense_connection == '1conv':
             self.conv_after_body = nn.Conv2d(embed_dim, embed_dim, 3, 1, 1)
@@ -635,15 +638,32 @@ class SwinSaliency(nn.Module):
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
                                                  nn.Conv2d(embed_dim // 4, embed_dim, 3, 1, 1))
     def forward_features(self, x):
+        input_x = x
         x_size = (x.shape[2], x.shape[3])
         x = self.patch_embed(x)
         x = self.pos_drop(x)
-        x1 = self.layers[0](x, x_size)
-        x2 = self.layers[1](x, x_size)
-        x3 = self.layers[2](x, x_size)
-        x4 = self.layers[4](x, x_size)
 
-        x = self.patch_unembed(x, x_size)
+        x1 = self.layers[0](x, x_size)
+        x1_unembed = self.patch_unembed(x1, x_size)
+        x11 = torch.cat((input_x, x1_unembed), 1)
+        x11 = self.conv_channel_balance2(x11)
+        x11 = self.patch_embed(x11)
+
+        x2 = self.layers[1](x11, x_size)
+        x2_unembed = self.patch_unembed(x2, x_size)
+        x22 = torch.cat((x1_unembed, x2_unembed), 1)
+        x22 = self.conv_channel_balance2(x22)
+        x22 = self.patch_embed(x22)
+
+        x3 = self.layers[2](x22, x_size)
+        x3_unembed = self.patch_unembed(x3, x_size)
+        x33 = torch.cat((x1_unembed, x2_unembed, x3_unembed), 1)
+        x33 = self.conv_channel_balance3(x33)
+        x33 = self.patch_embed(x33)
+
+        x4 = self.layers[3](x33, x_size)
+
+        x = self.patch_unembed(x4, x_size)
 
         return x
 
