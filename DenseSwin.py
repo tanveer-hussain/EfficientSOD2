@@ -633,6 +633,7 @@ class SwinSaliency(nn.Module):
         self.conv_channel_balance4 = nn.Conv2d(embed_dim * 4, embed_dim, 3, 1, 1)
         self.conv_channel_balance5 = nn.Conv2d(embed_dim * 5, embed_dim, 3, 1, 1)
 
+
             # build the last conv layer in deep feature extraction
         if dense_connection == '1conv':
             self.conv_after_body = nn.Conv2d(embed_dim, 1, 3, 1, 1)
@@ -680,6 +681,7 @@ class SwinSaliency(nn.Module):
         # print(x33.shape, 'x33')
         #
         x4 = self.layers[3](x33, x_size)
+        x = nn.Flatten(x4, start_dim=1)
         print(x4.shape, 'x4')
 
         # x = self.patch_unembed(x33, x_size)
