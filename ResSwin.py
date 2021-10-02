@@ -11,13 +11,15 @@ class ResSwinModel(nn.Module):
         self.swin_saliency = SwinSaliency()
         self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
 
-        # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
+        self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
 
     def forward(self, x, depth, y, training=True):
         if training:
             # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
-            self.x_sal = self.swin_saliency(x)
-            # self.d_sal = self.swin_saliency(depth)
+            self.x_f1 = self.swin_saliency(x)
+            self.x_f2 = self.swin_saliency(x)
+            self.x_f = torch.cat((self.x_f1, self.x_f2),1)
+            print (self.x_f.shape)
             # self.d_sal = self.conv1(self.d_sal)
 
             return self.x_sal#, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior

@@ -283,9 +283,7 @@ class Saliency_feat_encoder(nn.Module):
         self.features = nn.Sequential(
             nn.Flatten(start_dim=1),
             nn.ReLU(),
-            nn.Linear(12 * 24 * 24, 4096),
-            nn.ReLU(),
-            nn.Linear(4096, 2048),
+            nn.Linear(3136, 2048),
             nn.ReLU(),
             nn.Linear(2048, 1024)
         )
@@ -370,7 +368,7 @@ class Saliency_feat_encoder(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
-        print (sal_init.shape)
+        sal_init = self.features(sal_init)
 
 
         return sal_init#self.upsample4(sal_init), self.upsample4(depth_pred)
@@ -394,7 +392,7 @@ class Saliency_feat_encoder(nn.Module):
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
 
-sal_encoder = Saliency_feat_encoder(32, 3)
-x = torch.randn(2,3,224,224)
-x = sal_encoder(x,x)
-print (x.shape)
+# sal_encoder = Saliency_feat_encoder(32, 3)
+# x = torch.randn(2,3,224,224)
+# x = sal_encoder(x,x)
+# print (x.shape)
