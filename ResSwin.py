@@ -12,7 +12,7 @@ class ResSwinModel(nn.Module):
 
         # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
 
-    def forward(self, x, depth, training=True):
+    def forward(self, x, depth, y, training=True):
         if training:
             # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
             self.x_sal = self.swin_saliency(x)
