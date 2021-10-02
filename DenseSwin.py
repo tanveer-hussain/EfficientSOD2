@@ -704,8 +704,8 @@ class SwinSaliency(nn.Module):
     def forward(self, x):
         x = self.conv_first(x)
         x = self.forward_features(x)
-        x = self.conv_after_body(x)
-        x = self.features(x)
+        # x = self.conv_after_body(x)
+        # x = self.features(x)
         # print(x.shape)
         # x = self.conv_before_upsample(x)
         # print (x.shape)
