@@ -634,9 +634,9 @@ class SwinSaliency(nn.Module):
             # to save parameters and memory
             self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 4, embed_dim // 4, 1, 1, 0),
+                                                 nn.Conv2d(embed_dim // 4, embed_dim // 8, 1, 1, 0),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 4, embed_dim, 3, 1, 1))
+                                                 nn.Conv2d(embed_dim // 8, 3, 3, 1, 1))
     def forward_features(self, x):
         input_x = x
         x_size = (x.shape[2], x.shape[3])
@@ -664,6 +664,7 @@ class SwinSaliency(nn.Module):
         x4 = self.layers[3](x33, x_size)
 
         x = self.patch_unembed(x4, x_size)
+        x = self.conv_after_body(x)
 
         return x
 
