@@ -625,7 +625,7 @@ class SwinSaliency(nn.Module):
                 dense_connection=dense_connection
             )
             img_size = img_size // 2
-            print (img_size)
+            # print (img_size)
             self.layers.append(layer)
 
         self.conv_channel_balance2 = nn.Conv2d(embed_dim * 2, embed_dim, 3, 1, 1)
