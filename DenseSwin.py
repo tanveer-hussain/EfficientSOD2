@@ -679,7 +679,7 @@ x = torch.randn((2, 3, 224, 224)).to(device)
 # gt = torch.randn((12, 1, 224, 224)).to(device)
 model = SwinSaliency().to(device)
 x = model(x)
-print (model)
+print (x.shape)
 
 # a, b, c, d, e = model(x,depth, gt)
 # print ('done')
