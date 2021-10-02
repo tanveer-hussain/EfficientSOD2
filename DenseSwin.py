@@ -582,6 +582,8 @@ class SwinSaliency(nn.Module):
         self.patch_norm = patch_norm
         self.num_features = embed_dim
         self.mlp_ratio = mlp_ratio
+        num_feat = 64
+        num_out_ch = 1
 
         # split image into non-overlapping patches
         self.patch_embed = PatchEmbed(
@@ -634,9 +636,18 @@ class SwinSaliency(nn.Module):
             # to save parameters and memory
             self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 4, embed_dim // 8, 1, 1, 0),
+                                                 nn.Conv2d(embed_dim // 4, embed_dim // 4, 1, 1, 0),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 8, 1, 3, 1, 1))
+                                                 nn.Conv2d(embed_dim // 4, embed_dim, 3, 1, 1))
+
+        self.conv_before_upsample = nn.Sequential(nn.Conv2d(embed_dim, num_feat, 3, 1, 1),
+                                                  nn.LeakyReLU(inplace=True))
+        self.conv_up1 = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+        self.conv_up2 = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+        self.conv_hr = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+        self.conv_last = nn.Conv2d(num_feat, num_out_ch, 3, 1, 1)
+        self.lrelu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
+
     def forward_features(self, x):
         input_x = x
         x_size = (x.shape[2], x.shape[3])
@@ -664,6 +675,8 @@ class SwinSaliency(nn.Module):
         x4 = self.layers[3](x33, x_size)
 
         x = self.patch_unembed(x4, x_size)
+        del x1,x2,x3,x4,x11,x22,x33
+        torch.cuda.empty_cache()
 
         return x
 
@@ -671,6 +684,10 @@ class SwinSaliency(nn.Module):
         x = self.conv_first(x)
         x = self.forward_features(x)
         x = self.conv_after_body(x)
+        x = self.conv_before_upsample(x)
+        x = self.lrelu(self.conv_up1(torch.nn.functional.interpolate(x, scale_factor=2, mode='nearest')))
+        x = self.lrelu(self.conv_up2(torch.nn.functional.interpolate(x, scale_factor=2, mode='nearest')))
+        x = self.conv_last(self.lrelu(self.conv_hr(x)))
 
         return x
 
