@@ -21,6 +21,7 @@ class ResSwinModel(nn.Module):
     def forward(self, x, depth, y, training=True):
         if training:
             self.x_sal = self.sal_encoder(x, depth)
+            print (self.x_sal.shape)
             # self.x_f1 = self.swin_saliency(x)
             # print(self.x_f1.shape)
             # self.x_f2 = self.swin_saliency(x)
