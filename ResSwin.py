@@ -9,6 +9,7 @@ class ResSwinModel(nn.Module):
         super(ResSwinModel, self).__init__()
         self.relu = nn.ReLU(inplace=True)
         self.swin_saliency = SwinSaliency()
+        self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
 
         # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
 
@@ -17,6 +18,7 @@ class ResSwinModel(nn.Module):
             # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
             self.x_sal = self.swin_saliency(x)
             self.d_sal = self.swin_saliency(depth)
+            self.d_sal = self.conv1(self.d_sal)
 
             return self.x_sal, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
