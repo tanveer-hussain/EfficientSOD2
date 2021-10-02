@@ -704,7 +704,7 @@ class SwinSaliency(nn.Module):
         x = self.forward_features(x)
         x = self.conv_after_body(x)
         # x = self.features(x)
-        print(x.shape)
+        # print(x.shape)
         # x = self.conv_before_upsample(x)
         # print (x.shape)
         # x = self.lrelu(self.conv_up1(torch.nn.functional.interpolate(x, scale_factor=2, mode='nearest')))
