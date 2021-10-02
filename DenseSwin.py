@@ -629,14 +629,14 @@ class SwinSaliency(nn.Module):
 
             # build the last conv layer in deep feature extraction
         if dense_connection == '1conv':
-            self.conv_after_body = nn.Conv2d(embed_dim, 3, 3, 1, 1)
+            self.conv_after_body = nn.Conv2d(embed_dim, 1, 3, 1, 1)
         elif dense_connection == '3conv':
             # to save parameters and memory
             self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
                                                  nn.Conv2d(embed_dim // 4, embed_dim // 8, 1, 1, 0),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 8, 3, 3, 1, 1))
+                                                 nn.Conv2d(embed_dim // 8, 1, 3, 1, 1))
     def forward_features(self, x):
         input_x = x
         x_size = (x.shape[2], x.shape[3])
