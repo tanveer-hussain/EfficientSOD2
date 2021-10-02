@@ -149,7 +149,7 @@ if __name__ == '__main__':
                 depths = Variable(depths).cuda()
                 grays = Variable(grays).cuda()
 
-                x_sal, d_sal = resswin.forward(images,depths,gts)
+                x_sal = resswin.forward(images,depths,gts)
                 total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.swin_saliency)
                 # reg_loss = opt.reg_weight * reg_loss
