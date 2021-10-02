@@ -681,8 +681,8 @@ class SwinSaliency(nn.Module):
         # print(x33.shape, 'x33')
         #
         x4 = self.layers[3](x33, x_size)
-        x = nn.Flatten(x4, start_dim=1)
-        print(x4.shape, 'x4')
+        x = torch.flatten(x4, start_dim=1)
+        print(x.shape, 'x4')
 
         # x = self.patch_unembed(x33, x_size)
         torch.cuda.empty_cache()
