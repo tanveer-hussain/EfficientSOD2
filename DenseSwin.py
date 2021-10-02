@@ -564,7 +564,7 @@ class DSTB(nn.Module):
 class SwinSaliency(nn.Module):
     
     
-    def __init__(self, img_size=224, patch_size=1, in_chans=3,
+    def __init__(self, img_size=64, patch_size=1, in_chans=3,
                  embed_dim=96, depths=[6, 6, 6, 6], num_heads=[6, 6, 6, 6],
                  window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0.1,
@@ -654,27 +654,27 @@ class SwinSaliency(nn.Module):
         x = self.patch_embed(x)
         x = self.pos_drop(x)
 
-        x1 = self.layers[0](x, x_size)
-        x1_unembed = self.patch_unembed(x1, x_size)
+        x1 = self.layers[0](x, (64,64))
+        x1_unembed = self.patch_unembed(x1, (64,64))
         x11 = torch.cat((input_x, x1_unembed), 1)
         x11 = self.conv_channel_balance2(x11)
         x11 = self.patch_embed(x11)
 
-        x2 = self.layers[1](x11, x_size)
-        x2_unembed = self.patch_unembed(x2, x_size)
+        x2 = self.layers[1](x11, (64,64))
+        x2_unembed = self.patch_unembed(x2, (64,64))
         x22 = torch.cat((x1_unembed, x2_unembed), 1)
         x22 = self.conv_channel_balance2(x22)
         x22 = self.patch_embed(x22)
 
-        x3 = self.layers[2](x22, x_size)
-        x3_unembed = self.patch_unembed(x3, x_size)
+        x3 = self.layers[2](x22, (64,64))
+        x3_unembed = self.patch_unembed(x3, (64,64))
         x33 = torch.cat((x1_unembed, x2_unembed, x3_unembed), 1)
         x33 = self.conv_channel_balance3(x33)
         x33 = self.patch_embed(x33)
 
-        x4 = self.layers[3](x33, x_size)
+        x4 = self.layers[3](x33, (64,64))
 
-        x = self.patch_unembed(x4, x_size)
+        x = self.patch_unembed(x4, (64,64))
         del x1,x2,x3,x4,x11,x22,x33
         torch.cuda.empty_cache()
 
