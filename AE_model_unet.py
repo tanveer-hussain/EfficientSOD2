@@ -756,10 +756,14 @@ ae = nn.DataParallel(ae)
 msg = ae.load_state_dict(torch.load("GDN_RtoD_pretrained.pkl"))
 print (msg)
 ae = ae.eval()
-from PIL import Image
-img = np.array(Image.open('2.jpg'),dtype=np.float32)
+from imageio import imread
+img = imread("2.jpg").astype(np.float32)
+
+img = cv2.resize(img, (128,416))
 print (img.shape)
-img = cv2.resize(img, (148,416))
+
+
+
 print (img.shape)
 img_tensor = torch.tensor(img)
 img_tensor = img_tensor/255
