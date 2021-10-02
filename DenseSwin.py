@@ -643,10 +643,8 @@ class SwinSaliency(nn.Module):
             self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
                                                  nn.Conv2d(embed_dim // 4, embed_dim // 8, 1, 1, 0),
-                                                 nn.MaxPool2d(kernel_size=3,stride=3),
                                                  nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                                                 nn.Conv2d(embed_dim // 8, embed_dim // 8, 3, 1, 1),
-                                                 nn.MaxPool2d(kernel_size=3,stride=3))
+                                                 nn.Conv2d(embed_dim // 8, 1, 3, 1, 1))
 
         self.features = nn.Sequential(
             nn.Flatten(start_dim=1),
@@ -704,9 +702,9 @@ class SwinSaliency(nn.Module):
     def forward(self, x):
         x = self.conv_first(x)
         x = self.forward_features(x)
-        # x = self.conv_after_body(x)
+        x = self.conv_after_body(x)
         # x = self.features(x)
-        # print(x.shape)
+        print(x.shape)
         # x = self.conv_before_upsample(x)
         # print (x.shape)
         # x = self.lrelu(self.conv_up1(torch.nn.functional.interpolate(x, scale_factor=2, mode='nearest')))
