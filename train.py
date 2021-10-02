@@ -20,7 +20,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 parser = argparse.ArgumentParser()
 parser.add_argument('--epoch', type=int, default=200, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=8, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=1, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -150,7 +150,7 @@ if __name__ == '__main__':
                 grays = Variable(grays).cuda()
 
                 x_sal, d_sal = resswin.forward(images,depths,gts)
-                reg_loss = l2_regularisation(resswin.sal_encoder)
+                reg_loss = l2_regularisation(resswin.swin_saliency)
                 reg_loss = opt.reg_weight * reg_loss
 
                 depth_loss = l1_criterion(d_sal, gts)
