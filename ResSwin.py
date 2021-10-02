@@ -10,16 +10,25 @@ class ResSwinModel(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.swin_saliency = SwinSaliency()
         self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
-
+        self.liner1024 = nn.Linear(2048, 1024)
+        self.upsampling = nn.Sequential(
+            nn.Upsample(size=(64, 64), mode='bilinear', align_corners=True),
+        nn.Upsample(size=(128, 128), mode='bilinear', align_corners=True),
+        nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
+        )
         self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
 
     def forward(self, x, depth, y, training=True):
         if training:
             # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
             self.x_f1 = self.swin_saliency(x)
-            self.x_f2 = self.swin_saliency(x)
-            self.x_f = torch.cat((self.x_f1, self.x_f2),1)
-            print (self.x_f.shape)
+            # self.x_f2 = self.swin_saliency(x)
+            # self.x_f = torch.cat((self.x_f1, self.x_f2),1)
+            # self.x_f = self.liner1024(self.x_f)
+            self.x_f = self.x_f1.view(1,32,32)
+            self.x_f = torch.unsqueeze(self.x_f, 0)
+            self.x_sal = self.upsampling(self.x_f)
+            print (self.x_sal.shape)
             # self.d_sal = self.conv1(self.d_sal)
 
             return self.x_sal#, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
