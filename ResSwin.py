@@ -7,11 +7,12 @@ class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
         self.relu = nn.ReLU(inplace=True)
-        self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
+
+        # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
 
     def forward(self, x, depth, y=None, training=True):
         if training:
-            self.x_sal, self.d_sal = self.sal_encoder(x, depth)
+            # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
 
             return self.x_sal, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
