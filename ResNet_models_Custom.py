@@ -368,7 +368,7 @@ class Saliency_feat_encoder(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
-        sal_init = self.features(sal_init)
+        # sal_init = self.features(sal_init)
 
 
         return sal_init#self.upsample4(sal_init), self.upsample4(depth_pred)
