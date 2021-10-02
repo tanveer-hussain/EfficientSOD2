@@ -315,7 +315,7 @@ class Saliency_feat_encoder(nn.Module):
         # z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
         # x = torch.cat((x, depth), 1)
         # print (x.shape)
-        x = self.preconv(x)
+        # x = self.preconv(x)
         # x = self.conv_depth1(x)
         # swin_input = x
         # swin_input = torch.nn.functional.interpolate(swin_input, size=64)
@@ -330,14 +330,14 @@ class Saliency_feat_encoder(nn.Module):
         x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
 
         ## depth estimation
-        conv1_depth = self.conv1_depth(x1)
-        conv2_depth = self.upsample2(self.conv2_depth(x2))
-        conv3_depth = self.upsample4(self.conv3_depth(x3))
-        conv4_depth = self.upsample8(self.conv4_depth(x4))
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        conv_depth = self.conv128(conv_depth)
-        depth_pred = self.layer_depth(conv_depth)
-        depth_pred = self.postconv(depth_pred)
+        # conv1_depth = self.conv1_depth(x1)
+        # conv2_depth = self.upsample2(self.conv2_depth(x2))
+        # conv3_depth = self.upsample4(self.conv3_depth(x3))
+        # conv4_depth = self.upsample8(self.conv4_depth(x4))
+        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        # conv_depth = self.conv128(conv_depth)
+        # depth_pred = self.layer_depth(conv_depth)
+        # depth_pred = self.postconv(depth_pred)
 
         conv1_feat = self.conv1(x1)
         conv1_feat = self.asppconv1(conv1_feat)
@@ -396,5 +396,5 @@ class Saliency_feat_encoder(nn.Module):
 
 sal_encoder = Saliency_feat_encoder(32, 3)
 x = torch.randn(2,3,224,224)
-x = sal_encoder(x)
+x = sal_encoder(x,x)
 print (x.shape)
