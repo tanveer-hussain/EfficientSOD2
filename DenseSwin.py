@@ -564,7 +564,7 @@ class DSTB(nn.Module):
 class SwinSaliency(nn.Module):
     
     
-    def __init__(self, img_size=224, patch_size=1, in_chans=3,
+    def __init__(self, img_size=64, patch_size=1, in_chans=3,
                  embed_dim=96, depths=[6, 6, 6, 6], num_heads=[6, 6, 6, 6],
                  window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0.1,
