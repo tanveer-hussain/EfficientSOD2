@@ -569,7 +569,7 @@ class SwinSaliency(nn.Module):
                  window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0.1,
                  norm_layer=nn.LayerNorm, ape=False, patch_norm=True,
-                 use_checkpoint=False, upscale=2, img_range=1., upsampler='', dense_connection='1conv',
+                 use_checkpoint=False, upscale=2, img_range=1., upsampler='', dense_connection='3conv',
                  **kwargs):
         super(SwinSaliency, self).__init__()
 
@@ -629,7 +629,7 @@ class SwinSaliency(nn.Module):
 
             # build the last conv layer in deep feature extraction
         if dense_connection == '1conv':
-            self.conv_after_body = nn.Conv2d(embed_dim, embed_dim, 3, 1, 1)
+            self.conv_after_body = nn.Conv2d(embed_dim, 3, 3, 1, 1)
         elif dense_connection == '3conv':
             # to save parameters and memory
             self.conv_after_body = nn.Sequential(nn.Conv2d(embed_dim, embed_dim // 4, 3, 1, 1),
@@ -664,7 +664,6 @@ class SwinSaliency(nn.Module):
         x4 = self.layers[3](x33, x_size)
 
         x = self.patch_unembed(x4, x_size)
-        x = self.conv_after_body(x)
 
         return x
 
