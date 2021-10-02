@@ -280,6 +280,16 @@ class Saliency_feat_encoder(nn.Module):
         self.conv4_depth = Triple_Conv(2048, channel)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
 
+        self.features = nn.Sequential(
+            nn.Flatten(start_dim=1),
+            nn.ReLU(),
+            nn.Linear(12 * 24 * 24, 4096),
+            nn.ReLU(),
+            nn.Linear(4096, 2048),
+            nn.ReLU(),
+            nn.Linear(2048, 1024)
+        )
+
         if self.training:
             self.initialize_weights()
 
@@ -360,9 +370,10 @@ class Saliency_feat_encoder(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
+        print (sal_init.shape)
 
 
-        return self.upsample4(sal_init), self.upsample4(depth_pred)
+        return sal_init#self.upsample4(sal_init), self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
@@ -382,3 +393,8 @@ class Saliency_feat_encoder(nn.Module):
                 all_params[k] = v
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
+
+sal_encoder = Saliency_feat_encoder(32, 3)
+x = torch.randn(2,3,224,224)
+x = sal_encoder(x)
+print (x.shape)
