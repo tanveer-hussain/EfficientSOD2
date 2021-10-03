@@ -675,7 +675,7 @@ class SwinSaliency(nn.Module):
         x11 = torch.cat((input_x, x1_unembed), 1)
         x11 = self.conv_channel_balance2(x11)
         x11 = self.patch_embed(x11)
-        # print (x11.shape, 'x11')
+        print (x11.shape, 'x11')
 
         x2 = self.layers[1](x11, x_size)
         x2_unembed = self.patch_unembed(x2, x_size)
@@ -714,12 +714,12 @@ class SwinSaliency(nn.Module):
 
         return x
 
-# x = torch.randn((2, 3, 224, 224)).to(device)
-# # depth = torch.randn((12, 3, 224, 224)).to(device)
-# # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = SwinSaliency().to(device)
-# x = model(x)
-# print (x.shape)
+x = torch.randn((2, 3, 224, 224)).to(device)
+# depth = torch.randn((12, 3, 224, 224)).to(device)
+# gt = torch.randn((12, 1, 224, 224)).to(device)
+model = SwinSaliency().to(device)
+x = model(x)
+print (x.shape)
 
 # a, b, c, d, e = model(x,depth, gt)
 # print ('done')
