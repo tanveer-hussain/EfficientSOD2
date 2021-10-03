@@ -44,7 +44,7 @@ for i in range(test_loader.size):
     import timeit
 
     start_time = timeit.default_timer()
-    generator_pred = resswin.forward(image, depth, training=False)
+    generator_pred = resswin.forward(image, depth, depth, training=False)
     #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
     res = generator_pred
     res = F.upsample(res, size=[WW,HH], mode='bilinear', align_corners=False)
