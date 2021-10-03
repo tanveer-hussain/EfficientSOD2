@@ -46,3 +46,6 @@ SIP  Epoch [50/200] Step [98/98], Loss:3.2208
 SIP  Epoch [100/200] Step [98/98], Loss:3.0976
 SIP  Epoch [150/200] Step [98/98], Loss:3.9296
 SIP  Epoch [200/200] Step [98/98], Loss:2.8656
+DUT-RGBD  Epoch [50/100] Step [400/400], Loss:0.1317
+DUT-RGBD  Epoch [100/100] Step [400/400], Loss:0.1323
+NLPR  Epoch [50/100] Step [350/350], Loss:0.0746
