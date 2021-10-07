@@ -57,3 +57,5 @@ NJU2K  Epoch [50/100] Step [47/47], Loss:0.0268
 NJU2K  Epoch [100/100] Step [47/47], Loss:0.0404
 SIP  Epoch [50/100] Step [25/25], Loss:0.0316
 SIP  Epoch [100/100] Step [25/25], Loss:0.0367
+DUT-RGBD  Epoch [50/100] Step [25/25], Loss:2.1976
+DUT-RGBD  Epoch [100/100] Step [25/25], Loss:2.1021

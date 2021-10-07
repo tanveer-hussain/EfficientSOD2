@@ -266,7 +266,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
-        self.conv_depth1 = BasicConv2d(6+latent_dim, 3, kernel_size=3, padding=1)
+        self.conv_depth1 = BasicConv2d(3, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -316,7 +316,7 @@ class Saliency_feat_encoder(nn.Module):
         # x = torch.cat((x, depth), 1)
         # print (x.shape)
         # x = self.preconv(x)
-        # x = self.conv_depth1(x)
+        x = self.conv_depth1(x)
         # swin_input = x
         # swin_input = torch.nn.functional.interpolate(swin_input, size=64)
         # swin_features = self.swinmodel(swin_input)
