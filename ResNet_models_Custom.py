@@ -251,6 +251,8 @@ class Saliency_feat_encoder(nn.Module):
         self.conv96 = Triple_Conv(156,96)
         self.conv128 = Triple_Conv(188,128)
 
+        self.conv_depth1 = BasicConv2d(3, 3, kernel_size=3, padding=1)
+
         self.preconv = Triple_Conv(6,3)
         self.postconv = Triple_Conv(3,1)
         self.conv1 = Triple_Conv(256, channel)
@@ -314,7 +316,7 @@ class Saliency_feat_encoder(nn.Module):
         # x = torch.cat((x, depth), 1)
         # print (x.shape)
         # x = self.preconv(x)
-        # x = self.conv_depth1(x)
+        x = self.conv_depth1(x)
         # swin_input = x
         # swin_input = torch.nn.functional.interpolate(swin_input, size=64)
         # swin_features = self.swinmodel(swin_input)
