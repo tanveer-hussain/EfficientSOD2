@@ -671,9 +671,10 @@ class SwinSaliency(nn.Module):
         x = self.pos_drop(x)
 
         x1 = self.layers[0](x, x_size)
+        print(x1.shape, 'x11')
         x1_unembed = self.patch_unembed(x1, x_size)
         x11 = torch.cat((input_x, x1_unembed), 1)
-        print(x11.shape, 'x11')
+
         x11 = self.conv_channel_balance2(x11)
         x11 = self.patch_embed(x11)
         print (x11.shape, 'x11')

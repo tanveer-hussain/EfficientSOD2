@@ -7,8 +7,8 @@ from DenseSwin import SwinSaliency
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
-        self.relu = nn.ReLU(inplace=True)
-        self.swin_saliency = SwinSaliency()
+        # self.relu = nn.ReLU(inplace=True)
+        # self.swin_saliency = SwinSaliency()
         # self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
         # self.liner1024 = nn.Linear(2048, 1024)
         # self.upsampling = nn.Sequential(
@@ -16,13 +16,13 @@ class ResSwinModel(nn.Module):
         # nn.Upsample(size=(128, 128), mode='bilinear', align_corners=True),
         # nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
         # )
-        # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
+        self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
 
     def forward(self, x, depth, training=True):
         if training:
-            # self.x_sal = self.sal_encoder(x, depth)
+            self.x_sal = self.sal_encoder(x)
             # print (self.x_sal.shape)
-            self.x_sal = self.swin_saliency(x)
+            # self.x_sal = self.swin_saliency(x)
             # print(self.x_f1.shape)
             # self.x_f2 = self.swin_saliency(x)
             # self.x_f = torch.cat((self.x_f1, self.x_f2),1)
