@@ -316,7 +316,7 @@ class Saliency_feat_encoder(nn.Module):
         # x = torch.cat((x, depth), 1)
         # print (x.shape)
         # x = self.preconv(x)
-        x = self.conv_depth1(x)
+        # x = self.conv_depth1(x)
         # swin_input = x
         # swin_input = torch.nn.functional.interpolate(swin_input, size=64)
         # swin_features = self.swinmodel(swin_input)
