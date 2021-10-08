@@ -720,10 +720,12 @@ class SwinSaliency(nn.Module):
 
         return x
 
-# x = torch.randn((1, 3, 224, 224)).to(device)
+x = torch.randn((1, 3, 224, 224)).to(device)
 # model = SwinSaliency().to(device)
 # x = model(x)
 # print (x.shape)
 
-# a, b, c, d, e = model(x,depth, gt)
-# print ('done')
+from ResNet_models_Custom import Saliency_feat_encoder
+sal_encoder = Saliency_feat_encoder(32, 3)
+x_sal = sal_encoder(x)
+print ("Done")
