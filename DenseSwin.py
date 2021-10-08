@@ -672,7 +672,7 @@ class SwinSaliency(nn.Module):
         x = self.pos_drop(x)
 
         x1 = self.layers[0](x, x_size)
-        print(x1.shape, 'x11')
+        # print(x1.shape, 'x11')
         x1_unembed = self.patch_unembed(x1, x_size)
         x11 = torch.cat((input_x, x1_unembed), 1)
 
@@ -682,11 +682,11 @@ class SwinSaliency(nn.Module):
 
         x2 = self.layers[1](x11, x_size)
         x2_unembed = self.patch_unembed(x2, x_size)
-        print(x2_unembed.shape, 'x2_unembed shape')
+        # print(x2_unembed.shape, 'x2_unembed shape')
         x22 = torch.cat((input_x, x1_unembed, x2_unembed), 1)
         x22 = self.conv_channel_balance3(x22)
         x22 = self.patch_embed(x22)
-        print(x22.shape, 'x22')
+        # print(x22.shape, 'x22')
 
         x3 = self.layers[2](x22, x_size)
         x3_unembed = self.patch_unembed(x3, x_size)
@@ -698,7 +698,7 @@ class SwinSaliency(nn.Module):
         x4 = self.layers[3](x33, x_size)
 
         x = self.patch_unembed(x4, x_size)
-        print(x.shape, 'x4 unembed')
+        # print(x.shape, 'x4 unembed')
         del x1, x11, x2, x22, x3, x33, x4
         torch.cuda.empty_cache()
 
@@ -708,7 +708,7 @@ class SwinSaliency(nn.Module):
         x = self.conv_first(x)
         x = self.forward_features(x)
         x = self.conv_after_body(x)
-        print (x.shape, "conv after body shape")
+        # print (x.shape, "conv after body shape")
         # x = self.features(x)
         # print(x.shape)
         # x = self.conv_before_upsample(x)
@@ -720,11 +720,11 @@ class SwinSaliency(nn.Module):
 
         return x
 
-x = torch.randn((1, 3, 224, 224)).to(device)
-# depth = torch.randn((12, 3, 224, 224)).to(device)
-# gt = torch.randn((12, 1, 224, 224)).to(device)
-model = SwinSaliency().to(device)
-x = model(x)
+# x = torch.randn((1, 3, 224, 224)).to(device)
+# # depth = torch.randn((12, 3, 224, 224)).to(device)
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+# model = SwinSaliency().to(device)
+# x = model(x)
 # print (x.shape)
 
 # a, b, c, d, e = model(x,depth, gt)
