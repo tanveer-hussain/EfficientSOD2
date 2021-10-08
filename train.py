@@ -141,13 +141,12 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, pack in enumerate(train_loader, start=1):
-                images, gts, depths, grays, index_batch = pack
+            for i, (images, depths, gts) in enumerate(train_loader, start=1):
+
                 # print(index_batch)
                 images = Variable(images).cuda()
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
-                grays = Variable(grays).cuda()
 
                 x_sal = resswin.forward(images,depths)
                 # total_loss = mse_loss(x_sal,gts)

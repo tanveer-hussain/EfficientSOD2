@@ -43,6 +43,7 @@ class DatasetLoader(Dataset):
 
         x = Image.open(x_full_path).convert('RGB')
         y = Image.open(y_full_path).convert('L')
+        d = self.return_depth(np.asarray(x))
 
 
         x = self.img_transform(x)
