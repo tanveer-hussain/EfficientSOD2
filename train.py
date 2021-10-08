@@ -18,9 +18,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=100, help='epoch number')
+parser.add_argument('--epoch', type=int, default=20, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=2, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=3, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -37,7 +37,7 @@ parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight
 
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
-torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.to(device)
