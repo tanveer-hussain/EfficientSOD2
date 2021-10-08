@@ -129,11 +129,11 @@ if __name__ == '__main__':
     for dataset_name in datasets:
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
-        dataset_path = r'D:\My Research\Video Summarization\VS via Saliency\\' + dataset_name
+        dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
-        image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-        gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
+        # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
+        # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
 
         train_data = DatasetLoader(dataset_path, d_type[0])
         train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
