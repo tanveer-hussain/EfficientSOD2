@@ -37,7 +37,7 @@ parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight
 
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
-torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.to(device)
