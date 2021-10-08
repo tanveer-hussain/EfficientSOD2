@@ -43,7 +43,7 @@ pp=1
 # for each filename do the depth extraction and save it
 for pp in range (pp>0):
   # read file
-  img = cv2.imread('E:/IMLab/Hikmat Thesis work/paper_02/Depth/DenseDepth-master/examples/Untitled.png')
+  img = cv2.imread('0001.jpg')
   img=cv2.resize(img, (400,400))
   # convert color space from BGR to RGB
   img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
