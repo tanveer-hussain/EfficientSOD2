@@ -19,14 +19,9 @@ import os
 use_large_model = True
 
 if use_large_model:
-    midas = torch.hub.load("intel-isl/MiDaS", "dpt_large")
+    midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
 else:
     midas = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
-
-# if use_large_model:
-#     midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
-# else:
-#     midas = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
   
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 midas.to(device)
@@ -49,7 +44,7 @@ pp=1
 for pp in range (pp>0):
   # read file
   img = cv2.imread('0001.jpg')
-  img=cv2.resize(img, (400,400))
+  img=cv2.resize(img, (224,224))
   # convert color space from BGR to RGB
   img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
   # run midas model
@@ -80,11 +75,43 @@ cv2.imshow('sample image',img1)
 cv2.waitKey(0) # waits until a key is pressed
 cv2.destroyAllWindows()
 
-def return_depth():
-    pass
+def return_depth(img):
+    img = cv2.resize(img, (224, 224))
+    # convert color space from BGR to RGB
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # run midas model
+    input_batch = transform(img).to(device)
+    with torch.no_grad():
+        prediction = midas(input_batch)
+
+        prediction = torch.nn.functional.interpolate(
+            prediction.unsqueeze(1),
+            size=img.shape[:2],
+            mode="bicubic",
+            align_corners=False,
+        ).squeeze()
+    # convert output to numpy array
+    output = prediction.cpu().numpy()
+
+    # rescale output for simple depth extraction
+    min = np.min(output)
+    max = np.max(output)
+    output2 = 255.99 * (output - min) / (max - min)
+    output2 = output2.astype(int)
+    output2 = np.stack((output2,) * 3, axis=-1)
+    depth = output2.astype(np.uint8)
+    return depth
 
 
+source_directory = r""
+destin_directory = r""
+for image_name in os.listdir(source_directory):
+    print (f'Processing.. *{source_directory,image_name}*')
+    single_image = cv2.imread(os.path.join(source_directory,image_name))
+    single_depth = return_depth(single_image)
+    cv2.imwrite(os.path.join(source_directory,image_name), img1)
 
+    src_name = source_directory + "\\" + image_name
 
 
 
