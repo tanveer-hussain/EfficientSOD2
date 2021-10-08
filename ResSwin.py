@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 from ResNet_models_Custom import Saliency_feat_encoder
-# from DenseSwin import SwinSaliency
+from DenseSwin import SwinSaliency
 
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
         # self.relu = nn.ReLU(inplace=True)
-        # self.swin_saliency = SwinSaliency()
+        self.swin_saliency = SwinSaliency()
         # self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
         # self.liner1024 = nn.Linear(2048, 1024)
         # self.upsampling = nn.Sequential(
