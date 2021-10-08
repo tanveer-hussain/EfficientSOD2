@@ -51,7 +51,7 @@ class DatasetLoader(Dataset):
         d = self.gt_transform(d)
 
 
-        return x , y
+        return x , d, y
 
 
 
