@@ -19,9 +19,14 @@ import os
 use_large_model = True
 
 if use_large_model:
-    midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
+    midas = torch.hub.load("intel-isl/MiDaS", "dpt_large")
 else:
     midas = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
+
+# if use_large_model:
+#     midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
+# else:
+#     midas = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
   
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 midas.to(device)
@@ -74,6 +79,9 @@ for pp in range (pp>0):
 cv2.imshow('sample image',img1)
 cv2.waitKey(0) # waits until a key is pressed
 cv2.destroyAllWindows()
+
+def return_depth():
+    pass
 
 
 
