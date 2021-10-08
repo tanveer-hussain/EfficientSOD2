@@ -109,9 +109,8 @@ for image_name in os.listdir(source_directory):
     print (f'Processing.. *{source_directory,image_name}*')
     single_image = cv2.imread(os.path.join(source_directory,image_name))
     single_depth = return_depth(single_image)
-    cv2.imwrite(os.path.join(source_directory,image_name), img1)
+    cv2.imwrite(os.path.join(destin_directory,image_name), single_depth)
 
-    src_name = source_directory + "\\" + image_name
 
 
 
