@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import os
+from PIL import Image
 
 use_large_model = True
 
@@ -74,6 +75,10 @@ else:
 # cv2.imshow('sample image',img1)
 # cv2.waitKey(0) # waits until a key is pressed
 # cv2.destroyAllWindows()
+import torchvision.transforms as transforms
+gray_transform = transforms.Compose([
+            transforms.Resize((224,224)),
+            transforms.ToTensor()])
 
 def return_depth(img):
     img = cv2.resize(img, (224, 224))
@@ -104,12 +109,16 @@ def return_depth(img):
 
 
 source_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Input"
-destin_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\out8tif"
+destin_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Output"
 for image_name in os.listdir(source_directory):
     print (f'Processing.. *{source_directory,image_name}*')
+    # single_image = Image.open(os.path.join(source_directory,image_name))
+    # single_image = np.asarray(single_image)
     single_image = cv2.imread(os.path.join(source_directory,image_name))
     single_depth = return_depth(single_image)
-    cv2.imwrite(os.path.join(destin_directory,image_name), single_depth)
+    pil_image = Image.fromarray(single_depth)
+    pil_image.save(os.path.join(destin_directory,image_name))
+    # cv2.imwrite(os.path.join(destin_directory,image_name), single_depth)
 
 
 

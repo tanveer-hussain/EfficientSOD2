@@ -1,5 +1,8 @@
 import os
 from PIL import Image
+import cv2
+import torch
+import numpy as np
 import torch.utils.data as data
 import torchvision.transforms as transforms
 
@@ -10,11 +13,11 @@ class SalObjDataset(data.Dataset):
         self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg')]
         self.gts = [gt_root + f for f in os.listdir(gt_root) if f.endswith('.jpg')
                     or f.endswith('.png')]
-        self.depths = [depth_root + f for f in os.listdir(depth_root) if f.endswith('.png')]
+        # self.depths = [depth_root + f for f in os.listdir(depth_root) if f.endswith('.png')]
         self.grays = [gray_root + f for f in os.listdir(gray_root) if f.endswith('.jpg')]
         self.images = sorted(self.images)
         self.gts = sorted(self.gts)
-        self.depths = sorted(self.depths)
+        # self.depths = sorted(self.depths)
         self.grays = sorted(self.grays)
         self.filter_files()
         self.size = len(self.images)
@@ -32,13 +35,49 @@ class SalObjDataset(data.Dataset):
             transforms.Resize((224,224)),
             transforms.ToTensor()])
 
+        ###################### depth estimation
+        self.midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
+        self.midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
+        self.midas.eval()
+        self.transform = self.midas_transforms.default_transform
+
+    def return_depth(self, img):
+        img = cv2.resize(img, (224, 224))
+        # convert color space from BGR to RGB
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # run midas model
+        input_batch = self.transform(img)
+        with torch.no_grad():
+            prediction = self.midas(input_batch)
+
+            prediction = torch.nn.functional.interpolate(
+                prediction.unsqueeze(1),
+                size=img.shape[:2],
+                mode="bicubic",
+                align_corners=False,
+            ).squeeze()
+        # convert output to numpy array
+        output = prediction.cpu().numpy()
+
+        # rescale output for simple depth extraction
+        min = np.min(output)
+        max = np.max(output)
+        output2 = 255.99 * (output - min) / (max - min)
+        output2 = output2.astype(int)
+        output2 = np.stack((output2,) * 3, axis=-1)
+        depth = output2.astype(np.uint8)
+        pil_depth = Image.fromarray(depth)
+        return pil_depth
+
     def __getitem__(self, index):
         image = self.rgb_loader(self.images[index])
         gt = self.binary_loader(self.gts[index])
-        depth = self.rgb_loader(self.depths[index])
+        depth = self.return_depth(np.asarray(image))
+        # depth = self.rgb_loader(self.depths[index])
         gray = self.binary_loader(self.grays[index])
         image = self.img_transform(image)
         gt = self.gt_transform(gt)
+
         depth = self.depth_transform(depth)
         gray = self.gray_transform(gray)
         # img_names = self.images[index]
