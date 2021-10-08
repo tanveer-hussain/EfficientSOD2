@@ -566,7 +566,7 @@ class SwinSaliency(nn.Module):
     
     
     def __init__(self, img_size=224, patch_size=1, in_chans=3,
-                 embed_dim=96, depths=[6, 6, 6, 6], num_heads=[6, 6, 6, 6],
+                 embed_dim=96, depths=[6, 6], num_heads=[6, 6, 6, 6],
                  window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0.1,
                  norm_layer=nn.LayerNorm, ape=False, patch_norm=True,
@@ -688,18 +688,18 @@ class SwinSaliency(nn.Module):
         x22 = self.patch_embed(x22)
         # print(x22.shape, 'x22')
 
-        x3 = self.layers[2](x22, x_size)
-        x3_unembed = self.patch_unembed(x3, x_size)
-        x33 = torch.cat((input_x, x1_unembed, x2_unembed, x3_unembed), 1)
-        x33 = self.conv_channel_balance4(x33)
-        x33 = self.patch_embed(x33)
-        # print(x33.shape, 'x33')
-        #
-        x4 = self.layers[3](x33, x_size)
+        # x3 = self.layers[2](x22, x_size)
+        # x3_unembed = self.patch_unembed(x3, x_size)
+        # x33 = torch.cat((input_x, x1_unembed, x2_unembed, x3_unembed), 1)
+        # x33 = self.conv_channel_balance4(x33)
+        # x33 = self.patch_embed(x33)
+        # # print(x33.shape, 'x33')
+        # #
+        # x4 = self.layers[3](x33, x_size)
 
-        x = self.patch_unembed(x4, x_size)
+        x = self.patch_unembed(x22, x_size)
         # print(x.shape, 'x4 unembed')
-        del x1, x11, x2, x22, x3, x33, x4
+        # del x1, x11, x2, x22, x3, x33, x4
         torch.cuda.empty_cache()
 
         return x
@@ -708,7 +708,7 @@ class SwinSaliency(nn.Module):
         x = self.conv_first(x)
         x = self.forward_features(x)
         x = self.conv_after_body(x)
-        # print (x.shape, "conv after body shape")
+        print (x.shape, "conv after body shape")
         # x = self.features(x)
         # print(x.shape)
         # x = self.conv_before_upsample(x)
@@ -720,12 +720,10 @@ class SwinSaliency(nn.Module):
 
         return x
 
-# x = torch.randn((1, 3, 224, 224)).to(device)
-# # depth = torch.randn((12, 3, 224, 224)).to(device)
-# # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = SwinSaliency().to(device)
-# x = model(x)
-# print (x.shape)
+x = torch.randn((1, 3, 224, 224)).to(device)
+model = SwinSaliency().to(device)
+x = model(x)
+print (x.shape)
 
 # a, b, c, d, e = model(x,depth, gt)
 # print ('done')
