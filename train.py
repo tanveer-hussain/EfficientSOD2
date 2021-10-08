@@ -5,14 +5,15 @@ from torch.autograd import Variable
 import numpy as np
 import os, argparse
 # from ResNet_models import Generator
-from ResNet_models_UCNet import Generator
-from data import get_loader
+# from ResNet_models_UCNet import Generator
+from data import DatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
 import imageio
 import torch.nn as nn
 from customlosses import ssim
+from torch.utils.data import Dataset, DataLoader
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
@@ -127,15 +128,22 @@ if __name__ == '__main__':
 
     for dataset_name in datasets:
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
+
+        dataset_path = r'D:\My Research\Video Summarization\VS via Saliency\\' + dataset_name
+        d_type = ['Train', 'Test']
+
         image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
+
+        train_data = DatasetLoader(dataset_path, d_type[0])
+        train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
 
         # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         # gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
         # depth_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
         # gray_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
 
-        train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
+        # train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
