@@ -120,7 +120,8 @@ if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     print("Let's Play!")
     ## load data
-    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    datasets = ['SIP']
+    # datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     if not os.path.exists(save_path):
@@ -129,7 +130,8 @@ if __name__ == '__main__':
     for dataset_name in datasets:
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
-        dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
+        dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
+        # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
         # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
@@ -180,7 +182,7 @@ if __name__ == '__main__':
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
                 #
-                if i % 50 == 0 or i == total_step:
+                if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, total_loss.data))
 
