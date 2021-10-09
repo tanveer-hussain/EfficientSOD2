@@ -266,7 +266,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
-        self.conv_depth1 = BasicConv2d(3, 3, kernel_size=3, padding=1)
+        self.conv_depth1 = BasicConv2d(6, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -373,7 +373,7 @@ class Saliency_feat_encoder(nn.Module):
         # sal_init = self.features(sal_init)
 
 
-        return self.upsample4(sal_init) #, self.upsample4(depth_pred)
+        return self.upsample4(sal_init) , self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)

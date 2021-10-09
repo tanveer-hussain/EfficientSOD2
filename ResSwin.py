@@ -22,7 +22,7 @@ class ResSwinModel(nn.Module):
         if training:
             # self.x_sal = self.sal_encoder(x)
             # print (self.x_sal.shape)
-            self.x_sal = self.swin_saliency(x, depth)
+            self.x_sal , self.d_sal = self.swin_saliency(x, depth)
             # print(self.x_f1.shape)
             # self.x_f2 = self.swin_saliency(x)
             # self.x_f = torch.cat((self.x_f1, self.x_f2),1)
@@ -33,7 +33,7 @@ class ResSwinModel(nn.Module):
             # print (self.x_sal.shape)
             # self.d_sal = self.conv1(self.d_sal)
 
-            return self.x_sal#, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+            return self.x_sal, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
             # _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
             # z_noise = self.reparametrize(mux, logvarx)
