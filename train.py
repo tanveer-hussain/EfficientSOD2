@@ -129,7 +129,10 @@ if __name__ == '__main__':
     for dataset_name in datasets:
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
-        dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
+
+
+        dataset_path = r'D:\MyResearch\Datasets\Saliency\Detection\RGBD/' + dataset_name
+        # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
         # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
