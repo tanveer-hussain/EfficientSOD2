@@ -15,6 +15,9 @@ import torch.nn as nn
 from customlosses import ssim
 from torch.utils.data import Dataset, DataLoader
 
+midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
+midas.eval()
+
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
