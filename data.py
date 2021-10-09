@@ -11,11 +11,11 @@ from deph_Gen import return_depth
 class DatasetLoader(Dataset):
 
     def __init__(self, dir, d_type):
-        # self.x_path =
-        # self.y_path =
+        self.x_path = os.path.join(dir, str(d_type), 'Images')
+        self.y_path = os.path.join(dir, str(d_type), 'Labels')
 
-        self.X = os.listdir( os.path.join(dir, str(d_type), 'Images'))
-        self.Y = os.listdir(os.path.join(dir, str(d_type), 'Labels'))
+        self.X = os.listdir(self.x_path)
+        self.Y = os.listdir(self.y_path)
 
         self.length = len(self.X)
 
@@ -50,6 +50,8 @@ class DatasetLoader(Dataset):
         x = self.img_transform(x)
         y = self.gt_transform(y)
         d = self.gt_transform(d)
+
+        print ('x', x.shape, ', y', y.shape, ', d', d.shape)
 
 
         return x , d, y

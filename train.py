@@ -99,7 +99,7 @@ def visualize_gt(var_map):
         pred_edge_kk *= 255.0
         pred_edge_kk = pred_edge_kk.astype(np.uint8)
         save_path = './temp/'
-        name = '{:02d}_gt.png'.format(kk)
+        name = '{:02d}_depth.png'.format(kk)
         imageio.imwrite(save_path + name, pred_edge_kk)
 
 ## linear annealing to avoid posterior collapse

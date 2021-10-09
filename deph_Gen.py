@@ -75,15 +75,16 @@ else:
 # cv2.imshow('sample image',img1)
 # cv2.waitKey(0) # waits until a key is pressed
 # cv2.destroyAllWindows()
-import torchvision.transforms as transforms
-gray_transform = transforms.Compose([
-            transforms.Resize((224,224)),
-            transforms.ToTensor()])
+# import torchvision.transforms as transforms
+#
+# gray_transform = transforms.Compose([
+#             transforms.Resize((224,224)),
+#             transforms.ToTensor()])
 
 def return_depth(img):
-    # img = cv2.resize(img, (224, 224))
+    img = cv2.resize(img, (224, 224))
     # convert color space from BGR to RGB
-    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # run midas model
     input_batch = transform(img).to(device)
     # input_batch = gray_transform(img)
@@ -107,6 +108,7 @@ def return_depth(img):
     output2 = output2.astype(int)
     output2 = np.stack((output2,) * 3, axis=-1)
     depth = output2.astype(np.uint8)
+    pil_image = Image.fromarray(depth)
     return depth
 
 #
