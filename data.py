@@ -11,11 +11,13 @@ class DatasetLoader(Dataset):
 
     def __init__(self, dir, d_type):
 
-        self.x_path = os.path.join(dir, str(d_type), 'Images')
-        self.y_path = os.path.join(dir, str(d_type), 'Labels')
+        print (dir,d_type,"Images")
 
-        self.X = os.listdir(self.x_path)
-        self.Y = os.listdir(self.y_path)
+        # self.x_path =
+        # self.y_path =
+
+        self.X = os.listdir( os.path.join(dir, str(d_type), 'Images'))
+        self.Y = os.listdir(os.path.join(dir, str(d_type), 'Labels'))
 
         self.length = len(self.X)
 
