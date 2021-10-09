@@ -1,16 +1,16 @@
 #Set runtime to GPU
-print ("import libraries")
+# print ("import libraries")
 #importing libraries
-import tifffile as ti
-import random
-import numpy as np
+# import tifffile as ti
+# import random
+# import numpy as np
 import torch
 #load midas model from torch hub
 midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
 midas.eval()
-import cv2
-import urllib.request
-import matplotlib.pyplot as plt
+# import cv2
+# import urllib.request
+# import matplotlib.pyplot as plt
 #from google.colab.patches import cv2_imshow
 import numpy as np
 import cv2
@@ -114,15 +114,19 @@ def return_depth(img):
 #
 # source_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Input"
 # destin_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Output"
-# for image_name in os.listdir(source_directory):
-#     print (f'Processing.. *{source_directory,image_name}*')
-#     single_image = Image.open(os.path.join(source_directory,image_name)).convert('RGB')
-#     single_image = np.asarray(single_image)
-#     # single_image = cv2.imread(os.path.join(source_directory,image_name))
-#     single_depth = return_depth(single_image)
-#     pil_image = Image.fromarray(single_depth)
-#     pil_image.save(os.path.join(destin_directory,image_name))
-    # cv2.imwrite(os.path.join(destin_directory,image_name), single_depth)
+source_directory = r"D:\My Research\Datasets\Saliency Detection\RGBD\NJU2K\Train\Images"
+destin_directory = r"D:\My Research\Datasets\Saliency Detection\RGBD\NJU2K\Train\Depth_Synthetic"
+
+
+for image_name in os.listdir(source_directory):
+    print (f'Processing.. *{source_directory,image_name}*')
+    single_image = Image.open(os.path.join(source_directory,image_name)).convert('RGB')
+    single_image = np.asarray(single_image)
+    # single_image = cv2.imread(os.path.join(source_directory,image_name))
+    single_depth = return_depth(single_image)
+    pil_image = Image.fromarray(single_depth)
+    pil_image.save(os.path.join(destin_directory,image_name))
+    cv2.imwrite(os.path.join(destin_directory,image_name), single_depth)
 
 
 
