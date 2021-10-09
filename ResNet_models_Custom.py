@@ -246,7 +246,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
-        self.conv_depth1 = BasicConv2d(6 + latent_dim, 3, kernel_size=3, padding=1)
+        self.conv_depth1 = BasicConv2d(6 , 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -281,10 +281,7 @@ class Saliency_feat_encoder(nn.Module):
         return torch.index_select(a, dim, order_index)
 
     def forward(self, x,depth):
-        # z = torch.unsqueeze(z, 2)
-        # z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
-        # z = torch.unsqueeze(z, 3)
-        # z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
+
         x = torch.cat((x, depth), 1)
         x = self.conv_depth1(x)
         x = self.resnet.conv1(x)

@@ -186,6 +186,7 @@ if __name__ == '__main__':
                 if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, total_loss.data))
+                    print("Dataset: ", dataset_name)
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0 or epoch == opt.epoch:
