@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
 
 
-        dataset_path = r'D:\MyResearch\Datasets\SaliencyDetection\RGBD/' + dataset_name
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
