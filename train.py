@@ -120,8 +120,8 @@ if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     print("Let's Play!")
     ## load data
-    datasets = ['SIP']
-    # datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    # datasets = ['SIP']
+    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     if not os.path.exists(save_path):
@@ -189,8 +189,8 @@ if __name__ == '__main__':
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0 or epoch == opt.epoch:
-                torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
-                with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
-                    ResultsFile.write(writing_string)
+                torch.save(resswin.state_dict(), save_path + dataset_name + 'SD' + '_%d' % epoch + '_UCNet.pth')
+                # with open(save_results_path, "a+") as ResultsFile:
+                #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
+                #     ResultsFile.write(writing_string)
 
