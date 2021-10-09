@@ -247,6 +247,7 @@ class Saliency_feat_encoder(nn.Module):
 
         self.spatial_axes = [2, 3]
         self.conv_depth1 = BasicConv2d(6 , 3, kernel_size=3, padding=1)
+        self.conv_depth1 = BasicConv2d(6, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -261,6 +262,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv3_depth = Triple_Conv(1024, channel)
         self.conv4_depth = Triple_Conv(2048, channel)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
+        self.conv4_depth1 = Triple_Conv(3, 1)
 
         if self.training:
             self.initialize_weights()
@@ -300,6 +302,7 @@ class Saliency_feat_encoder(nn.Module):
         conv4_depth = self.upsample8(self.conv4_depth(x4))
         conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
         depth_pred = self.layer_depth(conv_depth)
+        depth_pred = self.conv4_depth1(depth_pred)
 
         conv1_feat = self.conv1(x1)
         conv1_feat = self.asppconv1(conv1_feat)
