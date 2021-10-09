@@ -85,9 +85,9 @@ def return_depth(img):
     # convert color space from BGR to RGB
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # run midas model
-    # input_batch = transform(img).to(device)
-    input_batch = gray_transform(img)
-    input_batch = torch.unsqueeze(input_batch,0)
+    input_batch = transform(img).to(device)
+    # input_batch = gray_transform(img)
+    # input_batch = torch.unsqueeze(input_batch,0)
     with torch.no_grad():
         prediction = midas(input_batch)
 
@@ -109,17 +109,17 @@ def return_depth(img):
     depth = output2.astype(np.uint8)
     return depth
 
-
-source_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Input"
-destin_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Output"
-for image_name in os.listdir(source_directory):
-    print (f'Processing.. *{source_directory,image_name}*')
-    single_image = Image.open(os.path.join(source_directory,image_name)).convert('RGB')
-    # single_image = np.asarray(single_image)
-    # single_image = cv2.imread(os.path.join(source_directory,image_name))
-    single_depth = return_depth(single_image)
-    pil_image = Image.fromarray(single_depth)
-    pil_image.save(os.path.join(destin_directory,image_name))
+#
+# source_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Input"
+# destin_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Output"
+# for image_name in os.listdir(source_directory):
+#     print (f'Processing.. *{source_directory,image_name}*')
+#     single_image = Image.open(os.path.join(source_directory,image_name)).convert('RGB')
+#     single_image = np.asarray(single_image)
+#     # single_image = cv2.imread(os.path.join(source_directory,image_name))
+#     single_depth = return_depth(single_image)
+#     pil_image = Image.fromarray(single_depth)
+#     pil_image.save(os.path.join(destin_directory,image_name))
     # cv2.imwrite(os.path.join(destin_directory,image_name), single_depth)
 
 
