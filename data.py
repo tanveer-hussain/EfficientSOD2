@@ -11,6 +11,8 @@ class DatasetLoader(Dataset):
 
     def __init__(self, dir, d_type):
 
+        print (dir,d_type,"Images")
+
         self.x_path = os.path.join(dir, str(d_type), 'Images')
         self.y_path = os.path.join(dir, str(d_type), 'Labels')
 
