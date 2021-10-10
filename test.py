@@ -17,7 +17,8 @@ opt = parser.parse_args()
 
 datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 dataset_name = datasets[0]
-dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
+dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
+# dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
 
 epoch = 100
 from ResSwin import ResSwinModel
@@ -29,7 +30,7 @@ resswin.eval()
 
 
 # save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
-
+save_path = r"output"
 image_root = dataset_path + '/Images/'
 depth_root = dataset_path + '/Depth/'
 print (image_root, "\n", depth_root)
