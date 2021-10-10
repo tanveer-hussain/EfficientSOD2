@@ -2,9 +2,11 @@ import torch
 import torch.nn.functional as F
 import os, argparse
 from torch.utils.data import Dataset, DataLoader
+from data import DatasetLoader
 import cv2
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+print (device)
+# os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--testsize', type=int, default=352, help='testing size')
@@ -33,7 +35,7 @@ depth_root = dataset_path + '/Depth_Synthetic/'
 print (image_root, "\n", depth_root)
 d_type = ['Train', 'Test']
 test_data = DatasetLoader(dataset_path, d_type[1])
-test_loader = DataLoader(test_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
+test_loader = DataLoader(test_data, batch_size=8, shuffle=True, num_workers=16, drop_last=True)
 
 for i, (images, depths, gts) in enumerate(test_loader, start=1):
     #
@@ -46,7 +48,7 @@ for i, (images, depths, gts) in enumerate(test_loader, start=1):
     import timeit
 
     start_time = timeit.default_timer()
-    generator_pred = resswin.forward(image, depth, training=False)
+    generator_pred = resswin.forward(images, depths, training=False)
     #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
     print (generator_pred.shape)
     res = generator_pred
