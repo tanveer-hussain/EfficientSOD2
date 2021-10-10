@@ -1,12 +1,9 @@
 import torch
 import torch.nn.functional as F
-import pdb, os, argparse
-# from ResNet_models_UCNet import Generator
-from ResNet_models import Generator
-from data import test_dataset
-
+import os, argparse
+from torch.utils.data import Dataset, DataLoader
 import cv2
-
+device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
 parser = argparse.ArgumentParser()
@@ -23,8 +20,8 @@ dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_nam
 epoch = 100
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-resswin.cuda()
-resswin.load_state_dict(torch.load("models/" + dataset_name+ 'SWIN' + '_%d' % epoch + '_UCNet.pth'))
+resswin.to(device)
+resswin.load_state_dict(torch.load("models/" + dataset_name+ 'SD' + '_%d' % epoch + '_.pth'))
 print ('Model loaded')
 resswin.eval()
 
@@ -32,25 +29,28 @@ resswin.eval()
 # save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
 save_path = r"output"
 image_root = dataset_path + '/Images/'
-depth_root = dataset_path + '/Depth/'
+depth_root = dataset_path + '/Depth_Synthetic/'
 print (image_root, "\n", depth_root)
-test_loader = test_dataset(image_root, depth_root, opt.testsize)
-for i in range(test_loader.size):
+d_type = ['Train', 'Test']
+test_data = DatasetLoader(dataset_path, d_type[1])
+test_loader = DataLoader(test_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
 
-    image, depth, HH, WW, name = test_loader.load_data()
+for i, (images, depths, gts) in enumerate(test_loader, start=1):
+    #
+    # image, depth, HH, WW, name = test_loader.load_data()
 
 
-    image = image.cuda()
-    depth = depth.cuda()
+    images = images.to(device)
+    depths = depths.to(device)
 
     import timeit
 
     start_time = timeit.default_timer()
-    generator_pred = resswin.forward(image, depth, training=True)
+    generator_pred = resswin.forward(image, depth, training=False)
     #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
     print (generator_pred.shape)
     res = generator_pred
-    res = F.upsample(res, size=[WW,HH], mode='bilinear', align_corners=False)
+    res = F.upsample(res, size=[224,224], mode='bilinear', align_corners=False)
     res = res.sigmoid().data.cpu().numpy().squeeze()
     # name = name[:-3]
     output_path = os.path.join(save_path,name)
