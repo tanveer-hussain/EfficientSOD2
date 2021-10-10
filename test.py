@@ -32,9 +32,9 @@ resswin.eval()
 
 # save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
 save_path = r"output"
-image_root = dataset_path + '/Images/'
-depth_root = dataset_path + '/Depth_Synthetic/'
-print (image_root, "\n", depth_root)
+# image_root = dataset_path #+ '/Images/'
+# depth_root = dataset_path #+ '/Depth_Synthetic/'
+# print (image_root, "\n", depth_root)
 d_type = ['Train', 'Test']
 test_data = DatasetLoader(dataset_path, d_type[1])
 test_loader = DataLoader(test_data, batch_size=8, shuffle=True, num_workers=16, drop_last=True)
@@ -66,4 +66,3 @@ if __name__ == '__main__':
 
         cv2.imwrite(output_path, res*255)
         # res.save(save_path+name, res)
-main()
