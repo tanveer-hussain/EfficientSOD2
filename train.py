@@ -6,7 +6,7 @@ import numpy as np
 import os, argparse
 # from ResNet_models import Generator
 # from ResNet_models_UCNet import Generator
-from data import DatasetLoader
+from data import TrainDatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
@@ -39,11 +39,7 @@ parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-from ResSwin import ResSwinModel
-resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-resswin.to(device)
-resswin_params = resswin.parameters()
-resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+
 ## define loss
 
 CE = torch.nn.BCELoss()
@@ -124,10 +120,18 @@ if __name__ == '__main__':
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
+    from ResSwin import ResSwinModel
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     for dataset_name in datasets:
+
+
+        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        resswin.to(device)
+        resswin_params = resswin.parameters()
+        resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
@@ -138,7 +142,7 @@ if __name__ == '__main__':
         # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
 
-        train_data = DatasetLoader(dataset_path, d_type[0])
+        train_data = TrainDatasetLoader(dataset_path, d_type[0])
         train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
 
         # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'

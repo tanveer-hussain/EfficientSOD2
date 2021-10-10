@@ -1,68 +1,79 @@
 from multiprocessing.dummy import freeze_support
-
 import torch
-import torch.nn.functional as F
-import os, argparse
-from torch.utils.data import Dataset, DataLoader
-from data import DatasetLoader
+from torchvision import transforms as T
+from PIL import Image
+import os
+import numpy as np
 import cv2
+import timeit
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 # print (device)
 # os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--testsize', type=int, default=352, help='testing size')
-parser.add_argument('--latent_dim', type=int, default=3, help='latent dim')
-parser.add_argument('--feat_channel', type=int, default=32, help='reduced channel of saliency feat')
-opt = parser.parse_args()
+latent_dim=3
+feat_channel=32
 
 datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 dataset_name = datasets[0]
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
 # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
-
-epoch = 100
+# DUT-RGBDSD_50_
+epoch = 50
 from ResSwin import ResSwinModel
-resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
 resswin.to(device)
-resswin.load_state_dict(torch.load("models/" + dataset_name+ 'SD' + '_%d' % epoch + '_.pth'))
+resswin.load_state_dict(torch.load("models/" + dataset_name + 'SD' + '_%d' % epoch + '_.pth'))
 print ('Model loaded')
 resswin.eval()
 
 
-# save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
-save_path = r"output"
-# image_root = dataset_path #+ '/Images/'
-# depth_root = dataset_path #+ '/Depth_Synthetic/'
-# print (image_root, "\n", depth_root)
-d_type = ['Train', 'Test']
-test_data = DatasetLoader(dataset_path, d_type[1])
-test_loader = DataLoader(test_data, batch_size=8, shuffle=True, num_workers=16, drop_last=True)
 
-if __name__ == '__main__':
-    freeze_support()
-    for i, (images, depths, gts) in enumerate(test_loader, start=1):
-        #
-        # image, depth, HH, WW, name = test_loader.load_data()
+datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 
 
-        images = images.to(device)
-        depths = depths.to(device)
+def preprocess_image(img):
+    transform = T.Compose([T.Resize((224, 224)), T.ToTensor()])
+    x = transform(img)
+    x = torch.unsqueeze(x, 0)
+    x = x.to(device)
+    return x
+def predictions(img):
 
-        import timeit
+    x = preprocess_image(img)
+    start_time = timeit.default_timer()
+    output = resswin(x)
+    output = torch.squeeze(output, 0)
 
-        start_time = timeit.default_timer()
-        generator_pred = resswin.forward(images, depths, training=False)
-        #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
-        print (generator_pred.shape)
-        res = generator_pred
-        res = F.upsample(res, size=[224,224], mode='bilinear', align_corners=False)
-        res = res.sigmoid().data.cpu().numpy().squeeze()
-        # name = name[:-3]
-        output_path = os.path.join(save_path,name)
-        # cv2.imshow('',res)
-        # cv2.waitKey(0)
-        print(output_path)
+    output = output.detach().cpu().numpy()
+    output = output.dot(255)
+    output *= output.max()/255.0
+    # print (max(output))
+    # output = cv2.erode(output, kernel, iterations=2)
+    # output = cv2.dilate(output, kernel, iterations=1)
+    return output
 
-        cv2.imwrite(output_path, res*255)
-        # res.save(save_path+name, res)
+def testing_code_dir(input_dir, output_dir):
+
+    val_base_path_images = os.listdir(input_dir)
+    for single_image in val_base_path_images:
+        full_path = input_dir + single_image
+
+        img = Image.open(full_path).convert("RGB")
+
+        output = predictions(img)
+        output = np.transpose(output, (1, 2, 0))
+        # cv2.imshow('', output)
+        # cv2.waitKey(50)
+
+        output_path = output_dir + single_image[0:(len(single_image) - 3)] + "png"
+        cv2.imwrite(output_path, output)
+        print("Reading: %s\n writing: %s " % (full_path, output_path))
+
+
+import os
+dataset_name = datasets[0]
+input_dir = r'D:\My Research\Datasets\Saliency Detection\RGBD' + dataset_name + "\Images"
+output_dir = r'C:\Users\user02\Documents\GitHub\EfficientSOD2\Output'  + dataset_name + "\\"
+output_dir = output_dir if os.path.exists(output_dir) else os.mkdir(output_dir)
+
+testing_code_dir(input_dir,output_dir)
