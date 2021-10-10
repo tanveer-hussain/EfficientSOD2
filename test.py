@@ -28,7 +28,8 @@ print ('Model loaded')
 resswin.eval()
 
 
-save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
+# save_path = r'/home/tinu/PycharmProjects/EfficientSOD2/output'
+
 image_root = dataset_path + '/Images/'
 depth_root = dataset_path + '/Depth/'
 print (image_root, "\n", depth_root)
