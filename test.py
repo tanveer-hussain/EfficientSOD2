@@ -1,3 +1,5 @@
+from multiprocessing.dummy import freeze_support
+
 import torch
 import torch.nn.functional as F
 import os, argparse
@@ -5,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from data import DatasetLoader
 import cv2
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-print (device)
+# print (device)
 # os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
 parser = argparse.ArgumentParser()
@@ -37,28 +39,31 @@ d_type = ['Train', 'Test']
 test_data = DatasetLoader(dataset_path, d_type[1])
 test_loader = DataLoader(test_data, batch_size=8, shuffle=True, num_workers=16, drop_last=True)
 
-for i, (images, depths, gts) in enumerate(test_loader, start=1):
-    #
-    # image, depth, HH, WW, name = test_loader.load_data()
+if __name__ == '__main__':
+    freeze_support()
+    for i, (images, depths, gts) in enumerate(test_loader, start=1):
+        #
+        # image, depth, HH, WW, name = test_loader.load_data()
 
 
-    images = images.to(device)
-    depths = depths.to(device)
+        images = images.to(device)
+        depths = depths.to(device)
 
-    import timeit
+        import timeit
 
-    start_time = timeit.default_timer()
-    generator_pred = resswin.forward(images, depths, training=False)
-    #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
-    print (generator_pred.shape)
-    res = generator_pred
-    res = F.upsample(res, size=[224,224], mode='bilinear', align_corners=False)
-    res = res.sigmoid().data.cpu().numpy().squeeze()
-    # name = name[:-3]
-    output_path = os.path.join(save_path,name)
-    # cv2.imshow('',res)
-    # cv2.waitKey(0)
-    print(output_path)
+        start_time = timeit.default_timer()
+        generator_pred = resswin.forward(images, depths, training=False)
+        #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
+        print (generator_pred.shape)
+        res = generator_pred
+        res = F.upsample(res, size=[224,224], mode='bilinear', align_corners=False)
+        res = res.sigmoid().data.cpu().numpy().squeeze()
+        # name = name[:-3]
+        output_path = os.path.join(save_path,name)
+        # cv2.imshow('',res)
+        # cv2.waitKey(0)
+        print(output_path)
 
-    cv2.imwrite(output_path, res*255)
-    # res.save(save_path+name, res)
+        cv2.imwrite(output_path, res*255)
+        # res.save(save_path+name, res)
+main()
