@@ -114,8 +114,8 @@ def return_depth(img):
 #
 # source_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Input"
 # destin_directory = r"C:\Users\khank\PycharmProjects\EfficientSOD2\Output"
-source_directory = r"D:\My Research\Datasets\Saliency Detection\RGBD\NJU2K\Train\Images"
-destin_directory = r"D:\My Research\Datasets\Saliency Detection\RGBD\NJU2K\Train\Depth_Synthetic"
+source_directory = r"D:\My Research\Datasets\Saliency Detection\RGBD\SIP\Test\Images"
+destin_directory = r"D:\My Research\Datasets\Saliency Detection\RGBD\SIP\Test\Depth_Synthetic"
 
 
 for image_name in os.listdir(source_directory):
