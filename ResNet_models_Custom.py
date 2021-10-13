@@ -420,9 +420,9 @@ class Saliency_feat_encoder(nn.Module):
 #
 #     layers.append(layer)
 #
-# # sal_encoder = Saliency_feat_encoder(32, 3)
-# # m = Pyramid_block(256,56,128,28,4)
-# x = torch.randn(2,256,56,56)
+sal_encoder = Saliency_feat_encoder(32, 3)
+# m = Pyramid_block(256,56,128,28,4)
+x = torch.randn(2,3,224,224)
 # for layer in layers:
 #     y = layer(x)
 #     temp = y
@@ -431,5 +431,5 @@ class Saliency_feat_encoder(nn.Module):
     # z = torch.cat((y),1)
     # print (z.shape)
 # print (y.shape)
-# x = sal_encoder(x,x)
+x = sal_encoder(x)
 # print (x.shape)
