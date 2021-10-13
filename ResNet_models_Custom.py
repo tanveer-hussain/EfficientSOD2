@@ -426,7 +426,7 @@ class Saliency_feat_encoder(nn.Module):
 #
 #     layers.append(layer)
 #
-sal_encoder = Saliency_feat_encoder(32, 3)
+sal_encoder = Saliency_feat_encoder(32, 3).to(device)
 # m = Pyramid_block(256,56,128,28,4)
 x = torch.randn(2,3,224,224).to(device)
 # for layer in layers:
