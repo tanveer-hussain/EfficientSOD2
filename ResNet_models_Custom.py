@@ -223,15 +223,6 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        # model_path = "/home/tinu/PycharmProjects/EfficientSOD2/swin_ir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-        # model_path = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth"
-        # self.swinmodel = SwinIR(upscale=4, in_chans=3, img_size=64, window_size=8,
-        #                         img_range=1., depths=[6, 6, 6, 6], embed_dim=60, num_heads=[6, 6, 6, 6],
-        #                         mlp_ratio=2, upsampler='pixelshuffledirect', resi_connection='1conv')
-        # msg = self.swinmodel.load_state_dict(torch.load(model_path)['params'], strict=True)
-        # self.swinmodel = self.swinmodel.to(device)
-
-
         self.resnet = B2_ResNet()
         self.relu = nn.ReLU(inplace=True)
         self.dropout = nn.Dropout(0.3)
@@ -244,17 +235,6 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.upsample14 = nn.Upsample(size=(14, 14), mode='bilinear', align_corners=True)
-        self.upsample28 = nn.Upsample(size=(28, 28), mode='bilinear', align_corners=True)
-        self.upsample56 = nn.Upsample(size=(56, 56), mode='bilinear', align_corners=True)
-        self.conv64 = Triple_Conv(64,64)
-        self.conv96 = Triple_Conv(156,96)
-        self.conv128 = Triple_Conv(188,128)
-
-        self.conv_depth1 = BasicConv2d(3, 3, kernel_size=3, padding=1)
-
-        self.preconv = Triple_Conv(6,3)
-        self.postconv = Triple_Conv(3,1)
         self.conv1 = Triple_Conv(256, channel)
         self.conv2 = Triple_Conv(512, channel)
         self.conv3 = Triple_Conv(1024, channel)
@@ -266,6 +246,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
+        self.conv_depth1 = BasicConv2d(6 , 3, kernel_size=3, padding=1)
         self.conv_depth1 = BasicConv2d(6, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
@@ -281,14 +262,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv3_depth = Triple_Conv(1024, channel)
         self.conv4_depth = Triple_Conv(2048, channel)
         self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
-
-        self.features = nn.Sequential(
-            nn.Flatten(start_dim=1),
-            nn.ReLU(),
-            nn.Linear(3136, 2048),
-            nn.ReLU(),
-            nn.Linear(2048, 1024)
-        )
+        self.conv4_depth1 = Triple_Conv(3, 1)
 
         if self.training:
             self.initialize_weights()
@@ -308,20 +282,10 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x):
-        # z = torch.unsqueeze(z, 2)
-        # z = self.tile(z, 2, x.shape[self.spatial_axes[0]])
-        # z = torch.unsqueeze(z, 3)
-        # z = self.tile(z, 3, x.shape[self.spatial_axes[1]])
+    def forward(self, x,depth):
 
-        # x = torch.cat((x, depth), 1)
-
-        # print (x.shape)
-        # x = self.preconv(x)
+        x = torch.cat((x, depth), 1)
         x = self.conv_depth1(x)
-        # swin_input = x
-        # swin_input = torch.nn.functional.interpolate(swin_input, size=64)
-        # swin_features = self.swinmodel(swin_input)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
@@ -332,14 +296,13 @@ class Saliency_feat_encoder(nn.Module):
         x4 = self.resnet.layer4(x3)  # 2048 x 8 x 8
 
         ## depth estimation
-        # conv1_depth = self.conv1_depth(x1)
-        # conv2_depth = self.upsample2(self.conv2_depth(x2))
-        # conv3_depth = self.upsample4(self.conv3_depth(x3))
-        # conv4_depth = self.upsample8(self.conv4_depth(x4))
-        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        # conv_depth = self.conv128(conv_depth)
-        # depth_pred = self.layer_depth(conv_depth)
-        # depth_pred = self.postconv(depth_pred)
+        conv1_depth = self.conv1_depth(x1)
+        conv2_depth = self.upsample2(self.conv2_depth(x2))
+        conv3_depth = self.upsample4(self.conv3_depth(x3))
+        conv4_depth = self.upsample8(self.conv4_depth(x4))
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        depth_pred = self.layer_depth(conv_depth)
+        depth_pred = self.conv4_depth1(depth_pred)
 
         conv1_feat = self.conv1(x1)
         conv1_feat = self.asppconv1(conv1_feat)
@@ -349,30 +312,23 @@ class Saliency_feat_encoder(nn.Module):
         conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
         conv4_feat = self.asppconv4(conv4_feat)
-
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
-        # conv43 = self.conv64(conv43)
         conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
 
-
         conv43 = self.upsample2(conv43)
         conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
-        # conv432 = self.conv96(conv432)
         conv432 = self.racb_432(conv432)
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
-
         conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
-        # conv4321 = self.conv128(conv4321)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
-        # sal_init = self.features(sal_init)
 
 
         return self.upsample4(sal_init) , self.upsample4(depth_pred)
@@ -396,45 +352,7 @@ class Saliency_feat_encoder(nn.Module):
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
 
-class MHSA(nn.Module):
-    def __init__(self, n_dims, width=14, height=14, heads=4):
-        super(MHSA, self).__init__()
-        self.heads = heads
-
-        self.query = nn.Conv2d(n_dims, n_dims, kernel_size=1)
-        self.key = nn.Conv2d(n_dims, n_dims, kernel_size=1)
-        self.value = nn.Conv2d(n_dims, n_dims, kernel_size=1)
-
-        self.rel_h = nn.Parameter(torch.randn([1, heads, n_dims // heads, 1, height]), requires_grad=True)
-        self.rel_w = nn.Parameter(torch.randn([1, heads, n_dims // heads, width, 1]), requires_grad=True)
-
-        self.softmax = nn.Softmax(dim=-1)
-
-    def forward(self, x):
-        n_batch, C, width, height = x.size()
-        q = self.query(x).view(n_batch, self.heads, C // self.heads, -1)
-        k = self.key(x).view(n_batch, self.heads, C // self.heads, -1)
-        v = self.value(x).view(n_batch, self.heads, C // self.heads, -1)
-
-        content_content = torch.matmul(q.permute(0, 1, 3, 2), k)
-
-        content_position = (self.rel_h + self.rel_w).view(1, self.heads, C // self.heads, -1).permute(0, 1, 3, 2)
-        content_position = torch.matmul(content_position, q)
-
-        energy = content_content + content_position
-        attention = self.softmax(energy)
-
-        out = torch.matmul(v, attention.permute(0, 1, 3, 2))
-        out = out.view(n_batch, C, width, height)
-
-        return out
-
-planes = 256
-conv2 = nn.ModuleList()
-heads = 4
-# conv2.append(MHSA(planes, width=224,height=224, heads=heads))
-mhsa_x1 = MHSA(256).to(device)
 # sal_encoder = Saliency_feat_encoder(32, 3)
-x = torch.randn(2,256,56,56).to(device)
-x = mhsa_x1(x)
+# x = torch.randn(2,3,224,224)
+# x = sal_encoder(x,x)
 # print (x.shape)

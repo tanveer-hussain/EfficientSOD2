@@ -6,7 +6,7 @@ import numpy as np
 import os, argparse
 # from ResNet_models import Generator
 # from ResNet_models_UCNet import Generator
-from data import DatasetLoader
+from data import TrainDatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
@@ -19,9 +19,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=20, help='epoch number')
+parser.add_argument('--epoch', type=int, default=100, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=3, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=32, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -39,11 +39,7 @@ parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight
 opt = parser.parse_args()
 print('Generator Learning Rate: {}'.format(opt.lr_gen))
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-from ResSwin import ResSwinModel
-resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-resswin.to(device)
-resswin_params = resswin.parameters()
-resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+
 ## define loss
 
 CE = torch.nn.BCELoss()
@@ -120,14 +116,22 @@ if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     print("Let's Play!")
     ## load data
-    datasets = ['SIP']
-    # datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    # datasets = ['SIP']
+    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
+    from ResSwin import ResSwinModel
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     for dataset_name in datasets:
+
+
+        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        resswin.to(device)
+        resswin_params = resswin.parameters()
+        resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
@@ -138,7 +142,7 @@ if __name__ == '__main__':
         # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
 
-        train_data = DatasetLoader(dataset_path, d_type[0])
+        train_data = TrainDatasetLoader(dataset_path, d_type[0])
         train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
 
         # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
@@ -178,7 +182,7 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                visualize_gt(depths)
+                visualize_gt(gts)
                 # print (x_sal.shape)
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
@@ -186,11 +190,12 @@ if __name__ == '__main__':
                 if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
                         format(epoch, opt.epoch, i, total_step, total_loss.data))
+                    print("Dataset: ", dataset_name)
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 50 == 0 or epoch == opt.epoch:
-                torch.save(resswin.state_dict(), save_path + dataset_name + 'SWIN' + '_%d' % epoch + '_UCNet.pth')
-                with open(save_results_path, "a+") as ResultsFile:
-                    writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
-                    ResultsFile.write(writing_string)
+                torch.save(resswin.state_dict(), save_path + dataset_name + 'SD' + '_%d' % epoch + '_.pth')
+                # with open(save_results_path, "a+") as ResultsFile:
+                #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
+                #     ResultsFile.write(writing_string)
 
