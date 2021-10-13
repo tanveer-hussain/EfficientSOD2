@@ -31,7 +31,6 @@ class MHSA(nn.Module):
 
         out = torch.matmul(v, attention.permute(0, 1, 3, 2))
         out = out.view(n_batch, C, width, height)
-        print (out.shape)
 
         return out
 
