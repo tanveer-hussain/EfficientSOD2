@@ -977,6 +977,7 @@ def ResNet50(num_classes=1000, resolution=(224, 224), heads=4):
 def main():
     x = torch.randn([2, 3, 224, 224])
     model = ResNet50(resolution=tuple(x.shape[2:]), heads=8)
+    y = model(x)
     print(model(x).size())
     print(get_n_params(model))
 
