@@ -358,13 +358,22 @@ class Saliency_feat_encoder(nn.Module):
         # depth_pred = self.conv4_depth1(depth_pred)
 
         conv1_feat = self.conv1(x1)
-        conv1_feat = self.asppconv1(conv1_feat)
+        for layer in self.b1_layers:
+            conv1_feat = layer(conv1_feat)
+
+        # conv1_feat = self.asppconv1(conv1_feat)
         conv2_feat = self.conv2(x2)
-        conv2_feat = self.asppconv2(conv2_feat)
+        for layer in self.b1_layers:
+            conv2_feat = layer(conv2_feat)
+        # conv2_feat = self.asppconv2(conv2_feat)
         conv3_feat = self.conv3(x3)
-        conv3_feat = self.asppconv3(conv3_feat)
+        for layer in self.b1_layers:
+            conv3_feat = layer(conv3_feat)
+        # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
-        conv4_feat = self.asppconv4(conv4_feat)
+        for layer in self.b1_layers:
+            conv4_feat = layer(conv4_feat)
+        # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
@@ -384,7 +393,7 @@ class Saliency_feat_encoder(nn.Module):
         sal_init = self.layer6(conv4321)
 
 
-        return self.upsample4(sal_init) , self.upsample4(depth_pred)
+        return self.upsample4(sal_init) #, self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
