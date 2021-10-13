@@ -273,9 +273,6 @@ class Saliency_feat_encoder(nn.Module):
         self.b4_layers.append(Pyramid_block(2048, 7, 32, 7, 4, 2))
 
 
-
-
-
         self.resnet = B2_ResNet()
         self.relu = nn.ReLU(inplace=True)
         self.dropout = nn.Dropout(0.3)
@@ -427,9 +424,10 @@ class Saliency_feat_encoder(nn.Module):
 #
 #     layers.append(layer)
 #
-sal_encoder = Saliency_feat_encoder(32, 3).to(device)
-# m = Pyramid_block(256,56,128,28,4)
-x = torch.randn(2,3,224,224).to(device)
+# sal_encoder = Saliency_feat_encoder(32, 3).to(device)
+# # m = Pyramid_block(256,56,128,28,4)
+# x = torch.randn(2,3,224,224).to(device)
+# x = sal_encoder(x).to(device)
 # for layer in layers:
 #     y = layer(x)
 #     temp = y
@@ -438,5 +436,5 @@ x = torch.randn(2,3,224,224).to(device)
     # z = torch.cat((y),1)
     # print (z.shape)
 # print (y.shape)
-x = sal_encoder(x).to(device)
+
 # print (x.shape)
