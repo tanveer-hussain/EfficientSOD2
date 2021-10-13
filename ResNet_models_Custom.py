@@ -357,22 +357,22 @@ class Saliency_feat_encoder(nn.Module):
         # depth_pred = self.layer_depth(conv_depth)
         # depth_pred = self.conv4_depth1(depth_pred)
 
-        conv1_feat = self.conv1(x1)
+        # conv1_feat = self.conv1(x1)
         for layer in self.b1_layers:
-            conv1_feat = layer(conv1_feat)
+            conv1_feat = layer(x1)
 
         # conv1_feat = self.asppconv1(conv1_feat)
-        conv2_feat = self.conv2(x2)
+        # conv2_feat = self.conv2(x2)
         for layer in self.b2_layers:
-            conv2_feat = layer(conv2_feat)
+            conv2_feat = layer(x2)
         # conv2_feat = self.asppconv2(conv2_feat)
-        conv3_feat = self.conv3(x3)
+        # conv3_feat = self.conv3(x3)
         for layer in self.b3_layers:
-            conv3_feat = layer(conv3_feat)
+            conv3_feat = layer(x3)
         # conv3_feat = self.asppconv3(conv3_feat)
-        conv4_feat = self.conv4(x4)
+        # conv4_feat = self.conv4(x4)
         for layer in self.b4_layers:
-            conv4_feat = layer(conv4_feat)
+            conv4_feat = layer(x4)
         # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
