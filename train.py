@@ -111,7 +111,13 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
+from ResSwin import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
+resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+resswin.to(device)
+resswin_params = resswin.parameters()
+resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     print("Let's Play!")
@@ -120,17 +126,11 @@ if __name__ == '__main__':
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
-    from ResSwin import ResSwinModel
+
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     for dataset_name in datasets:
-
-
-        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-        resswin.to(device)
-        resswin_params = resswin.parameters()
-        resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
