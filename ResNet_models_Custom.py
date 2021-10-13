@@ -5,6 +5,7 @@ from ResNet import *
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
+from Multi_head import MHSA
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
@@ -218,10 +219,50 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         return x + self.main(x)
 
+class Pyramid_block(nn.Module):
+    def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
+        super(Pyramid_block, self).__init__()
+
+
+        self.block1 = nn.ModuleList()
+
+        if initial==1:
+            self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
+            self.block1.append(multi_scale_aspp(in_channels))
+        else:
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
+
+        if in_channels != out_channels:
+            self.block1.append(Triple_Conv(in_channels, out_channels))
+        self.block1 = nn.Sequential(*self.block1)
+
+        self.in_resolution = in_resolution
+        self.out_resolution = out_resolution
+
+    def forward(self, x):
+        x = self.block1(x)
+        if self.in_resolution != self.out_resolution:
+            x = F.interpolate(x, size=(self.out_resolution,self.out_resolution), mode='bilinear',align_corners=True)
+
+        return x
+
+
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
+
+        self.block1_layers = 4
+        self.block2_layers = 3
+        self.block1_layers = 4
+        self.block1_layers = 1
+
+        self.layers = nn.ModuleList()
+        for i_layer in range(self.block1_layers):
+            layer = Pyramid_block(256,56,256,56,4,i_layer)
+
+            self.layers.append(layer)
 
         self.resnet = B2_ResNet()
         self.relu = nn.ReLU(inplace=True)
@@ -246,8 +287,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
-        self.conv_depth1 = BasicConv2d(6 , 3, kernel_size=3, padding=1)
-        self.conv_depth1 = BasicConv2d(6, 3, kernel_size=3, padding=1)
+        self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -282,9 +322,9 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x,depth):
+    def forward(self, x):
 
-        x = torch.cat((x, depth), 1)
+        # x = torch.cat((x, depth), 1)
         x = self.conv_depth1(x)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
@@ -351,8 +391,18 @@ class Saliency_feat_encoder(nn.Module):
                 all_params[k] = v
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
+block1_layers = 4
+layers = nn.ModuleList()
+for i_layer in range(block1_layers):
+    layer = Pyramid_block(256,56,256,56,4,i_layer)
+
+    layers.append(layer)
 
 # sal_encoder = Saliency_feat_encoder(32, 3)
-# x = torch.randn(2,3,224,224)
+# m = Pyramid_block(256,56,128,28,4)
+x = torch.randn(2,256,56,56)
+for layer in layers:
+    y = layer(x)
+# print (y.shape)
 # x = sal_encoder(x,x)
 # print (x.shape)
