@@ -290,10 +290,10 @@ class Saliency_feat_encoder(nn.Module):
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
 
-        self.asppconv1 = multi_scale_aspp(channel)
-        self.asppconv2 = multi_scale_aspp(channel)
-        self.asppconv3 = multi_scale_aspp(channel)
-        self.asppconv4 = multi_scale_aspp(channel)
+        # self.asppconv1 = multi_scale_aspp(channel)
+        # self.asppconv2 = multi_scale_aspp(channel)
+        # self.asppconv3 = multi_scale_aspp(channel)
+        # self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
         self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
