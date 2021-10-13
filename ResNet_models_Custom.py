@@ -220,13 +220,19 @@ class ResidualBlock(nn.Module):
         return x + self.main(x)
 
 class Pyramid_block(nn.Module):
-    def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads):
+    def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
         super(Pyramid_block, self).__init__()
 
 
         self.block1 = nn.ModuleList()
-        self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
-        self.block1.append(multi_scale_aspp(in_channels))
+
+        if initial==1:
+            self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
+            self.block1.append(multi_scale_aspp(in_channels))
+        else:
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
+
         if in_channels != out_channels:
             self.block1.append(Triple_Conv(in_channels, out_channels))
         self.block1 = nn.Sequential(*self.block1)
@@ -247,7 +253,16 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
+        self.block1_layers = 4
+        self.block2_layers = 3
+        self.block1_layers = 4
+        self.block1_layers = 1
 
+        self.layers = nn.ModuleList()
+        for i_layer in range(self.block1_layers):
+            layer = Pyramid_block(256,56,256,56,4,i_layer)
+
+            self.layers.append(layer)
 
         self.resnet = B2_ResNet()
         self.relu = nn.ReLU(inplace=True)
@@ -376,11 +391,18 @@ class Saliency_feat_encoder(nn.Module):
                 all_params[k] = v
         assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
         self.resnet.load_state_dict(all_params)
+block1_layers = 4
+layers = nn.ModuleList()
+for i_layer in range(block1_layers):
+    layer = Pyramid_block(256,56,256,56,4,i_layer)
+
+    layers.append(layer)
 
 # sal_encoder = Saliency_feat_encoder(32, 3)
 # m = Pyramid_block(256,56,128,28,4)
-# x = torch.randn(2,256,56,56)
-# y = m(x)
+x = torch.randn(2,256,56,56)
+for layer in layers:
+    y = layer(x)
 # print (y.shape)
 # x = sal_encoder(x,x)
 # print (x.shape)
