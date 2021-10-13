@@ -260,19 +260,19 @@ class Saliency_feat_encoder(nn.Module):
         self.b4_layers = nn.ModuleList()
 
         for i_layer in range(self.num_b1_layers):
-            layer = Pyramid_block(256,56,256,56,4,i_layer)
+            layer = Pyramid_block(256,56,64,56,4,i_layer)
             self.b1_layers.append(layer)
 
         for i_layer in range(self.num_b1_layers-1):
-            layer = Pyramid_block(512,28,512,28,4,i_layer)
+            layer = Pyramid_block(512,28,64,28,4,i_layer)
             self.b2_layers.append(layer)
 
         for i_layer in range(self.num_b1_layers-2):
-            layer = Pyramid_block(1024,14,1024,14,4,i_layer)
+            layer = Pyramid_block(1024,14,64,14,4,i_layer)
             self.b3_layers.append(layer)
 
         for i_layer in range(self.num_b1_layers-3):
-            layer = Pyramid_block(2048,7,2048,7,4,i_layer)
+            layer = Pyramid_block(2048,7,64,7,4,i_layer)
             self.b4_layers.append(layer)
 
         self.resnet = B2_ResNet()
