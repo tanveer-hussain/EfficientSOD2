@@ -261,16 +261,16 @@ class Saliency_feat_encoder(nn.Module):
         self.b1_layers.append(Pyramid_block(256,56,256,56,4,1))
         self.b1_layers.append(Pyramid_block(256, 56, 128, 56, 4, 2))
         self.b1_layers.append(Pyramid_block(128, 56, 128, 56, 4, 3))
-        self.b1_layers.append(Pyramid_block(128, 56, 64, 56, 4, 4))
+        self.b1_layers.append(Pyramid_block(128, 56, 32, 56, 4, 4))
 
         self.b2_layers.append(Pyramid_block(512, 28, 256, 28, 4, 1))
         self.b2_layers.append(Pyramid_block(256, 28, 128, 28, 4, 2))
-        self.b2_layers.append(Pyramid_block(128, 28, 64, 28, 4, 3))
+        self.b2_layers.append(Pyramid_block(128, 28, 32, 28, 4, 3))
 
         self.b3_layers.append(Pyramid_block(1024, 14, 256, 14, 4, 1))
-        self.b3_layers.append(Pyramid_block(256, 14, 64, 14, 4, 2))
+        self.b3_layers.append(Pyramid_block(256, 14, 32, 14, 4, 2))
 
-        self.b4_layers.append(Pyramid_block(2048, 7, 64, 7, 4, 2))
+        self.b4_layers.append(Pyramid_block(2048, 7, 32, 7, 4, 2))
 
 
 
