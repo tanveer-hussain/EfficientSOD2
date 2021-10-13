@@ -253,27 +253,28 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.num_b1_layers = 4
         self.b1_layers = nn.ModuleList()
         self.b2_layers = nn.ModuleList()
         self.b3_layers = nn.ModuleList()
         self.b4_layers = nn.ModuleList()
 
-        for i_layer in range(self.num_b1_layers):
-            layer = Pyramid_block(256,56,64,56,4,i_layer)
-            self.b1_layers.append(layer)
+        self.b1_layers.append(Pyramid_block(256,56,256,56,4,1))
+        self.b1_layers.append(Pyramid_block(256, 56, 128, 56, 4, 2))
+        self.b1_layers.append(Pyramid_block(128, 56, 128, 56, 4, 3))
+        self.b1_layers.append(Pyramid_block(128, 56, 64, 56, 4, 4))
 
-        for i_layer in range(self.num_b1_layers-1):
-            layer = Pyramid_block(512,28,64,28,4,i_layer)
-            self.b2_layers.append(layer)
+        self.b2_layers.append(Pyramid_block(512, 28, 256, 28, 4, 1))
+        self.b2_layers.append(Pyramid_block(256, 28, 128, 28, 4, 2))
+        self.b2_layers.append(Pyramid_block(128, 28, 64, 28, 4, 3))
 
-        for i_layer in range(self.num_b1_layers-2):
-            layer = Pyramid_block(1024,14,64,14,4,i_layer)
-            self.b3_layers.append(layer)
+        self.b3_layers.append(Pyramid_block(1024, 14, 256, 14, 4, 1))
+        self.b3_layers.append(Pyramid_block(256, 14, 64, 14, 4, 2))
 
-        for i_layer in range(self.num_b1_layers-3):
-            layer = Pyramid_block(2048,7,64,7,4,i_layer)
-            self.b4_layers.append(layer)
+        self.b4_layers.append(Pyramid_block(2048, 7, 64, 7, 4, 2))
+
+
+
+
 
         self.resnet = B2_ResNet()
         self.relu = nn.ReLU(inplace=True)
