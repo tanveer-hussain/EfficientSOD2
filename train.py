@@ -167,7 +167,7 @@ if __name__ == '__main__':
                 reg_loss = opt.reg_weight * reg_loss
                 #
                 # depth_loss = l1_criterion(d_sal, gts)
-                d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
+                # d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
                 #
                 sal_loss = l1_criterion(x_sal, gts)
                 x_ssim_loss = torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
