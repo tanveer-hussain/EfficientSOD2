@@ -258,14 +258,14 @@ class Saliency_feat_encoder(nn.Module):
         # self.b3_layers = nn.ModuleList()
         # self.b4_layers = nn.ModuleList()
 
-        self.b1_layers.append(Pyramid_block(256,56,256,56,4,1))
-        self.b1_layers.append(Pyramid_block(256, 56, 32, 56, 4, 2))
-        self.b1_layers.append(Pyramid_block(128, 56, 128, 56, 4, 3))
-        self.b1_layers.append(Pyramid_block(128, 56, 32, 56, 4, 4))
-
-        self.b2_layers.append(Pyramid_block(512, 28, 256, 28, 4, 1))
-        self.b2_layers.append(Pyramid_block(256, 28, 32, 28, 4, 2))
-        self.b2_layers.append(Pyramid_block(128, 28, 32, 28, 4, 3))
+        # self.b1_layers.append(Pyramid_block(256,56,256,56,4,1))
+        # self.b1_layers.append(Pyramid_block(256, 56, 32, 56, 4, 2))
+        # self.b1_layers.append(Pyramid_block(128, 56, 128, 56, 4, 3))
+        # self.b1_layers.append(Pyramid_block(128, 56, 32, 56, 4, 4))
+        #
+        # self.b2_layers.append(Pyramid_block(512, 28, 256, 28, 4, 1))
+        # self.b2_layers.append(Pyramid_block(256, 28, 32, 28, 4, 2))
+        # self.b2_layers.append(Pyramid_block(128, 28, 32, 28, 4, 3))
 
         # self.b3_layers.append(Pyramid_block(1024, 14, 256, 14, 4, 1))
         # self.b3_layers.append(Pyramid_block(256, 14, 32, 14, 4, 2))
@@ -356,25 +356,25 @@ class Saliency_feat_encoder(nn.Module):
         # depth_pred = self.conv4_depth1(depth_pred)
 
 
-        conv1_feat = self.b1_layers[0](x1)
-        conv1_feat = self.b1_layers[1](conv1_feat)
-        # conv1_feat = self.b1_layers[2](conv1_feat)
-        # conv1_feat = self.b1_layers[3](conv1_feat)
-
-        conv2_feat = self.b2_layers[0](x2)
-        conv2_feat = self.b2_layers[1](conv2_feat)
+        # conv1_feat = self.b1_layers[0](x1)
+        # conv1_feat = self.b1_layers[1](conv1_feat)
+        # # conv1_feat = self.b1_layers[2](conv1_feat)
+        # # conv1_feat = self.b1_layers[3](conv1_feat)
+        #
+        # conv2_feat = self.b2_layers[0](x2)
+        # conv2_feat = self.b2_layers[1](conv2_feat)
         # conv2_feat = self.b2_layers[2](conv2_feat)
 
-        # conv1_feat = self.conv1(x1)
+
         # conv3_feat = self.b3_layers[0](x3)
         # conv3_feat = self.b3_layers[1](conv3_feat)
-
+        #
         # conv4_feat = self.b4_layers[0](x4)
 
-
-        # conv1_feat = self.asppconv1(conv1_feat)
-        # conv2_feat = self.conv2(x2)
-        # conv2_feat = self.asppconv2(conv2_feat)
+        conv1_feat = self.conv1(x1)
+        conv1_feat = self.asppconv1(conv1_feat)
+        conv2_feat = self.conv2(x2)
+        conv2_feat = self.asppconv2(conv2_feat)
         conv3_feat = self.conv3(x3)
         conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
