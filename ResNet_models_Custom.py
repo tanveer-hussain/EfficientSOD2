@@ -267,10 +267,10 @@ class Saliency_feat_encoder(nn.Module):
         self.b2_layers.append(Pyramid_block(256, 28, 128, 28, 4, 2))
         self.b2_layers.append(Pyramid_block(128, 28, 32, 28, 4, 3))
 
-        self.b3_layers.append(Pyramid_block(1024, 14, 256, 14, 4, 1))
-        self.b3_layers.append(Pyramid_block(256, 14, 32, 14, 4, 2))
-
-        self.b4_layers.append(Pyramid_block(2048, 7, 32, 7, 4, 2))
+        # self.b3_layers.append(Pyramid_block(1024, 14, 256, 14, 4, 1))
+        # self.b3_layers.append(Pyramid_block(256, 14, 32, 14, 4, 2))
+        #
+        # self.b4_layers.append(Pyramid_block(2048, 7, 32, 7, 4, 2))
 
 
         self.resnet = B2_ResNet()
@@ -365,8 +365,8 @@ class Saliency_feat_encoder(nn.Module):
         conv2_feat = self.b2_layers[1](conv2_feat)
         conv2_feat = self.b2_layers[2](conv2_feat)
 
-        conv3_feat = self.b3_layers[0](x3)
-        conv3_feat = self.b3_layers[1](conv3_feat)
+        # conv3_feat = self.b3_layers[0](x3)
+        # conv3_feat = self.b3_layers[1](conv3_feat)
 
         # conv4_feat = self.b4_layers[0](x4)
 
@@ -374,8 +374,8 @@ class Saliency_feat_encoder(nn.Module):
         # conv1_feat = self.asppconv1(conv1_feat)
         # conv2_feat = self.conv2(x2)
         # conv2_feat = self.asppconv2(conv2_feat)
-        # conv3_feat = self.conv3(x3)
-        # conv3_feat = self.asppconv3(conv3_feat)
+        conv3_feat = self.conv3(x3)
+        conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
         conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
