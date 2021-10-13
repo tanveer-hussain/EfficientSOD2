@@ -371,7 +371,7 @@ class Saliency_feat_encoder(nn.Module):
         conv3_feat = self.b3_layers[0](x3)
         conv3_feat = self.b3_layers[1](conv3_feat)
 
-        conv4_feat = self.b4_layers[0](x4)
+        # conv4_feat = self.b4_layers[0](x4)
 
 
         # conv1_feat = self.asppconv1(conv1_feat)
@@ -379,8 +379,8 @@ class Saliency_feat_encoder(nn.Module):
         # conv2_feat = self.asppconv2(conv2_feat)
         # conv3_feat = self.conv3(x3)
         # conv3_feat = self.asppconv3(conv3_feat)
-        # conv4_feat = self.conv4(x4)
-        # conv4_feat = self.asppconv4(conv4_feat)
+        conv4_feat = self.conv4(x4)
+        conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
