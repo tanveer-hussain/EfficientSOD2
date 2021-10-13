@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class MHSA(nn.Module):
     def __init__(self, n_dims, width=14, height=14, heads=4):
@@ -28,9 +27,7 @@ class MHSA(nn.Module):
         content_position = torch.matmul(content_position, q)
 
         energy = content_content + content_position
-        print (energy.shape)
         attention = self.softmax(energy)
-        print ("Attention>> ", attention.shape)
 
         out = torch.matmul(v, attention.permute(0, 1, 3, 2))
         out = out.view(n_batch, C, width, height)
@@ -38,13 +35,13 @@ class MHSA(nn.Module):
 
         return out
 
-conv2 = nn.ModuleList()
-conv2.append(MHSA(256, width=56, height=56, heads=4))
-conv2 = nn.Sequential(*conv2)
-print (conv2)
-x = torch.randn(1,256,56,56)
-y = conv2(x)
-print (y.shape)
+# conv2 = nn.ModuleList()
+# conv2.append(MHSA(256, width=56, height=56, heads=4))
+# conv2 = nn.Sequential(*conv2)
+# print (conv2)
+# x = torch.randn(1,256,56,56)
+# y = conv2(x)
+# print (y.shape)
 # resolution = 14
 # mhsa = MHSA(64, width=resolution, height=resolution)
 # print (mhsa)
