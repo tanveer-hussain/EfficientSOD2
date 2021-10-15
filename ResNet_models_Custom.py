@@ -256,7 +256,7 @@ class Saliency_feat_encoder(nn.Module):
         self.aspp_mhsa1 = Pyramid_block(256,56,32,56,4,1)
         self.aspp_mhsa2 = Pyramid_block(512,28,32,28,4,1)
         self.aspp_mhsa3 = Pyramid_block(1048, 14, 32, 14, 4, 1)
-        self.aspp_mhsa4 = Pyramid_block(2048, 7, 32, 7, 4, 2)
+        # self.aspp_mhsa4 = Pyramid_block(2048, 7, 32, 7, 4, 2)
 
         # self.b1_layers = nn.ModuleList()
         # self.b2_layers = nn.ModuleList()
@@ -279,12 +279,12 @@ class Saliency_feat_encoder(nn.Module):
 
 
         self.resnet = B2_ResNet()
-        self.relu = nn.ReLU(inplace=True)
-        self.dropout = nn.Dropout(0.3)
+        # self.relu = nn.ReLU(inplace=True)
+        # self.dropout = nn.Dropout(0.3)
 
-        self.layer5 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], channel, 2048)
-        self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
-        self.layer7 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
+        # self.layer5 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], channel, 2048)
+        # self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
+        # self.layer7 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
 
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
@@ -303,9 +303,9 @@ class Saliency_feat_encoder(nn.Module):
         self.spatial_axes = [2, 3]
         # self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
 
-        self.racb_43 = RCAB(channel * 2)
-        self.racb_432 = RCAB(channel * 3)
-        self.racb_4321 = RCAB(channel * 4)
+        # self.racb_43 = RCAB(channel * 2)
+        # self.racb_432 = RCAB(channel * 3)
+        # self.racb_4321 = RCAB(channel * 4)
 
         self.conv43 = Triple_Conv(2 * channel, channel)
         self.conv432 = Triple_Conv(3 * channel, channel)
