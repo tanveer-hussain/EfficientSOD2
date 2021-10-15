@@ -295,10 +295,10 @@ class Saliency_feat_encoder(nn.Module):
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
 
-        self.asppconv1 = multi_scale_aspp(channel)
-        self.asppconv2 = multi_scale_aspp(channel)
-        self.asppconv3 = multi_scale_aspp(channel)
-        self.asppconv4 = multi_scale_aspp(channel)
+        # self.asppconv1 = multi_scale_aspp(channel)
+        # self.asppconv2 = multi_scale_aspp(channel)
+        # self.asppconv3 = multi_scale_aspp(channel)
+        # self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
         self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
@@ -311,12 +311,12 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv1_depth = Triple_Conv(256, channel)
-        self.conv2_depth = Triple_Conv(512, channel)
-        self.conv3_depth = Triple_Conv(1024, channel)
-        self.conv4_depth = Triple_Conv(2048, channel)
-        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
-        self.conv4_depth1 = Triple_Conv(3, 1)
+        # self.conv1_depth = Triple_Conv(256, channel)
+        # self.conv2_depth = Triple_Conv(512, channel)
+        # self.conv3_depth = Triple_Conv(1024, channel)
+        # self.conv4_depth = Triple_Conv(2048, channel)
+        # self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
+        # self.conv4_depth1 = Triple_Conv(3, 1)
 
         if self.training:
             self.initialize_weights()
