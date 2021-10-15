@@ -23,11 +23,9 @@ for dataset in test_datasets:
     save_path = 'results/' + dataset + '/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    if dataset == "SIP":
-        epoch = 50
 
     # resswin.load_state_dict(torch.load("models/" + dataset + 'SD' + '_%d' % epoch + '_.pth'))
-    resswin.load_state_dict(torch.load("models/" + '00 DUT-RGBDSD_50_.pth'))
+    resswin.load_state_dict(torch.load("models/" + 'DUT-RGBDRGB_100_Pyramid.pth'))
 
     print('Model loaded')
     resswin.eval()
@@ -37,12 +35,13 @@ for dataset in test_datasets:
     test_loader = test_dataset(image_root, depth_root, 352)
     for i in range(test_loader.size):
         # print (i)
-        image, depth, HH, WW, name = test_loader.load_data()
+        image, HH, WW, name = test_loader.load_data()
+        # image, depth, HH, WW, name = test_loader.load_data()
 
         print ("Processing..", image_root + name)
         image = image.cuda()
-        depth = depth.cuda()
-        output = resswin.forward(image, depth, training=False)
+        # depth = depth.cuda()
+        output = resswin.forward(image, training=False)
         # res = output
         # res = F.upsample(res, size=[WW, HH], mode='bilinear', align_corners=False)
         # res = res.sigmoid().data.cpu().numpy().squeeze()

@@ -253,8 +253,13 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.b1_layers = nn.ModuleList()
-        self.b2_layers = nn.ModuleList()
+        self.aspp_mhsa1 = Pyramid_block(256,56,32,56,4,1)
+        self.aspp_mhsa2 = Pyramid_block(512,28,32,28,4,1)
+        self.aspp_mhsa3 = Pyramid_block(1048, 14, 32, 14, 4, 1)
+        self.aspp_mhsa4 = Pyramid_block(2048, 7, 32, 7, 4, 2)
+
+        # self.b1_layers = nn.ModuleList()
+        # self.b2_layers = nn.ModuleList()
         # self.b3_layers = nn.ModuleList()
         # self.b4_layers = nn.ModuleList()
 
