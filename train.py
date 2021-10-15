@@ -114,7 +114,7 @@ def count_parameters(model):
 from ResSwin import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-resswin.to(device).half()
+resswin.to(device)
 resswin.train()
 resswin_params = resswin.parameters()
 resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
@@ -158,8 +158,8 @@ if __name__ == '__main__':
             for i, (images, gts) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
-                images = Variable(images).cuda().half()
-                gts = Variable(gts).cuda().half()
+                images = Variable(images).cuda()
+                gts = Variable(gts).cuda()
                 # depths = Variable(depths).cuda()
 
                 x_sal = resswin.forward(images)
