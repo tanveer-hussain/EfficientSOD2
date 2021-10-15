@@ -301,7 +301,7 @@ class Saliency_feat_encoder(nn.Module):
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
-        self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
+        # self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
@@ -339,7 +339,7 @@ class Saliency_feat_encoder(nn.Module):
     def forward(self, x):
 
         # x = torch.cat((x, depth), 1)
-        x = self.conv_depth1(x)
+        # x = self.conv_depth1(x)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
@@ -391,17 +391,17 @@ class Saliency_feat_encoder(nn.Module):
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
-        conv43 = self.racb_43(conv43)
+        # conv43 = self.racb_43(conv43)
         conv43 = self.conv43(conv43)
 
         conv43 = self.upsample2(conv43)
         conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
-        conv432 = self.racb_432(conv432)
+        # conv432 = self.racb_432(conv432)
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
         conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
-        conv4321 = self.racb_4321(conv4321)
+        # conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
