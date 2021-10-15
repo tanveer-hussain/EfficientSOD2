@@ -255,7 +255,7 @@ class Saliency_feat_encoder(nn.Module):
 
         self.aspp_mhsa1 = Pyramid_block(256,56,32,56,4,1)
         self.aspp_mhsa2 = Pyramid_block(512,28,32,28,4,1)
-        self.aspp_mhsa3 = Pyramid_block(1048, 14, 32, 14, 4, 1)
+        self.aspp_mhsa3 = Pyramid_block(1024, 14, 32, 14, 4, 1)
         # self.aspp_mhsa4 = Pyramid_block(2048, 7, 32, 7, 4, 2)
 
         # self.b1_layers = nn.ModuleList()
@@ -283,7 +283,7 @@ class Saliency_feat_encoder(nn.Module):
         # self.dropout = nn.Dropout(0.3)
 
         # self.layer5 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], channel, 2048)
-        # self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
+        self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
         # self.layer7 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
 
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
@@ -376,14 +376,14 @@ class Saliency_feat_encoder(nn.Module):
         #
         # conv4_feat = self.b4_layers[0](x4)
 
-        conv1_feat = self.conv1(x1)
-        conv1_feat = self.aspp_mhsa1(conv1_feat)
+        # conv1_feat = self.conv1(x1)
+        conv1_feat = self.aspp_mhsa1(x1)
         # conv1_feat = self.asppconv1(conv1_feat)
-        conv2_feat = self.conv2(x2)
-        conv2_feat = self.aspp_mhsa2(conv2_feat)
+        # conv2_feat = self.conv2(x2)
+        conv2_feat = self.aspp_mhsa2(x2)
         # conv2_feat = self.asppconv2(conv2_feat)
-        conv3_feat = self.conv3(x3)
-        conv3_feat = self.aspp_mhsa3(conv3_feat)
+        # conv3_feat = self.conv3(x3)
+        conv3_feat = self.aspp_mhsa3(x3)
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
         # conv4_feat = self.aspp_mhsa4(conv4_feat)

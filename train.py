@@ -115,6 +115,7 @@ from ResSwin import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.to(device).half()
+resswin.train()
 resswin_params = resswin.parameters()
 resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
@@ -143,7 +144,7 @@ if __name__ == '__main__':
         # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
 
         train_data = TrainDatasetLoader(dataset_path, d_type[0])
-        train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=16, drop_last=True)
+        train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=8, drop_last=True)
 
         # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         # gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
