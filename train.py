@@ -21,7 +21,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 parser = argparse.ArgumentParser()
 parser.add_argument('--epoch', type=int, default=100, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=1, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=2, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -114,7 +114,7 @@ def count_parameters(model):
 from ResSwin import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-resswin.to(device)
+resswin.to(device).half()
 resswin_params = resswin.parameters()
 resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
@@ -157,8 +157,8 @@ if __name__ == '__main__':
             for i, (images, gts) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
-                images = Variable(images).cuda()
-                gts = Variable(gts).cuda()
+                images = Variable(images).cuda().half()
+                gts = Variable(gts).cuda().half()
                 # depths = Variable(depths).cuda()
 
                 x_sal = resswin.forward(images)
