@@ -298,7 +298,7 @@ class Saliency_feat_encoder(nn.Module):
         # self.asppconv1 = multi_scale_aspp(channel)
         # self.asppconv2 = multi_scale_aspp(channel)
         # self.asppconv3 = multi_scale_aspp(channel)
-        # self.asppconv4 = multi_scale_aspp(channel)
+        self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
         self.conv_depth1 = BasicConv2d(3 , 3, kernel_size=3, padding=1)
@@ -386,8 +386,8 @@ class Saliency_feat_encoder(nn.Module):
         conv3_feat = self.aspp_mhsa3(conv3_feat)
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
-        conv4_feat = self.aspp_mhsa4(conv4_feat)
-        # conv4_feat = self.asppconv4(conv4_feat)
+        # conv4_feat = self.aspp_mhsa4(conv4_feat)
+        conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
