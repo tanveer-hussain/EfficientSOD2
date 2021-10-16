@@ -67,11 +67,11 @@ class test_dataset:
         self.images = sorted(self.images)
         self.depths = sorted(self.depths)
         self.transform = T.Compose([
-            T.Resize((self.testsize, self.testsize)),
+            T.Resize((224, 224)),
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
         self.depth_transform = T.Compose([
-            T.Resize((self.testsize, self.testsize)),
+            T.Resize((224, 224)),
             T.ToTensor()])
         self.size = len(self.images)
         self.index = 0

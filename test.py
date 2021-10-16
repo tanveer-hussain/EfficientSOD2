@@ -8,24 +8,24 @@ import torch.nn.functional as F
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 latent_dim=3
 feat_channel=32
-test_datasets = ["DUT-RGBD"]
+test_datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+# test_datasets = ['NJU2K', 'SIP']
 # dataset_name = datasets[0]
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'# + dataset_name
 # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
-epoch = 100
+epoch = 50
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
 resswin.to(device)
 import os
-from imageio import imsave
 
 for dataset in test_datasets:
     save_path = 'results/' + dataset + '/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    # resswin.load_state_dict(torch.load("models/" + dataset + 'SD' + '_%d' % epoch + '_.pth'))
-    resswin.load_state_dict(torch.load("models/" + 'DUT-RGBDRGB_100_Pyramid.pth'))
+    resswin.load_state_dict(torch.load("models/" + dataset + 'RGB' + '_%d' % epoch + '_Pyramid.pth'))
+    # resswin.load_state_dict(torch.load("models/" + 'NJU2KRGB_50_Pyramid.pth'))
 
     print('Model loaded')
     resswin.eval()
