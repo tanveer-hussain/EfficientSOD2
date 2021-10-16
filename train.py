@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=50, help='epoch number')
+parser.add_argument('--epoch', type=int, default=100, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=8, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -183,8 +183,8 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                # visualize_gt(gts)
+                # visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
