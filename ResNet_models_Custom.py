@@ -330,13 +330,13 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        self.conv_depth1 = Triple_Conv(6, 3)
-        self.conv1_depth = Triple_Conv(256, channel)
-        self.conv2_depth = Triple_Conv(512, channel)
-        self.conv3_depth = Triple_Conv(1024, channel)
-        self.conv4_depth = Triple_Conv(2048, channel)
-        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
-        self.conv4_depth1 = Triple_Conv(3, 1)
+        # self.conv_depth1 = Triple_Conv(6, 3)
+        # self.conv1_depth = Triple_Conv(256, channel)
+        # self.conv2_depth = Triple_Conv(512, channel)
+        # self.conv3_depth = Triple_Conv(1024, channel)
+        # self.conv4_depth = Triple_Conv(2048, channel)
+        # self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
+        # self.conv4_depth1 = Triple_Conv(3, 1)
 
         if self.training:
             self.initialize_weights()
@@ -401,7 +401,6 @@ class Saliency_feat_encoder(nn.Module):
         conv1_feat = self.aspp_mhsa1_2(conv1_feat)
         conv1_feat = self.aspp_mhsa1_3(conv1_feat)
         conv1_feat = self.aspp_mhsa1_4(conv1_feat)
-        # conv1_feat = torch.cat((F.interpolate(self.conv1(x1),size=(32,32), mode='bilinear',align_corners=True),conv1_feat))
         conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat),1))
         # print (conv1_feat.shape)
 
