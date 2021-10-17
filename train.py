@@ -155,7 +155,7 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, (images, depths, gts) in enumerate(train_loader, start=1):
+            for i, (images, gts) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
                 images = Variable(images).cuda()
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                 # depths = Variable(depths).cuda()
 
                 # x_sal, d_sal = resswin.forward(images, depths)
-                x_sal = resswin.forward(images, depths)
+                x_sal = resswin.forward(images)
                 # total_loss = mse_loss(x_sal,gts)
                 reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
