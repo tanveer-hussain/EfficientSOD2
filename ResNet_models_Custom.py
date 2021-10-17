@@ -254,7 +254,7 @@ class Saliency_feat_encoder(nn.Module):
         super(Saliency_feat_encoder, self).__init__()
 
         self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
-        # self.aspp_mhsa1_2 = Pyramid_block(64, 56, 32, 56, 4, 2)
+        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
 
         self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
         # self.aspp_mhsa2_2 = Pyramid_block(256, 28, 64, 28, 4, 2)
