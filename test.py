@@ -8,8 +8,8 @@ import torch.nn.functional as F
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 latent_dim=3
 feat_channel=32
-test_datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-# test_datasets = ['NJU2K', 'SIP']
+# test_datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+test_datasets = ['DUT-RGBD']
 # dataset_name = datasets[0]
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'# + dataset_name
 # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
@@ -48,11 +48,14 @@ for dataset in test_datasets:
         # imsave(save_path+name, res)
         # print (res.shape)
 
-        output = torch.squeeze(output, 0)
-        output = output.detach().cpu().numpy()
-        output = output.dot(255)
-        output *= output.max() / 255.0
-        output = np.transpose(output, (1, 2, 0))
+        # output = torch.squeeze(output, 0)
+        output = F.interpolate(output, size=(HH,WW), mode='bilinear', align_corners=False)
+        output = output.sigmoid().detach().cpu().numpy().squeeze()
+        output = (output - output.min())/(output.max()- output.min()+ 1e-8)
+        output*= 255
+        # output = output.dot(255)
+        # output *= output.max() / 255.0
+        # output = np.transpose(output, (1, 2, 0))
         output_path = save_path + name
         cv2.imwrite(output_path, output)
         # misc.imsave(save_path + name, output)
