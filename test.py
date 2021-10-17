@@ -48,14 +48,13 @@ for dataset in test_datasets:
         # imsave(save_path+name, res)
         # print (res.shape)
 
-        # output = torch.squeeze(output, 0)
-        output = F.interpolate(output, size=(HH,WW), mode='bilinear', align_corners=False)
-        output = output.sigmoid().detach().cpu().numpy().squeeze()
-        output = (output - output.min())/(output.max()- output.min()+ 1e-8)
-        output*= 255
-        # output = output.dot(255)
-        # output *= output.max() / 255.0
-        # output = np.transpose(output, (1, 2, 0))
+
+        output = F.interpolate(output, size=(HH, WW), mode='bilinear', align_corners=False)
+        output = torch.squeeze(output, 0)
+        output = output.detach().cpu().numpy()
+        output = output.dot(255)
+        output *= output.max() / 255.0
+        output = np.transpose(output, (1, 2, 0))
         output_path = save_path + name
         cv2.imwrite(output_path, output)
         # misc.imsave(save_path + name, output)
