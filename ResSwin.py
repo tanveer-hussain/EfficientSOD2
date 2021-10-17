@@ -20,8 +20,8 @@ class ResSwinModel(nn.Module):
 
     def forward(self, x, depth, training=True):
         if training:
-            # self.x_sal = self.sal_encoder(x)
-            self.x_sal, self.d_sal = self.sal_encoder(x, depth)
+            self.x_sal = self.sal_encoder(x)
+            # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
             # print (self.x_sal.shape)
             # self.x_sal , self.d_sal = self.swin_saliency(x, depth)
             # print(self.x_f1.shape)
@@ -36,8 +36,8 @@ class ResSwinModel(nn.Module):
 
             return self.x_sal, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
-            # self.x_sal = self.sal_encoder(x)
-            self.x_sal, _ = self.sal_encoder(x, depth)
+            self.x_sal = self.sal_encoder(x)
+            # self.x_sal, _ = self.sal_encoder(x, depth)
             # _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
             # z_noise = self.reparametrize(mux, logvarx)
             # self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)

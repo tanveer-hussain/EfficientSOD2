@@ -356,10 +356,10 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x, depth):
+    def forward(self, x):
 
-        x = torch.cat((x, depth), 1)
-        x = self.conv_depth1(x)
+        # x = torch.cat((x, depth), 1)
+        # x = self.conv_depth1(x)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
