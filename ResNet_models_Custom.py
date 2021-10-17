@@ -372,13 +372,13 @@ class Saliency_feat_encoder(nn.Module):
 
 
         ## depth estimation
-        conv1_depth = self.conv1_depth(x1)
-        conv2_depth = self.upsample2(self.conv2_depth(x2))
-        conv3_depth = self.upsample4(self.conv3_depth(x3))
-        conv4_depth = self.upsample8(self.conv4_depth(x4))
-        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        depth_pred = self.layer_depth(conv_depth)
-        depth_pred = self.conv4_depth1(depth_pred)
+        # conv1_depth = self.conv1_depth(x1)
+        # conv2_depth = self.upsample2(self.conv2_depth(x2))
+        # conv3_depth = self.upsample4(self.conv3_depth(x3))
+        # conv4_depth = self.upsample8(self.conv4_depth(x4))
+        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        # depth_pred = self.layer_depth(conv_depth)
+        # depth_pred = self.conv4_depth1(depth_pred)
 
 
         # conv1_feat = self.b1_layers[0](x1)
