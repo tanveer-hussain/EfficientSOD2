@@ -427,7 +427,7 @@ class Saliency_feat_encoder(nn.Module):
         # conv3_feat = self.aspp_mhsa3_3(conv3_feat)
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv4(x4)
-        conv4_feat = self.aspp_mhsa4(conv4_feat)
+        conv4_feat = self.aspp_mhsa4_1(conv4_feat)
         conv4_feat = self.conv1_1(torch.cat((self.conv4(x4), conv4_feat),1))
         # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
