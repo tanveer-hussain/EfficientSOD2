@@ -324,12 +324,12 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        # self.conv1_depth = Triple_Conv(256, channel)
-        # self.conv2_depth = Triple_Conv(512, channel)
-        # self.conv3_depth = Triple_Conv(1024, channel)
-        # self.conv4_depth = Triple_Conv(2048, channel)
-        # self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
-        # self.conv4_depth1 = Triple_Conv(3, 1)
+        self.conv1_depth = Triple_Conv(256, channel)
+        self.conv2_depth = Triple_Conv(512, channel)
+        self.conv3_depth = Triple_Conv(1024, channel)
+        self.conv4_depth = Triple_Conv(2048, channel)
+        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
+        self.conv4_depth1 = Triple_Conv(3, 1)
 
         if self.training:
             self.initialize_weights()
@@ -349,10 +349,10 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x):
+    def forward(self, x, depth):
 
-        # x = torch.cat((x, depth), 1)
-        # x = self.conv_depth1(x)
+        x = torch.cat((x, depth), 1)
+        x = self.conv_depth1(x)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
@@ -365,13 +365,13 @@ class Saliency_feat_encoder(nn.Module):
 
 
         ## depth estimation
-        # conv1_depth = self.conv1_depth(x1)
-        # conv2_depth = self.upsample2(self.conv2_depth(x2))
-        # conv3_depth = self.upsample4(self.conv3_depth(x3))
-        # conv4_depth = self.upsample8(self.conv4_depth(x4))
-        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        # depth_pred = self.layer_depth(conv_depth)
-        # depth_pred = self.conv4_depth1(depth_pred)
+        conv1_depth = self.conv1_depth(x1)
+        conv2_depth = self.upsample2(self.conv2_depth(x2))
+        conv3_depth = self.upsample4(self.conv3_depth(x3))
+        conv4_depth = self.upsample8(self.conv4_depth(x4))
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        depth_pred = self.layer_depth(conv_depth)
+        depth_pred = self.conv4_depth1(depth_pred)
 
 
         # conv1_feat = self.b1_layers[0](x1)
@@ -434,7 +434,7 @@ class Saliency_feat_encoder(nn.Module):
         sal_init = self.layer6(conv4321)
 
 
-        return self.upsample4(sal_init) #, self.upsample4(depth_pred)
+        return self.upsample4(sal_init) , self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)
