@@ -13,7 +13,7 @@ test_datasets = ['DUT-RGBD']
 # dataset_name = datasets[0]
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'# + dataset_name
 # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
-epoch = 100
+epoch = 50
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
 resswin.to(device)
