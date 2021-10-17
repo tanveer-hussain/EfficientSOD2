@@ -392,7 +392,8 @@ class Saliency_feat_encoder(nn.Module):
         conv1_feat = self.conv1(x1)
         conv1_feat = self.aspp_mhsa1_1(conv1_feat)
         # conv1_feat = torch.cat((F.interpolate(self.conv1(x1),size=(32,32), mode='bilinear',align_corners=True),conv1_feat))
-        conv1_feat = torch.cat((self.conv1(x1), conv1_feat),1)
+        conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat),1))
+        # print (conv1_feat.shape)
 
         conv2_feat = self.conv2(x2)
         conv2_feat = self.aspp_mhsa2_1(conv2_feat)
