@@ -87,7 +87,7 @@ class test_dataset:
         if name.endswith('.jpg'):
             name = name.split('.jpg')[0] + '.png'
         self.index += 1
-        return image, depth, HH, WW, name #image, depth, HH, WW, name
+        return image, HH, WW, name #image, depth, HH, WW, name
 
     def rgb_loader(self, path):
         with open(path, 'rb') as f:

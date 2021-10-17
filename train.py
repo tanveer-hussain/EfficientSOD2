@@ -196,7 +196,7 @@ if __name__ == '__main__':
                     print("Dataset: ", dataset_name)
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
-            if epoch % 15 == 0 or epoch == opt.epoch:
+            if epoch % 25 == 0 or epoch == opt.epoch:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
