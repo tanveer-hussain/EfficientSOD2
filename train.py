@@ -155,19 +155,19 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, (images, gts) in enumerate(train_loader, start=1):
+            for i, (images, depths, gts) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
                 images = Variable(images).cuda()
                 gts = Variable(gts).cuda()
-                # depths = Variable(depths).cuda()
+                depths = Variable(depths).cuda()
 
-                x_sal = resswin.forward(images)
+                x_sal, d_sal = resswin.forward(images, depths)
                 # total_loss = mse_loss(x_sal,gts)
                 reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
                 #
-                # depth_loss = l1_criterion(d_sal, gts)
+                depth_loss = l1_criterion(d_sal, gts)
                 d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
                 #
                 sal_loss = l1_criterion(x_sal, gts)
