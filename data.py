@@ -45,17 +45,17 @@ class TrainDatasetLoader(Dataset):
 
         x = Image.open(x_full_path).convert('RGB')
         y = Image.open(y_full_path).convert('L')
-        d = Image.open(d_full_path).convert('RGB')
+        # d = Image.open(d_full_path).convert('RGB')
 
 
         x = self.img_transform(x)
         y = self.gt_transform(y)
-        d = self.gt_transform(d)
+        # d = self.gt_transform(d)
 
         # print ('x', x.shape, ', y', y.shape, ', d', d.shape)
 
 
-        return x , d, y
+        return x , y
 
 
 class test_dataset:
