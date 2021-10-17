@@ -34,7 +34,7 @@ class ResSwinModel(nn.Module):
             # print (self.x_sal.shape)
             # self.d_sal = self.conv1(self.d_sal)
 
-            return self.x_sal, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+            return self.x_sal #, self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
             self.x_sal = self.sal_encoder(x)
             # self.x_sal, _ = self.sal_encoder(x, depth)
