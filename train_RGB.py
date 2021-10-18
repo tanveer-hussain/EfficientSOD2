@@ -124,7 +124,7 @@ if __name__ == '__main__':
     print("Let's Play!")
     ## load data
     # datasets = ['SIP']
-    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    # datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
@@ -132,19 +132,20 @@ if __name__ == '__main__':
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    for dataset_name in datasets:
+    for dataset_name in rgb_datasets:
 
-        print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
+        print ("Datasets:", rgb_datasets, "\n ****Currently Training > ", dataset_name)
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
-        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB/' + dataset_name
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
-        d_type = ['Train', 'Test']
+        # d_type = ['Train', 'Test']
+        d_type = ''
 
         # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
 
-        train_data = TrainDatasetLoader(dataset_path, d_type[0])
+        train_data = TrainDatasetLoader(dataset_path, d_type)
         train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=8, drop_last=True)
 
         # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
@@ -185,8 +186,8 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                # visualize_gt(gts)
-                # visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                visualize_gt(gts)
+                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
@@ -197,7 +198,7 @@ if __name__ == '__main__':
                     print("Dataset: ", dataset_name)
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
-            if epoch % 15 == 0 or epoch == opt.epoch:
+            if epoch % 10 == 0 or epoch == opt.epoch:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"

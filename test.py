@@ -8,8 +8,8 @@ import torch.nn.functional as F
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 latent_dim=3
 feat_channel=32
-test_datasets = ['DUT-RGBD', "NJU2K", "NLPR", 'SIP']
-# test_datasets = ['DUT-RGBD']
+# test_datasets = ['DUT-RGBD', "NJU2K"]#, "NLPR", 'SIP']
+test_datasets = ['DUT-RGBD']
 # dataset_name = datasets[0]
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'# + dataset_name
 # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
@@ -18,6 +18,7 @@ from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
 resswin.to(device)
 import os
+
 
 for dataset in test_datasets:
     save_path = 'results/' + dataset + '/'
