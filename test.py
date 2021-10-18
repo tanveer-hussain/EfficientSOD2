@@ -62,10 +62,10 @@ for dataset in test_datasets:
     eval_loader = DataLoader(eval_data)
 
     eval = Evaluator(eval_loader)
-    mae , fmeasure = eval.execute()
+    mae , fmeasure, emeasure, smeasure = eval.execute()
     logfile = 'results/EvaluationResults.txt'
     with open(logfile, 'a+') as f:
-        f.write(dataset + "\t" + str(mae) + "\t" + str(fmeasure) + "\n")
+        f.write(dataset + "\tMAE: " + str(mae) + ", FMeasure: " + str(fmeasure) + ", EMeasure: " + str(emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
 
 
 

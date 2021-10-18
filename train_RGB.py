@@ -14,14 +14,15 @@ import imageio
 import torch.nn as nn
 from customlosses import ssim
 from torch.utils.data import Dataset, DataLoader
+import math
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=30, help='epoch number')
+parser.add_argument('--epoch', type=int, default=1, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=4, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=2, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -110,7 +111,6 @@ def linear_annealing(init, fin, step, annealing_steps):
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-
 from ResSwin import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
@@ -126,7 +126,6 @@ if __name__ == '__main__':
     # datasets = ['SIP']
     # datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
-    save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
 
     if not os.path.exists(save_path):
@@ -137,23 +136,17 @@ if __name__ == '__main__':
         print ("Datasets:", rgb_datasets, "\n ****Currently Training > ", dataset_name)
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
-        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB/' + dataset_name
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB1/' + dataset_name  ######################################
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         # d_type = ['Train', 'Test']
         d_type = ''
 
-        # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-        # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
+        total_data = TrainDatasetLoader(dataset_path,d_type)
+        data_length = len(total_data)
 
-        train_data = TrainDatasetLoader(dataset_path, d_type)
-        train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=8, drop_last=True)
-
-        # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-        # gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
-        # depth_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
-        # gray_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
-
-        # train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
+        train_set, test_set = torch.utils.data.random_split(total_data, [math.ceil((80*data_length)/100), math.floor((20*data_length)/100)])
+        
+        train_loader = DataLoader(train_set, batch_size=2, shuffle=True, num_workers=8, drop_last=True)
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
@@ -199,8 +192,13 @@ if __name__ == '__main__':
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 10 == 0 or epoch == opt.epoch:
-                torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD' + '_%d' % epoch + '_Pyramid.pth')
+                torch.save(resswin.state_dict(), save_path + dataset_name + 'RGB' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
+        save_path = 'results/' + dataset_name + '/'
+        test_loader = DataLoader(test_set, batch_size=4)
+        
+        from test_RGB import ModelTesting
+        ModelTesting(resswin, test_loader, save_path, dataset_path, dataset_name)
 
