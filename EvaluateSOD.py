@@ -232,7 +232,9 @@ if __name__ == '__main__':
     dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/DUT-RGBD'
     d_type = 'Test'
     weights_path = "models/DUT-RGBDRGBD_30_Pyramid.pth"
-    test_data = TestDatasetLoader(dataset_path, d_type, weights_path)
+    predictions_root = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD/"
+    gt_root = r"D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test\Labels/"
+    test_data = TestDatasetLoader(dataset_path, d_type)
     test_loader = DataLoader(test_data, batch_size=4, shuffle=True, num_workers=8, drop_last=True)
     
 
