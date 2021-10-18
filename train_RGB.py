@@ -196,9 +196,10 @@ if __name__ == '__main__':
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
-        save_path = 'results/' + dataset_name + '/'
+        image_save_path = 'results/' + dataset_name + '/'
         test_loader = DataLoader(test_set)
+        print (image_save_path , " >>Image save path")
         
         from test_RGB import ModelTesting
-        ModelTesting(resswin, test_loader, save_path, dataset_path, dataset_name)
+        ModelTesting(resswin, test_loader, image_save_path, dataset_path, dataset_name)
 

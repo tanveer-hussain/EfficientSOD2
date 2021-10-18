@@ -1,0 +1,3 @@
+DUTS-TE	MAE: 0.187, FMeasure: 0.24, EMeasure: 0.468, SMeasure: 0.24
+DUTS-TE	MAE: 0.157, FMeasure: 0.275, EMeasure: 0.629, SMeasure: 0.275
+ECSSD	MAE: 0.152, FMeasure: 0.335, EMeasure: 0.609, SMeasure: 0.335

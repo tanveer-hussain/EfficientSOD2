@@ -13,7 +13,6 @@ class Evaluator():
     def __init__(self, data_loader):
         super(Evaluator, self).__init__()
         self.data_loader = data_loader
-        self.logfile = os.path.join('output_dir', 'result.txt')
         
 
     def execute(self):
