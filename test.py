@@ -23,7 +23,8 @@ class ModelTesting():
             output = output.dot(255)
             output *= output.max() / 255.0
             output = np.transpose(output, (1, 2, 0))
-            output_path = self.output_path + name
+            name, _ = name.split('.')
+            output_path = self.output_path + name + '.png'
             print ("Saving Image at.. ", output_path)
             cv2.imwrite(output_path, output)
 
@@ -41,10 +42,10 @@ resswin.to(device)
 
 
 for dataset in test_datasets:
-    save_path = 'results/' + dataset + '/'
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-
+    # save_path = 'results/' + dataset + '/'
+    # if not os.path.exists(save_path):
+    #     os.makedirs(save_path)
+    #
     # resswin.load_state_dict(torch.load("models/" + dataset + 'RGBD' + '_%d' % epoch + '_Pyramid.pth'))
     #
     # print('Model loaded')
@@ -61,7 +62,10 @@ for dataset in test_datasets:
     eval_loader = DataLoader(eval_data)
 
     eval = Evaluator(eval_loader)
-    print (eval.execute())
+    mae , fmeasure = eval.execute()
+    logfile = 'results/EvaluationResults.txt'
+    with open(logfile, 'a+') as f:
+        f.write(dataset + "\t" + str(mae) + "\t" + str(fmeasure) + "\n")
 
 
 

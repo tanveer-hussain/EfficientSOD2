@@ -17,13 +17,16 @@ class Evaluator():
         
 
     def execute(self):
-        print ("Computing SCORES... ")
+        print ("Computing MAE... ")
         mae = self.Eval_mae()
+        print("Computing FMeasure... ")
         fmeasure = self.Eval_fmeasure()
-        emeasure = self.Eval_Emeasure()
-        smeasure = self.Eval_Smeasure()
+        # print("Computing EMeasure... ")
+        # emeasure = self.Eval_Emeasure()
+        # print("Computing SMeasure... ")
+        # smeasure = self.Eval_Smeasure()
 
-        return mae, fmeasure, emeasure, smeasure
+        return round(mae,3), round(fmeasure,3)#, round(emeasure,3), round(smeasure,3)
 
     def Eval_mae(self):
         # print('eval[MAE]:{} dataset with {} method.'.format(self.dataset, self.method))
