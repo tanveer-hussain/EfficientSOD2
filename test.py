@@ -55,4 +55,22 @@ for dataset in test_datasets:
         # misc.imsave(save_path + name, output)
 
 class ModelTesting():
+    def __init__(self, model, test_loader, output_root):
+        self.model = model
+        self.loader = test_loader
+        self.output_path = output_root
+
+    def prediction(self):
+        for iter, (X, name) in enumerate(self.loader):
+            X = X.to(device)
+            pred = self.model.forward(X, training=False)
+            output = torch.squeeze(pred, 0)
+            output = output.detach().cpu().numpy()
+            output = output.dot(255)
+            output *= output.max() / 255.0
+            output = np.transpose(output, (1, 2, 0))
+            output_path = self.output_path + name
+            cv2.imwrite(output_path, output)
+
+
 

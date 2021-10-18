@@ -29,14 +29,6 @@ class TrainDatasetLoader(Dataset):
             T.Resize((224, 224)),
             T.ToTensor()])
 
-        ###################### depth estimation
-        # self.return_depth = return_depth
-        # self.midas = torch.hub.load("intel-isl/MiDaS", "MiDaS")
-        # self.midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
-        # self.midas.eval()
-        # self.transform = self.midas_transforms.default_transform
-
-
     def __len__(self):
         return self.length
 
@@ -93,6 +85,33 @@ class TestDatasetLoader(data.Dataset):
         gt = self.trans(gt)
 
         return pred , gt
+
+
+class RetreiveTestData(data.Dataset):
+
+    def __init__(self, image_root, label_root):
+        self.x_path = image_root
+        self.y_path = label_root
+
+        print(self.x_path, self.y_path)
+
+        self.X = os.listdir(self.x_path)
+        self.Y = os.listdir(self.y_path)
+
+        self.length = len(self.X)
+        self.trans = T.Compose([T.ToTensor()])
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, index):
+        x_full_path = os.path.join(self.x_path, self.X[index])
+
+        x = Image.open(x_full_path).convert('RGB')
+
+        x = self.trans(x)
+
+        return pred, gt
 
 
 class test_dataset:
