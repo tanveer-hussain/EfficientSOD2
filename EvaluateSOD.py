@@ -50,9 +50,8 @@ class Evaluator():
         avg_f, img_num = 0.0, 0.0
 
         with torch.no_grad():
-            for image, gt in self.data_loader:
-                image = image.to(device)
-                pred = self.resswin.forward(image, training=False)
+            for pred, gt in self.data_loader:
+                pred = pred.to(device)
                 gt = gt.to(device)
 
                 prec, recall = self._eval_pr(pred, gt, 255)
@@ -69,9 +68,9 @@ class Evaluator():
         with torch.no_grad():
             
             scores = torch.zeros(255).to(device)
-            for image, gt in self.data_loader:
-                image = image.to(device)
-                pred = self.resswin.forward(image, training=False)
+            for pred, gt in self.data_loader:
+                pred = pred.to(device)
+                gt = gt.to(device)
                 gt = gt.to(device)
                 scores += self._eval_e(pred, gt, 255)
                 img_num += 1.0
@@ -83,9 +82,9 @@ class Evaluator():
         # print('eval[SMeasure]:{} dataset with {} method.'.format(self.dataset, self.method))
         alpha, avg_q, img_num = 0.5, 0.0, 0.0
         with torch.no_grad():
-            for image, gt in self.data_loader:
-                image = image.to(device)
-                pred = self.resswin.forward(image, training=False)
+            for pred, gt in self.data_loader:
+                pred = pred.to(device)
+                gt = gt.to(device)
                 gt = gt.to(device)
                 y = gt.mean()
                 if y == 0:
