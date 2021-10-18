@@ -218,15 +218,15 @@ class Evaluator():
             Q = 0
         return Q
 
-from multiprocessing.dummy import freeze_support
-if __name__ == '__main__':
-    freeze_support()
-
-    predictions_root = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD/"
-    gt_root = r"D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test\Labels/"
-    test_data = TestDatasetLoader(predictions_root, gt_root)
-    test_loader = DataLoader(test_data)
-    
-
-    eval = Evaluator(test_loader)
-    print (eval.execute())
+# from multiprocessing.dummy import freeze_support
+# if __name__ == '__main__':
+#     freeze_support()
+#
+#     predictions_root = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD/"
+#     gt_root = r"D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test\Labels/"
+#     test_data = TestDatasetLoader(predictions_root, gt_root)
+#     test_loader = DataLoader(test_data)
+#
+#
+#     eval = Evaluator(test_loader)
+#     print (eval.execute())

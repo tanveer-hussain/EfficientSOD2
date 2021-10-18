@@ -79,7 +79,7 @@ class TestDatasetLoader(data.Dataset):
         gt = Image.open(gt_full_path).convert('L')
 
         if pred.size != gt.size:
-            pred = pred.reshape(gt.size, Image.BILINEAR)
+            pred = pred.resize(gt.size, Image.BILINEAR)
         
         pred = self.trans(pred)
         gt = self.trans(gt)
