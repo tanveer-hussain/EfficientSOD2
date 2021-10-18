@@ -28,7 +28,8 @@ class ModelTesting():
             output = output.dot(255)
             output *= output.max() / 255.0
             output = np.transpose(output, (1, 2, 0))
-            name, _ = name.split('.')
+            name, _ = name[0].split('.')
+            self.output_path = self.output_path if os.path.exists(self.output_path) else os.mkdir(self.output_path)
             output_path = self.output_path + name + '.png'
             print ("Saving Image at.. ", output_path)
             cv2.imwrite(output_path, output)
