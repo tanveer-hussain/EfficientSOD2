@@ -196,9 +196,9 @@ if __name__ == '__main__':
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
-        image_save_path = 'results/' + dataset_name + '/'
+        image_save_path = 'results/' + dataset_name
+        image_save_path = image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
         test_loader = DataLoader(test_set)
-        print (image_save_path , " >>Image save path")
         
         from test_RGB import ModelTesting
         ModelTesting(resswin, test_loader, image_save_path, dataset_path, dataset_name)

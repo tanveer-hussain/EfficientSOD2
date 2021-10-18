@@ -14,7 +14,7 @@ class ModelTesting():
         self.model = model
         self.model.eval()
         self.loader = test_loader
-        self.output_path = output_root
+        self.output_path = output_root + '/'
         self.gt_root = gt_root + "/Labels"
         self.prediction()
         self.evaluate()
@@ -29,7 +29,6 @@ class ModelTesting():
             output *= output.max() / 255.0
             output = np.transpose(output, (1, 2, 0))
             image_name , _ = name[0].split('.')
-            self.output_path = self.output_path if os.path.exists(self.output_path) else os.mkdir(self.output_path)
             output_path = self.output_path + image_name + '.png'
             print ("Saving Image at.. ", output_path)
             cv2.imwrite(output_path, output)
