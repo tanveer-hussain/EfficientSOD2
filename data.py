@@ -108,14 +108,11 @@ class TestDatasetLoader(data.Dataset):
         pred = np.transpose(pred, (1, 2, 0))
 
 
+
+
         y = np.array(y)
 
-        h = x.size[0]
-        w = x.size[1]
-        # d = Image.open(d_full_path).convert('RGB')
-
-
-
+        print(pred.shape, "and ", y.shape)
 
 
         return pred , y
