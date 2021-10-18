@@ -60,8 +60,8 @@ class TrainDatasetLoader(Dataset):
         return x , y
 
 from torch.utils import data
-from ResSwin import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
+
 class TestDatasetLoader(data.Dataset):
 
     def __init__(self, image_root, label_root):

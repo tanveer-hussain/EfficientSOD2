@@ -37,19 +37,12 @@ for dataset in test_datasets:
     for i in range(test_loader.size):
         # print (i)
         image, HH, WW, name = test_loader.load_data()
-        # image, depth, HH, WW, name = test_loader.load_data()
 
         print ("Processing..", image_root + name)
         image = image.cuda()
         # depth = depth.cuda()
         # output = resswin.forward(image, depth, training=False)
         output = resswin.forward(image, training=False)
-        # res = output
-        # res = F.upsample(res, size=[WW, HH], mode='bilinear', align_corners=False)
-        # res = res.sigmoid().data.cpu().numpy().squeeze()
-        # imsave(save_path+name, res)
-        # print (res.shape)
-
 
         output = F.interpolate(output, size=(HH, WW), mode='bilinear', align_corners=False)
         output = torch.squeeze(output, 0)
@@ -60,3 +53,6 @@ for dataset in test_datasets:
         output_path = save_path + name
         cv2.imwrite(output_path, output)
         # misc.imsave(save_path + name, output)
+
+class ModelTesting():
+
