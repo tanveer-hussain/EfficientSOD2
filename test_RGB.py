@@ -12,6 +12,7 @@ class ModelTesting():
     def __init__(self, model, test_loader, output_root, gt_root, dataset_name):
         self.dataset_name = dataset_name
         self.model = model
+        self.model.eval()
         self.loader = test_loader
         self.output_path = output_root
         self.gt_root = gt_root
@@ -19,7 +20,7 @@ class ModelTesting():
         self.evaluate()
 
     def prediction(self):
-        for iter, (X, name) in enumerate(self.loader):
+        for iter, (X, _, name) in enumerate(self.loader):
             X = X.to(device)
             pred = self.model.forward(X, training=False)
             output = torch.squeeze(pred, 0)

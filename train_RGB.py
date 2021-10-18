@@ -150,7 +150,7 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, (images, gts) in enumerate(train_loader, start=1):
+            for i, (images, gts, _) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
                 images = Variable(images).cuda()
@@ -197,7 +197,7 @@ if __name__ == '__main__':
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
         save_path = 'results/' + dataset_name + '/'
-        test_loader = DataLoader(test_set, batch_size=4)
+        test_loader = DataLoader(test_set)
         
         from test_RGB import ModelTesting
         ModelTesting(resswin, test_loader, save_path, dataset_path, dataset_name)
