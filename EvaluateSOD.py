@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
-
+from PIL import Image
 from data import TestDatasetLoader
 import torch.nn.functional as F
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
@@ -20,12 +20,12 @@ class Evaluator():
         print ("Computing SCORES... ")
         mae = self.Eval_mae()
         print ("MAE > ", mae)
-        # fmeasure = self.Eval_fmeasure()
-        # print ("FMeasure > ", fmeasure)
-        # emeasure = self.Eval_Emeasure()
-        # print ("Emeasure > ", emeasure)
-        # smeasure = self.Eval_Smeasure()
-        # print ("SMeasure > ", smeasure)
+        fmeasure = self.Eval_fmeasure()
+        print ("FMeasure > ", fmeasure)
+        emeasure = self.Eval_Emeasure()
+        print ("Emeasure > ", emeasure)
+        smeasure = self.Eval_Smeasure()
+        print ("SMeasure > ", smeasure)
 
         return mae
 
@@ -35,8 +35,8 @@ class Evaluator():
         with torch.no_grad():
             trans = transforms.Compose([transforms.ToTensor()])
             for pred, gt in self.data_loader:
-                pred = trans(pred).to(device)
-                gt = trans(gt).to(device)
+                pred = pred.to(device)
+                gt = gt.to(device)
                 mea = torch.abs(pred - gt).mean()
                 if mea == mea:  # for Nan
                     avg_mae += mea
@@ -229,13 +229,10 @@ from multiprocessing.dummy import freeze_support
 if __name__ == '__main__':
     freeze_support()
 
-    dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/DUT-RGBD'
-    d_type = 'Test'
-    weights_path = "models/DUT-RGBDRGBD_30_Pyramid.pth"
     predictions_root = r"C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD/"
     gt_root = r"D:\My Research\Datasets\Saliency Detection\RGBD\DUT-RGBD\Test\Labels/"
-    test_data = TestDatasetLoader(dataset_path, d_type)
-    test_loader = DataLoader(test_data, batch_size=4, shuffle=True, num_workers=8, drop_last=True)
+    test_data = TestDatasetLoader(predictions_root, gt_root)
+    test_loader = DataLoader(test_data)
     
 
     eval = Evaluator(test_loader)

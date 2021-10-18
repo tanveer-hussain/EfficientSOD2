@@ -68,10 +68,13 @@ class TestDatasetLoader(data.Dataset):
         self.x_path = image_root
         self.y_path = label_root
 
+        print (self.x_path, self.y_path)
+
         self.X = os.listdir(self.x_path)
         self.Y = os.listdir(self.y_path)
 
         self.length = len(self.X)
+        self.trans = T.Compose([T.ToTensor()])
 
     def __len__(self):
         return self.length
@@ -85,7 +88,9 @@ class TestDatasetLoader(data.Dataset):
 
         if pred.size != gt.size:
             pred = pred.reshape(gt.size, Image.BILINEAR)
-
+        
+        pred = self.trans(pred)
+        gt = self.trans(gt)
 
         return pred , gt
 
