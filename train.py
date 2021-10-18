@@ -125,6 +125,7 @@ if __name__ == '__main__':
     ## load data
     # datasets = ['SIP']
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
 
