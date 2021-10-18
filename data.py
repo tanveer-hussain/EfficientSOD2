@@ -89,17 +89,16 @@ class TestDatasetLoader(data.Dataset):
 
 class RetreiveTestData(data.Dataset):
 
-    def __init__(self, image_root, label_root):
+    def __init__(self, image_root):
         self.x_path = image_root
-        self.y_path = label_root
-
-        print(self.x_path, self.y_path)
 
         self.X = os.listdir(self.x_path)
-        self.Y = os.listdir(self.y_path)
 
         self.length = len(self.X)
-        self.trans = T.Compose([T.ToTensor()])
+        self.img_transform = T.Compose([
+            T.Resize((224, 224)),
+            T.ToTensor(),
+            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
     def __len__(self):
         return self.length
@@ -109,9 +108,9 @@ class RetreiveTestData(data.Dataset):
 
         x = Image.open(x_full_path).convert('RGB')
 
-        x = self.trans(x)
+        x = self.img_transform (x).unsqueeze(0)
 
-        return pred, gt
+        return x, self.X[index]
 
 
 class test_dataset:
