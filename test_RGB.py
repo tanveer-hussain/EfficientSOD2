@@ -14,7 +14,7 @@ class ModelTesting():
         self.model = model
         self.model.eval()
         self.loader = test_loader
-        self.output_path = output_root + '/'
+        self.output_path = output_root
         self.gt_root = gt_root + "/Labels"
         self.prediction()
         self.evaluate()
