@@ -19,15 +19,11 @@ class Evaluator():
     def execute(self):
         print ("Computing SCORES... ")
         mae = self.Eval_mae()
-        print ("MAE > ", mae)
         fmeasure = self.Eval_fmeasure()
-        print ("FMeasure > ", fmeasure)
         emeasure = self.Eval_Emeasure()
-        print ("Emeasure > ", emeasure)
         smeasure = self.Eval_Smeasure()
-        print ("SMeasure > ", smeasure)
 
-        return mae
+        return mae, fmeasure, emeasure, smeasure
 
     def Eval_mae(self):
         # print('eval[MAE]:{} dataset with {} method.'.format(self.dataset, self.method))
@@ -163,8 +159,6 @@ class Evaluator():
 
     def _centroid(self, gt):
         rows, cols = gt.size()[-2:]
-        print (rows, cols)
-        print (gt.shape)
         gt = gt.view(rows, cols)
         if gt.sum() == 0:
             X = torch.eye(1).to(device) * round(cols / 2)
