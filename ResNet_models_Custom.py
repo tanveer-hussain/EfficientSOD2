@@ -264,16 +264,18 @@ class Pyramid_block(nn.Module):
 
         self.block1 = nn.ModuleList()
 
+        if in_channels != out_channels:
+            self.block1.append(Triple_Conv(in_channels, out_channels))
+
+
         if initial==1:
             self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
             self.block1.append(multi_scale_aspp(in_channels))
         else:
             self.block1.append(multi_scale_aspp(in_channels))
             self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
-
-        if in_channels != out_channels:
-            self.block1.append(Triple_Conv(in_channels, out_channels))
         self.block1 = nn.Sequential(*self.block1)
+
 
         self.in_resolution = in_resolution
         self.out_resolution = out_resolution
