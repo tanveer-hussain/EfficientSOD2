@@ -219,6 +219,41 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         return x + self.main(x)
 
+class Encoder_x(nn.Module):
+    def __init__(self, input_channels, channels):
+        super(Encoder_x, self).__init__()
+        self.contracting_path = nn.ModuleList()
+        self.input_channels = input_channels
+        self.relu = nn.ReLU(inplace=True)
+        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
+        self.bn1 = nn.BatchNorm2d(channels)
+        self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
+        self.bn2 = nn.BatchNorm2d(channels * 2)
+        self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
+        self.bn3 = nn.BatchNorm2d(channels * 4)
+        self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+        self.bn4 = nn.BatchNorm2d(channels * 8)
+        self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+        self.bn5 = nn.BatchNorm2d(channels * 8)
+        self.channel = channels
+
+    def forward(self, input):
+        output = self.leakyrelu(self.bn1(self.layer1(input)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn2(self.layer2(output)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn3(self.layer3(output)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn4(self.layer4(output)))
+        # print(output.size())
+        output = self.leakyrelu(self.bn4(self.layer5(output)))
+
+        print(output.size())
+
+        return output
+
+
+
 class Pyramid_block(nn.Module):
     def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
         super(Pyramid_block, self).__init__()
@@ -265,7 +300,7 @@ class Saliency_feat_encoder(nn.Module):
         # self.aspp_mhsa2_3 = Pyramid_block(64, 28, 32, 28, 4, 3)
 
         self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
-        self.aspp_mhsa3_2 = Pyramid_block(512, 14, 32, 14, 4, 2)
+        self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         # self.aspp_mhsa3_3 = Pyramid_block(32, 14, 32, 14, 4, 3)
         # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         # self.aspp_mhsa3_3 = Pyramid_block(128, 14, 32, 14, 4, 3)
