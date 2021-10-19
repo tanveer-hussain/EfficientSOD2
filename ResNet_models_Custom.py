@@ -253,18 +253,18 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.aspp_mhsa1_1 = Pyramid_block(256,56,128,56,4,1)
-        self.aspp_mhsa1_2 = Pyramid_block(128, 56, 32, 56, 4, 2)
+        self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
+        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
         # self.aspp_mhsa1_3 = Pyramid_block(32, 56, 32, 56, 4, 3)
         # self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
 
-        self.aspp_mhsa2_1 = Pyramid_block(512,28,128,28,4,1)
-        self.aspp_mhsa2_2 = Pyramid_block(128, 28, 32, 28, 4, 2)
+        self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
+        self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
         # self.aspp_mhsa2_3 = Pyramid_block(32, 28, 32, 28, 4, 3)
         # self.aspp_mhsa2_4 = Pyramid_block(32, 28, 32, 28, 4, 4)
         # self.aspp_mhsa2_3 = Pyramid_block(64, 28, 32, 28, 4, 3)
 
-        self.aspp_mhsa3_1 = Pyramid_block(1024, 14, 512, 14, 4, 1)
+        self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
         self.aspp_mhsa3_2 = Pyramid_block(512, 14, 32, 14, 4, 2)
         # self.aspp_mhsa3_3 = Pyramid_block(32, 14, 32, 14, 4, 3)
         # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
@@ -399,16 +399,16 @@ class Saliency_feat_encoder(nn.Module):
         #
         # conv4_feat = self.b4_layers[0](x4)
 
-        # conv1_feat = self.conv1(x1)
-        conv1_feat = self.aspp_mhsa1_1(x1)
+        conv1_feat = self.conv1(x1)
+        conv1_feat = self.aspp_mhsa1_1(conv1_feat)
         conv1_feat = self.aspp_mhsa1_2(conv1_feat)
         # conv1_feat = self.aspp_mhsa1_3(conv1_feat)
         # conv1_feat = self.aspp_mhsa1_4(conv1_feat)
         conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat),1))
         # print (conv1_feat.shape)
 
-        # conv2_feat = self.conv2(x2)
-        conv2_feat = self.aspp_mhsa2_1(x2)
+        conv2_feat = self.conv2(x2)
+        conv2_feat = self.aspp_mhsa2_1(conv2_feat)
         conv2_feat = self.aspp_mhsa2_2(conv2_feat)
         # conv2_feat = self.aspp_mhsa2_3(conv2_feat)
         # conv2_feat = self.aspp_mhsa2_4(conv2_feat)
@@ -417,8 +417,8 @@ class Saliency_feat_encoder(nn.Module):
         # conv2_feat = self.aspp_mhsa2_3(conv2_feat)
 
         # conv2_feat = self.asppconv2(conv2_feat)
-        # conv3_feat = self.conv3(x3)
-        conv3_feat = self.aspp_mhsa3_1(x3)
+        conv3_feat = self.conv3(x3)
+        conv3_feat = self.aspp_mhsa3_1(conv3_feat)
         conv3_feat = self.aspp_mhsa3_2(conv3_feat)
         # conv3_feat = self.aspp_mhsa3_3(conv3_feat)
         # conv3_feat = self.aspp_mhsa3_4(conv3_feat)
