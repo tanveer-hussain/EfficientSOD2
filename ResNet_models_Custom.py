@@ -293,7 +293,7 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.vgg_features = VGGFeatures(3,4)
+        # self.vgg_features = VGGFeatures(3,4)
 
         self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
         self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
@@ -355,9 +355,7 @@ class Saliency_feat_encoder(nn.Module):
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
 
-        self.conv1_1 = Triple_Conv(96,channel)
-        self.conv1_2 = Triple_Conv(8, channel)
-        self.conv1_3 = Triple_Conv(16, channel)
+        self.conv1_1 = Triple_Conv(64,channel)
 
 
         # self.asppconv1 = multi_scale_aspp(channel)
@@ -376,13 +374,13 @@ class Saliency_feat_encoder(nn.Module):
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
 
-        # self.conv_depth1 = Triple_Conv(6, 3)
-        # self.conv1_depth = Triple_Conv(256, channel)
-        # self.conv2_depth = Triple_Conv(512, channel)
-        # self.conv3_depth = Triple_Conv(1024, channel)
-        # self.conv4_depth = Triple_Conv(2048, channel)
-        # self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
-        # self.conv4_depth1 = Triple_Conv(3, 1)
+        self.conv_depth1 = Triple_Conv(6, 3)
+        self.conv1_depth = Triple_Conv(256, channel)
+        self.conv2_depth = Triple_Conv(512, channel)
+        self.conv3_depth = Triple_Conv(1024, channel)
+        self.conv4_depth = Triple_Conv(2048, channel)
+        self.layer_depth = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 3, channel * 4)
+        self.conv4_depth1 = Triple_Conv(3, 1)
 
         if self.training:
             self.initialize_weights()
@@ -402,10 +400,10 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x):
+    def forward(self, x, depth):
 
-        x1_vgg, x2_vgg, x3_vgg, x4_vgg = self.vgg_features(x)
-        # x = torch.cat((x, depth), 1)
+        # x1_vgg, x2_vgg, x3_vgg, x4_vgg = self.vgg_features(x)
+        x = torch.cat((x, depth), 1)
         # x = self.conv_depth1(x)
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
@@ -418,14 +416,14 @@ class Saliency_feat_encoder(nn.Module):
 
 
 
-        ## depth estimation
-        # conv1_depth = self.conv1_depth(x1)
-        # conv2_depth = self.upsample2(self.conv2_depth(x2))
-        # conv3_depth = self.upsample4(self.conv3_depth(x3))
-        # conv4_depth = self.upsample8(self.conv4_depth(x4))
-        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        # depth_pred = self.layer_depth(conv_depth)
-        # depth_pred = self.conv4_depth1(depth_pred)
+        # depth estimation
+        conv1_depth = self.conv1_depth(x1)
+        conv2_depth = self.upsample2(self.conv2_depth(x2))
+        conv3_depth = self.upsample4(self.conv3_depth(x3))
+        conv4_depth = self.upsample8(self.conv4_depth(x4))
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        depth_pred = self.layer_depth(conv_depth)
+        depth_pred = self.conv4_depth1(depth_pred)
 
 
         # conv1_feat = self.b1_layers[0](x1)
@@ -446,17 +444,15 @@ class Saliency_feat_encoder(nn.Module):
         conv1_feat = self.conv1(x1)
         conv1_feat = self.aspp_mhsa1_1(conv1_feat)
         conv1_feat = self.aspp_mhsa1_2(conv1_feat)
-        conv1_feat_vgg = self.conv1_2(x1_vgg)
         # conv1_feat = self.aspp_mhsa1_4(conv1_feat)
-        conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat,conv1_feat_vgg),1))
+        conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat),1))
         # print (conv1_feat.shape)
 
         conv2_feat = self.conv2(x2)
         conv2_feat = self.aspp_mhsa2_1(conv2_feat)
         conv2_feat = self.aspp_mhsa2_2(conv2_feat)
-        conv2_feat_vgg = self.conv1_3(x2_vgg)
         # conv2_feat = self.aspp_mhsa2_4(conv2_feat)
-        conv2_feat = self.conv1_1(torch.cat((self.conv2(x2), conv2_feat,conv2_feat_vgg),1))
+        conv2_feat = self.conv1_1(torch.cat((self.conv2(x2), conv2_feat),1))
         # conv2_feat = self.aspp_mhsa2_2(conv2_feat)
         # conv2_feat = self.aspp_mhsa2_3(conv2_feat)
 
@@ -466,7 +462,7 @@ class Saliency_feat_encoder(nn.Module):
         conv3_feat = self.aspp_mhsa3_2(conv3_feat)
         # conv3_feat_vgg = self.aspp_mhsa3_3_vgg(x3_vgg)
         # conv3_feat = self.aspp_mhsa3_4(conv3_feat)
-        conv3_feat = self.conv1_1(torch.cat((self.conv3(x3), conv3_feat,x3_vgg),1))
+        conv3_feat = self.conv1_1(torch.cat((self.conv3(x3), conv3_feat),1))
         # conv3_feat = self.aspp_mhsa3_2(conv3_feat)
         # conv3_feat = self.aspp_mhsa3_3(conv3_feat)
         # conv3_feat = self.asppconv3(conv3_feat)
@@ -475,7 +471,7 @@ class Saliency_feat_encoder(nn.Module):
         # conv4_feat_vgg = self.aspp_mhsa4_2_vgg(x4_vgg)
         # conv4_feat = self.aspp_mhsa4_3(conv4_feat)
         # conv4_feat = self.aspp_mhsa4_4(conv4_feat)
-        conv4_feat = self.conv1_1(torch.cat((self.conv4(x4), conv4_feat,x4_vgg),1))
+        conv4_feat = self.conv1_1(torch.cat((self.conv4(x4), conv4_feat),1))
         # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
@@ -496,7 +492,7 @@ class Saliency_feat_encoder(nn.Module):
         sal_init = self.layer6(conv4321)
 
 
-        return self.upsample4(sal_init) #, self.upsample4(depth_pred)
+        return self.upsample4(sal_init) , self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)

@@ -11,13 +11,13 @@ class TrainDatasetLoader(Dataset):
     def __init__(self, dir, d_type):
         self.x_path = os.path.join(dir, str(d_type), 'Images')
         self.y_path = os.path.join(dir, str(d_type), 'Labels')
-        # self.d_path = os.path.join(dir, str(d_type), 'Depth')
+        self.d_path = os.path.join(dir, str(d_type), 'Depth')
 
         # print (self.x_path, "\n", self.y_path, "\n", self.d_path)
 
         self.X = os.listdir(self.x_path)
         self.Y = os.listdir(self.y_path)
-        # self.D = os.listdir(self.d_path)
+        self.D = os.listdir(self.d_path)
 
         self.length = len(self.X)
 
@@ -35,21 +35,21 @@ class TrainDatasetLoader(Dataset):
     def __getitem__(self, index):
         x_full_path = os.path.join(self.x_path, self.X[index])
         y_full_path = os.path.join(self.y_path, self.Y[index])
-        # d_full_path = os.path.join(self.d_path, self.D[index])
+        d_full_path = os.path.join(self.d_path, self.D[index])
 
         x = Image.open(x_full_path).convert('RGB')
         y = Image.open(y_full_path).convert('L')
-        # d = Image.open(d_full_path).convert('RGB')
+        d = Image.open(d_full_path).convert('RGB')
 
 
         x = self.img_transform(x)
         y = self.gt_transform(y)
-        # d = self.gt_transform(d)
+        d = self.gt_transform(d)
 
         # print ('x', x.shape, ', y', y.shape, ', d', d.shape)
 
 
-        return x , y, self.X[index]
+        return x , d, y, self.X[index]
 
 from torch.utils import data
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")

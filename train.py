@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=40, help='epoch number')
+parser.add_argument('--epoch', type=int, default=1, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=4, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -157,30 +157,30 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, (images, gts, _) in enumerate(train_loader, start=1):
+            for i, (images, depths, gts, _) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
                 images = Variable(images).cuda()
                 gts = Variable(gts).cuda()
-                # depths = Variable(depths).cuda()
+                depths = Variable(depths).cuda()
 
-                # x_sal, d_sal = resswin.forward(images, depths)
-                x_sal = resswin.forward(images)
+                x_sal, d_sal = resswin.forward(images, depths)
+                # x_sal = resswin.forward(images)
                 # total_loss = mse_loss(x_sal,gts)
                 reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
                 #
-                # depth_loss = l1_criterion(d_sal, gts)
-                # d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
+                depth_loss = l1_criterion(d_sal, gts)
+                d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
                 #
                 sal_loss = l1_criterion(x_sal, gts)
                 x_ssim_loss = torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
                 #
                 x_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) + (0.3 * x_ssim_loss) + (0.2 * sal_loss)
-                # d_loss = (0.2 * structure_loss(d_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.3 * d_ssim_loss) + (0.2 * depth_loss)
+                d_loss = (0.2 * structure_loss(d_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.3 * d_ssim_loss) + (0.2 * depth_loss)
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                total_loss = reg_loss + x_loss #+ d_loss
+                total_loss = reg_loss + x_loss + d_loss
 
                 #
                 resswin_optimizer.zero_grad()
