@@ -219,9 +219,9 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         return x + self.main(x)
 
-class Encoder_x(nn.Module):
+class VGGFeatures(nn.Module):
     def __init__(self, input_channels, channels):
-        super(Encoder_x, self).__init__()
+        super(VGGFeatures, self).__init__()
         self.contracting_path = nn.ModuleList()
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
@@ -252,6 +252,9 @@ class Encoder_x(nn.Module):
 
         return output
 
+vgg_features = VGGFeatures(32)
+x = torch.randn(1,32,224,224)
+y = vgg_features(x)
 
 
 class Pyramid_block(nn.Module):
