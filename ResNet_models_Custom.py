@@ -306,7 +306,7 @@ class Saliency_feat_encoder(nn.Module):
 
         self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
         self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
-        self.aspp_mhsa3_3_vgg = Pyramid_block(16, 14, 32, 14, 4, 3)
+        self.aspp_mhsa3_3_vgg = Pyramid_block(32, 14, 32, 14, 4, 3)
         # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         # self.aspp_mhsa3_3 = Pyramid_block(128, 14, 32, 14, 4, 3)
 
