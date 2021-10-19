@@ -222,7 +222,7 @@ class ResidualBlock(nn.Module):
 class VGGFeatures(nn.Module):
     def __init__(self, input_channels, channels):
         super(VGGFeatures, self).__init__()
-        self.contracting_path = nn.ModuleList()
+
         self.input_channels = input_channels
         self.relu = nn.ReLU(inplace=True)
         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
@@ -236,23 +236,24 @@ class VGGFeatures(nn.Module):
         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
         self.bn5 = nn.BatchNorm2d(channels * 8)
         self.channel = channels
+        self.leakyrelu = nn.LeakyReLU()
 
     def forward(self, input):
-        output = self.leakyrelu(self.bn1(self.layer1(input)))
+        output = self.leakyrelu(self.bn1(self.layer1(input))) # [1, 4, 112, 112]
         # print(output.size())
-        output = self.leakyrelu(self.bn2(self.layer2(output)))
+        x1 = self.leakyrelu(self.bn2(self.layer2(output))) # [1, 8, 56, 56]
         # print(output.size())
-        output = self.leakyrelu(self.bn3(self.layer3(output)))
+        x2 = self.leakyrelu(self.bn3(self.layer3(output))) # [1, 16, 28, 28]
         # print(output.size())
-        output = self.leakyrelu(self.bn4(self.layer4(output)))
+        x3 = self.leakyrelu(self.bn4(self.layer4(output))) # [1, 32, 14, 14]
         # print(output.size())
-        output = self.leakyrelu(self.bn4(self.layer5(output)))
+        x4 = self.leakyrelu(self.bn4(self.layer5(output))) # [1, 32, 7, 7]
 
         print(output.size())
 
-        return output
+        return x1, x2, x3, x4
 
-vgg_features = VGGFeatures(32)
+vgg_features = VGGFeatures(32,4)
 x = torch.randn(1,32,224,224)
 y = vgg_features(x)
 
