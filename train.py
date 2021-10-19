@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=1, help='epoch number')
+parser.add_argument('--epoch', type=int, default=40, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=4, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -128,6 +128,12 @@ if __name__ == '__main__':
         os.makedirs(save_path)
 
     for dataset_name in datasets:
+
+        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        resswin.to(device)
+        resswin.train()
+        resswin_params = resswin.parameters()
+        resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
 
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
