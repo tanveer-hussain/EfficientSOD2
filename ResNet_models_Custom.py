@@ -249,13 +249,12 @@ class VGGFeatures(nn.Module):
         # print(output.size())
         x4 = self.leakyrelu(self.bn4(self.layer5(output))) # [1, 32, 7, 7]
 
-        print(output.size())
 
         return x1, x2, x3, x4
 
-vgg_features = VGGFeatures(32,4)
-x = torch.randn(1,32,224,224)
-y = vgg_features(x)
+# vgg_features = VGGFeatures(32,4)
+# x = torch.randn(1,32,224,224)
+# y = vgg_features(x)
 
 
 class Pyramid_block(nn.Module):
@@ -292,25 +291,27 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
+        self.vgg_features = VGGFeatures(32,4)
+
         self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
         self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
-        # self.aspp_mhsa1_3 = Pyramid_block(32, 56, 32, 56, 4, 3)
+        self.aspp_mhsa1_3_vgg = Pyramid_block(8, 56, 32, 56, 4, 1)
         # self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
 
         self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
         self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
-        # self.aspp_mhsa2_3 = Pyramid_block(32, 28, 32, 28, 4, 3)
+        self.aspp_mhsa2_3_vgg = Pyramid_block(16, 28, 32, 28, 4, 1)
         # self.aspp_mhsa2_4 = Pyramid_block(32, 28, 32, 28, 4, 4)
         # self.aspp_mhsa2_3 = Pyramid_block(64, 28, 32, 28, 4, 3)
 
         self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
         self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
-        # self.aspp_mhsa3_3 = Pyramid_block(32, 14, 32, 14, 4, 3)
+        self.aspp_mhsa3_3_vgg = Pyramid_block(16, 14, 32, 14, 4, 3)
         # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         # self.aspp_mhsa3_3 = Pyramid_block(128, 14, 32, 14, 4, 3)
 
         self.aspp_mhsa4_1 = Pyramid_block(32, 7, 32, 7, 4, 1)
-        # self.aspp_mhsa4_2 = Pyramid_block(32, 7, 32, 7, 4, 2)
+        self.aspp_mhsa4_2_vgg = Pyramid_block(32, 7, 32, 7, 4, 2)
         # self.aspp_mhsa4_3 = Pyramid_block(32, 7, 32, 7, 4, 3)
         # self.aspp_mhsa4_4 = Pyramid_block(32, 7, 32, 7, 4, 4)
 
@@ -400,6 +401,7 @@ class Saliency_feat_encoder(nn.Module):
 
     def forward(self, x):
 
+        x1_vgg, x2_vgg, x3_vgg, x4_vgg = self.vgg_features(x)
         # x = torch.cat((x, depth), 1)
         # x = self.conv_depth1(x)
         x = self.resnet.conv1(x)
