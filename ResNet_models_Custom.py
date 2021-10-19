@@ -229,7 +229,6 @@ class Pyramid_block(nn.Module):
         if initial==1:
             self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
             self.block1.append(multi_scale_aspp(in_channels))
-            self.block1.append(multi_scale_aspp(in_channels))
         else:
             self.block1.append(multi_scale_aspp(in_channels))
             self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
