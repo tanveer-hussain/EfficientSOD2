@@ -405,6 +405,7 @@ class Saliency_feat_encoder(nn.Module):
         # x1_vgg, x2_vgg, x3_vgg, x4_vgg = self.vgg_features(x)
         x = torch.cat((x, depth), 1)
         x = self.conv_depth1(x)
+
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
         x = self.resnet.relu(x)
