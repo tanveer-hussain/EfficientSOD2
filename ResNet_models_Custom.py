@@ -243,17 +243,17 @@ class VGGFeatures(nn.Module):
         # print(output.size())
         x1 = self.leakyrelu(self.bn2(self.layer2(output))) # [1, 8, 56, 56]
         # print(output.size())
-        x2 = self.leakyrelu(self.bn3(self.layer3(output))) # [1, 16, 28, 28]
+        x2 = self.leakyrelu(self.bn3(self.layer3(x1))) # [1, 16, 28, 28]
         # print(output.size())
-        x3 = self.leakyrelu(self.bn4(self.layer4(output))) # [1, 32, 14, 14]
+        x3 = self.leakyrelu(self.bn4(self.layer4(x2))) # [1, 32, 14, 14]
         # print(output.size())
-        x4 = self.leakyrelu(self.bn4(self.layer5(output))) # [1, 32, 7, 7]
+        x4 = self.leakyrelu(self.bn4(self.layer5(x3))) # [1, 32, 7, 7]
 
 
         return x1, x2, x3, x4
 
-# vgg_features = VGGFeatures(32,4)
-# x = torch.randn(1,32,224,224)
+# vgg_features = VGGFeatures(3,4)
+# x = torch.randn(1,3,224,224)
 # y = vgg_features(x)
 
 
