@@ -253,9 +253,9 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.aspp_mhsa1_1 = Pyramid_block(256,56,128,56,4,1)
-        self.aspp_mhsa1_2 = Pyramid_block(128, 56, 64, 56, 4, 2)
-        self.aspp_mhsa1_3 = Pyramid_block(64, 56, 32, 56, 4, 3)
+        self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
+        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
+        self.aspp_mhsa1_3 = Pyramid_block(32, 56, 32, 56, 4, 3)
         self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
 
         self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
@@ -308,7 +308,7 @@ class Saliency_feat_encoder(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv1 = Triple_Conv(256, 256)
+        self.conv1 = Triple_Conv(256, channel)
         self.conv2 = Triple_Conv(512, channel)
         self.conv3 = Triple_Conv(1024, channel)
         self.conv4 = Triple_Conv(2048, channel)
@@ -402,15 +402,15 @@ class Saliency_feat_encoder(nn.Module):
         conv1_feat = self.conv1(x1)
         conv1_feat = self.aspp_mhsa1_1(conv1_feat)
         conv1_feat = self.aspp_mhsa1_2(conv1_feat)
-        conv1_feat = self.aspp_mhsa1_3(conv1_feat)
-        conv1_feat = self.aspp_mhsa1_4(conv1_feat)
+        # conv1_feat = self.aspp_mhsa1_3(conv1_feat)
+        # conv1_feat = self.aspp_mhsa1_4(conv1_feat)
         conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat),1))
         # print (conv1_feat.shape)
 
         conv2_feat = self.conv2(x2)
         conv2_feat = self.aspp_mhsa2_1(conv2_feat)
         conv2_feat = self.aspp_mhsa2_2(conv2_feat)
-        conv2_feat = self.aspp_mhsa2_3(conv2_feat)
+        # conv2_feat = self.aspp_mhsa2_3(conv2_feat)
         # conv2_feat = self.aspp_mhsa2_4(conv2_feat)
         conv2_feat = self.conv1_1(torch.cat((self.conv2(x2), conv2_feat),1))
         # conv2_feat = self.aspp_mhsa2_2(conv2_feat)
