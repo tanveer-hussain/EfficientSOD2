@@ -291,7 +291,7 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.vgg_features = VGGFeatures(32,4)
+        self.vgg_features = VGGFeatures(3,4)
 
         self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
         self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
