@@ -297,23 +297,23 @@ class Saliency_feat_encoder(nn.Module):
 
         self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
         self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
-        self.aspp_mhsa1_3_vgg = Pyramid_block(8, 56, 32, 56, 4, 1)
+        # self.aspp_mhsa1_3_vgg = Pyramid_block(8, 56, 32, 56, 4, 1)
         # self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
 
         self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
         self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
-        self.aspp_mhsa2_3_vgg = Pyramid_block(16, 28, 32, 28, 4, 1)
+        # self.aspp_mhsa2_3_vgg = Pyramid_block(16, 28, 32, 28, 4, 1)
         # self.aspp_mhsa2_4 = Pyramid_block(32, 28, 32, 28, 4, 4)
         # self.aspp_mhsa2_3 = Pyramid_block(64, 28, 32, 28, 4, 3)
 
         self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
         self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
-        self.aspp_mhsa3_3_vgg = Pyramid_block(32, 14, 32, 14, 4, 3)
+        # self.aspp_mhsa3_3_vgg = Pyramid_block(32, 14, 32, 14, 4, 3)
         # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         # self.aspp_mhsa3_3 = Pyramid_block(128, 14, 32, 14, 4, 3)
 
         self.aspp_mhsa4_1 = Pyramid_block(32, 7, 32, 7, 4, 1)
-        self.aspp_mhsa4_2_vgg = Pyramid_block(32, 7, 32, 7, 4, 2)
+        # self.aspp_mhsa4_2_vgg = Pyramid_block(32, 7, 32, 7, 4, 2)
         # self.aspp_mhsa4_3 = Pyramid_block(32, 7, 32, 7, 4, 3)
         # self.aspp_mhsa4_4 = Pyramid_block(32, 7, 32, 7, 4, 4)
 
