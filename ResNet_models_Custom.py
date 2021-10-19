@@ -253,19 +253,19 @@ class Saliency_feat_encoder(nn.Module):
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
 
-        self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
-        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
-        self.aspp_mhsa1_3 = Pyramid_block(32, 56, 32, 56, 4, 3)
-        self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
+        self.aspp_mhsa1_1 = Pyramid_block(256,56,128,56,4,1)
+        self.aspp_mhsa1_2 = Pyramid_block(128, 56, 32, 56, 4, 2)
+        # self.aspp_mhsa1_3 = Pyramid_block(32, 56, 32, 56, 4, 3)
+        # self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
 
-        self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
-        self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
-        self.aspp_mhsa2_3 = Pyramid_block(32, 28, 32, 28, 4, 3)
+        self.aspp_mhsa2_1 = Pyramid_block(512,28,128,28,4,1)
+        self.aspp_mhsa2_2 = Pyramid_block(128, 28, 32, 28, 4, 2)
+        # self.aspp_mhsa2_3 = Pyramid_block(32, 28, 32, 28, 4, 3)
         # self.aspp_mhsa2_4 = Pyramid_block(32, 28, 32, 28, 4, 4)
         # self.aspp_mhsa2_3 = Pyramid_block(64, 28, 32, 28, 4, 3)
 
-        self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
-        self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
+        self.aspp_mhsa3_1 = Pyramid_block(1024, 14, 512, 14, 4, 1)
+        self.aspp_mhsa3_2 = Pyramid_block(512, 14, 32, 14, 4, 2)
         # self.aspp_mhsa3_3 = Pyramid_block(32, 14, 32, 14, 4, 3)
         # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         # self.aspp_mhsa3_3 = Pyramid_block(128, 14, 32, 14, 4, 3)
