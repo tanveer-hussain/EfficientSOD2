@@ -3,25 +3,44 @@ import torch.nn as nn
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 from ResNet_models_Custom import Saliency_feat_encoder
 
+from dpt.models_custom import DPTSegmentationModel
 
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
+        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
+        self.dpt_model = DPTSegmentationModel(
+            150,
+            path=model_path,
+            backbone="vitb_rn50_384",
+        )
+        self.dpt_model.eval()
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        optimize = True
+        self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
+        # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
+        # if optimize == True and device == torch.device("cuda"):
+        #     self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
+        #     self.dpt_model = self.dpt_model.half()
+        #     self.sal_encoder = self.sal_encoder.half()
+
         # self.relu = nn.ReLU(inplace=True)
         # self.swin_saliency = SwinSaliency()
-        # self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
+        self.conv1 = nn.Conv2d(3, 1, 3, 1, 1)
         # self.liner1024 = nn.Linear(2048, 1024)
         # self.upsampling = nn.Sequential(
         #     nn.Upsample(size=(64, 64), mode='bilinear', align_corners=True),
         # nn.Upsample(size=(128, 128), mode='bilinear', align_corners=True),
         # nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
         # )
-        self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
+
 
     def forward(self, x, depth , training=True):
         if training:
             # self.x_sal = self.sal_encoder(x)
-            self.x_sal, self.d_sal = self.sal_encoder(x, depth)
+            self.x_sal = self.dpt_model(x)
+            self.x_sal = self.conv1(self.x_sal)
+            # self.x_sal, self.d_sal = self.sal_encoder(x, depth)
             # print (self.x_sal.shape)
             # self.x_sal , self.d_sal = self.swin_saliency(x, depth)
             # print(self.x_f1.shape)
@@ -34,10 +53,11 @@ class ResSwinModel(nn.Module):
             # print (self.x_sal.shape)
             # self.d_sal = self.conv1(self.d_sal)
 
-            return self.x_sal , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+            return self.x_sal# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         else:
             # self.x_sal = self.sal_encoder(x)
-            self.x_sal, _ = self.sal_encoder(x, depth)
+            # self.x_sal, _ = self.sal_encoder(x, depth)
+            self.x_sal = self.dpt_model(x)
             # _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
             # z_noise = self.reparametrize(mux, logvarx)
             # self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
