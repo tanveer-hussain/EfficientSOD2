@@ -35,7 +35,7 @@ class ResSwinModel(nn.Module):
         # )
 
 
-    def forward(self, x, depth , training=True):
+    def forward(self, x , training=True):
         if training:
             # self.x_sal = self.sal_encoder(x)
             self.x_sal = self.dpt_model(x)
