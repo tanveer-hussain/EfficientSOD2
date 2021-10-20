@@ -56,7 +56,7 @@ class ModelTesting():
         for iter, (X, depth, _, name) in enumerate(self.loader):
             X = X.to(device)
             depth = depth.to(device)
-            pred = self.model.forward(X, depth, training=False)
+            pred = self.model.forward(X, training=False)
             output = torch.squeeze(pred, 0)
             output = output.detach().cpu().numpy()
             output = output.dot(255)

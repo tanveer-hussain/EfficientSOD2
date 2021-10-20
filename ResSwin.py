@@ -58,6 +58,7 @@ class ResSwinModel(nn.Module):
             # self.x_sal = self.sal_encoder(x)
             # self.x_sal, _ = self.sal_encoder(x, depth)
             self.x_sal = self.dpt_model(x)
+            self.x_sal = self.conv1(self.x_sal)
             # _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
             # z_noise = self.reparametrize(mux, logvarx)
             # self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
