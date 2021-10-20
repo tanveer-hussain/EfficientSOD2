@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
         train_set, test_set = torch.utils.data.random_split(total_data, [math.ceil((80*data_length)/100), math.floor((20*data_length)/100)])
         
-        train_loader = DataLoader(train_set, batch_size=2, shuffle=True, num_workers=8, drop_last=True)
+        train_loader = DataLoader(train_set, batch_size=opt.batchsize, shuffle=True, num_workers=8, drop_last=True)
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
@@ -179,8 +179,8 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                visualize_gt(gts)
-                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                # visualize_gt(gts)
+                # visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
