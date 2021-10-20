@@ -167,7 +167,8 @@ if __name__ == '__main__':
                 # x_sal, d_sal = resswin.forward(images, depths)
                 x_sal = resswin.forward(images)
                 # total_loss = mse_loss(x_sal,gts)
-                reg_loss = l2_regularisation(resswin.sal_encoder)
+                # reg_loss = l2_regularisation(resswin.sal_encoder)
+                reg_loss = l2_regularisation(resswin.self.dpt_model)
                 reg_loss = opt.reg_weight * reg_loss
                 #
                 #depth_loss = l1_criterion(d_sal, gts)
