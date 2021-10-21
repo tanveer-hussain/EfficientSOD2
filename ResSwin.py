@@ -49,13 +49,13 @@ class ResSwinModel(nn.Module):
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
         self.aspp_mhsa1_1 = Pyramid_block(32, 112, 32, 56, 4, 1)
-        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
+        # self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
 
         self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
-        self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
+        # self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
 
         self.aspp_mhsa3_1 = Pyramid_block(32, 28, 32, 14, 4, 1)
-        self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
+        # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
 
         self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
 
@@ -92,19 +92,19 @@ class ResSwinModel(nn.Module):
 
         conv1_feat = self.conv1(self.p1)
         conv1_feat = self.aspp_mhsa1_1(conv1_feat)
-        conv1_feat = self.aspp_mhsa1_2(conv1_feat)
+        # conv1_feat = self.aspp_mhsa1_2(conv1_feat)
         # conv1_feat = self.aspp_mhsa1_4(conv1_feat)
         conv1_feat = self.conv1_1(torch.cat((self.conv1(self.p1), conv1_feat), 1))
         # print (conv1_feat.shape)
 
         conv2_feat = self.conv1(self.p2)
         conv2_feat = self.aspp_mhsa2_1(conv2_feat)
-        conv2_feat = self.aspp_mhsa2_2(conv2_feat)
+        # conv2_feat = self.aspp_mhsa2_2(conv2_feat)
         conv2_feat = self.conv1_1(torch.cat((self.conv2(self.p2), conv2_feat), 1))
 
         conv3_feat = self.conv1(self.p3)
         conv3_feat = self.aspp_mhsa3_1(conv3_feat)
-        conv3_feat = self.aspp_mhsa3_2(conv3_feat)
+        # conv3_feat = self.aspp_mhsa3_2(conv3_feat)
         conv3_feat = self.conv1_1(torch.cat((self.conv3(self.p3), conv3_feat), 1))
 
         conv4_feat = self.conv1(self.p4)
