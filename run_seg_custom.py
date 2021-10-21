@@ -52,7 +52,7 @@ model.to(device)
 
 print("start processing")
 
-img_name = 'input/150.jpg'
+img_name = '150.png'
 img = cv2.imread(img_name)
 img = cv2.resize(img, (net_w,net_h))
 if img.ndim == 2:
@@ -80,5 +80,5 @@ with torch.no_grad():
     # filename = "output_semseg/150"
     # util.io.write_segm_img(filename, img, prediction, alpha=0.5)
 
-    # print (x4.shape, x3.shape, x2.shape, x1.shape)
+    print (x1.shape, "\n",  x2.shape, "\n", x3.shape, "\n", x4.shape)
 
