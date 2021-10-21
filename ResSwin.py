@@ -131,6 +131,8 @@ class ResSwinModel(nn.Module):
 
         sal_init = self.layer6(conv4321)
 
+        print (sal_init.shape)
+
         return self.upsample4(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         # else:
         #     # self.x_sal = self.sal_encoder(x)
