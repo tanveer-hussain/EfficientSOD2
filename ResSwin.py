@@ -88,7 +88,7 @@ class ResSwinModel(nn.Module):
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
-        # self.conv2 = Triple_Conv(512, channel)
+        self.self.conv_balance = Triple_Conv(150, 1)
         # self.conv3 = Triple_Conv(1024, channel)
         # self.conv4 = Triple_Conv(2048, channel)
         # self.liner1024 = nn.Linear(2048, 1024)
@@ -102,7 +102,7 @@ class ResSwinModel(nn.Module):
     def forward(self, x , training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        p1, p2, p3, p4 = self.dpt_model(x)
+        out, p1, p2, p3, p4 = self.dpt_model(x)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(p1)
@@ -130,10 +130,11 @@ class ResSwinModel(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
+        out = self.conv_balance(out)
+        # print (out.shape)
 
-        print (sal_init.shape)
 
-        return self.upsample4(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+        return self.upsample2(sal_init), out #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         # else:
         #     # self.x_sal = self.sal_encoder(x)
         #     # self.x_sal, _ = self.sal_encoder(x, depth)

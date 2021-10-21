@@ -81,9 +81,9 @@ class DPT(BaseModel):
         path_2 = self.scratch.refinenet2(path_3, layer_2_rn)
         path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
 
-        # out = self.scratch.output_conv(path_1)
+        out = self.scratch.output_conv(path_1)
 
-        return path_1, path_2, path_3, path_4 #, out
+        return out, path_1, path_2, path_3, path_4 #, out
 
 
 class DPTDepthModel(DPT):
@@ -136,7 +136,7 @@ class DPTSegmentationModel(DPT):
             nn.BatchNorm2d(features),
             nn.ReLU(True),
             nn.Dropout(0.1, False),
-            nn.Conv2d(features, num_classes, kernel_size=1),
+            nn.Conv2d(features, 1, kernel_size=1),
             Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
         )
 
