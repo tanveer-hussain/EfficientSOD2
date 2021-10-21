@@ -41,7 +41,7 @@ class ResSwinModel(nn.Module):
         super(ResSwinModel, self).__init__()
         model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
         self.dpt_model = DPTSegmentationModel(
-            224,
+            150,
             path=model_path,
             backbone="vitb_rn50_384",
         )
