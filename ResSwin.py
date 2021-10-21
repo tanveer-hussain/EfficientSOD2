@@ -39,7 +39,7 @@ class Pyramid_block(nn.Module):
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
-        model_path = "weights/dpt_hybrid-midas-501f0c75.pt"
+        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
         self.dpt_model = DPTSegmentationModel(
             224,
             path=model_path,
