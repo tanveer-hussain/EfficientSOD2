@@ -165,7 +165,7 @@ if __name__ == '__main__':
                 #depths = Variable(depths).cuda()
 
                 # x_sal, d_sal = resswin.forward(images, depths)
-                _, x_sal = resswin.forward(images)
+                x_sal = resswin.forward(images)
                 # total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = l2_regularisation(resswin.dpt_model)
