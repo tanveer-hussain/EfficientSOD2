@@ -88,7 +88,7 @@ class ResSwinModel(nn.Module):
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
-        # self.conv2 = Triple_Conv(512, channel)
+        self.conv2 = Triple_Conv(150, 1)
         # self.conv3 = Triple_Conv(1024, channel)
         # self.conv4 = Triple_Conv(2048, channel)
         # self.liner1024 = nn.Linear(2048, 1024)
@@ -131,7 +131,6 @@ class ResSwinModel(nn.Module):
 
         sal_init = self.layer6(conv4321)
 
-        print (sal_init.shape)
 
         return self.upsample2(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         # else:
