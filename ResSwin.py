@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-from ResNet_models_Custom import Saliency_feat_encoder, Triple_Conv, multi_scale_aspp
+from ResNet_models_Custom import Saliency_feat_encoder, Triple_Conv, multi_scale_aspp, Classifier_Module, RCAB
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
@@ -48,6 +48,14 @@ class ResSwinModel(nn.Module):
         self.dpt_model.eval()
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
+        self.aspp_mhsa1_1 = Pyramid_block(32, 56, 32, 56, 4, 1)
+        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
+        self.aspp_mhsa2_1 = Pyramid_block(32, 28, 32, 28, 4, 1)
+        self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
+        self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
+        self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
+        self.aspp_mhsa4_1 = Pyramid_block(32, 7, 32, 7, 4, 1)
+
         # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
         # if optimize == True and device == torch.device("cuda"):
         #     self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
@@ -57,8 +65,11 @@ class ResSwinModel(nn.Module):
         # self.relu = nn.ReLU(inplace=True)
         # self.swin_saliency = SwinSaliency()
         self.conv1_1 = Triple_Conv(64, channel)
-
         self.conv1 = Triple_Conv(256, channel)
+        self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
+        self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
+        self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
+        self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         # self.conv2 = Triple_Conv(512, channel)
         # self.conv3 = Triple_Conv(1024, channel)
         # self.conv4 = Triple_Conv(2048, channel)
@@ -126,6 +137,8 @@ class ResSwinModel(nn.Module):
         #     # self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
         #     # self.prob_pred, _ = self.sal_encoder(x, depth)
         #     return self.x_sal
+    def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
+        return block(dilation_series, padding_series, NoLabels, input_channel)
 
 # x = torch.randn((12, 3, 224, 224)).to(device)
 # # depth = torch.randn((12, 3, 224, 224)).to(device)

@@ -5,7 +5,7 @@ from ResNet import *
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 from torch.nn import Parameter, Softmax
 import torch.nn.functional as F
-
+from Multi_head import MHSA
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1):
@@ -219,51 +219,125 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         return x + self.main(x)
 
-class VGGFeatures(nn.Module):
-    def __init__(self, input_channels, channels):
-        super(VGGFeatures, self).__init__()
-
-        self.input_channels = input_channels
-        self.relu = nn.ReLU(inplace=True)
-        self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
-        self.bn1 = nn.BatchNorm2d(channels)
-        self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(channels * 2)
-        self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
-        self.bn3 = nn.BatchNorm2d(channels * 4)
-        self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
-        self.bn4 = nn.BatchNorm2d(channels * 8)
-        self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
-        self.bn5 = nn.BatchNorm2d(channels * 8)
-        self.channel = channels
-        self.leakyrelu = nn.LeakyReLU()
-
-    def forward(self, input):
-        output = self.leakyrelu(self.bn1(self.layer1(input))) # [1, 4, 112, 112]
-        # print(output.size())
-        x1 = self.leakyrelu(self.bn2(self.layer2(output))) # [1, 8, 56, 56]
-        # print(output.size())
-        x2 = self.leakyrelu(self.bn3(self.layer3(x1))) # [1, 16, 28, 28]
-        # print(output.size())
-        x3 = self.leakyrelu(self.bn4(self.layer4(x2))) # [1, 32, 14, 14]
-        # print(output.size())
-        x4 = self.leakyrelu(self.bn4(self.layer5(x3))) # [1, 32, 7, 7]
-
-
-        return x1, x2, x3, x4
-
-# vgg_features = VGGFeatures(3,4)
-# x = torch.randn(1,3,224,224)
-# y = vgg_features(x)
-
-
+# class VGGFeatures(nn.Module):
+#     def __init__(self, input_channels, channels):
+#         super(VGGFeatures, self).__init__()
+#
+#         self.input_channels = input_channels
+#         self.relu = nn.ReLU(inplace=True)
+#         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
+#         self.bn1 = nn.BatchNorm2d(channels)
+#         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
+#         self.bn2 = nn.BatchNorm2d(channels * 2)
+#         self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
+#         self.bn3 = nn.BatchNorm2d(channels * 4)
+#         self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+#         self.bn4 = nn.BatchNorm2d(channels * 8)
+#         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
+#         self.bn5 = nn.BatchNorm2d(channels * 8)
+#         self.channel = channels
+#         self.leakyrelu = nn.LeakyReLU()
+#
+#     def forward(self, input):
+#         output = self.leakyrelu(self.bn1(self.layer1(input))) # [1, 4, 112, 112]
+#         # print(output.size())
+#         x1 = self.leakyrelu(self.bn2(self.layer2(output))) # [1, 8, 56, 56]
+#         # print(output.size())
+#         x2 = self.leakyrelu(self.bn3(self.layer3(x1))) # [1, 16, 28, 28]
+#         # print(output.size())
+#         x3 = self.leakyrelu(self.bn4(self.layer4(x2))) # [1, 32, 14, 14]
+#         # print(output.size())
+#         x4 = self.leakyrelu(self.bn4(self.layer5(x3))) # [1, 32, 7, 7]
+#
+#
+#         return x1, x2, x3, x4
+#
+# # vgg_features = VGGFeatures(3,4)
+# # x = torch.randn(1,3,224,224)
+# # y = vgg_features(x)
 
 
+class Pyramid_block(nn.Module):
+    def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
+        super(Pyramid_block, self).__init__()
 
+
+        self.block1 = nn.ModuleList()
+
+        if in_channels != out_channels:
+            self.block1.append(Triple_Conv(in_channels, out_channels))
+
+
+        if initial==1:
+            self.block1.append(MHSA(out_channels, width=in_resolution, height=in_resolution, heads=heads))
+            self.block1.append(multi_scale_aspp(in_channels))
+        else:
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
+        self.block1 = nn.Sequential(*self.block1)
+
+
+        self.in_resolution = in_resolution
+        self.out_resolution = out_resolution
+
+    def forward(self, x):
+        x = self.block1(x)
+        if self.in_resolution != self.out_resolution:
+            x = F.interpolate(x, size=(self.out_resolution,self.out_resolution), mode='bilinear',align_corners=True)
+
+        return x
+
+from dpt.models_custom import DPTSegmentationModel
 class Saliency_feat_encoder(nn.Module):
     # resnet based encoder decoder
     def __init__(self, channel, latent_dim):
         super(Saliency_feat_encoder, self).__init__()
+
+
+        # self.vgg_features = VGGFeatures(3,4)
+
+        self.aspp_mhsa1_1 = Pyramid_block(32,56,32,56,4,1)
+        self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
+        # self.aspp_mhsa1_3_vgg = Pyramid_block(8, 56, 32, 56, 4, 1)
+        # self.aspp_mhsa1_4 = Pyramid_block(32, 56, 32, 56, 4, 4)
+
+        self.aspp_mhsa2_1 = Pyramid_block(32,28,32,28,4,1)
+        self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
+        # self.aspp_mhsa2_3_vgg = Pyramid_block(16, 28, 32, 28, 4, 1)
+        # self.aspp_mhsa2_4 = Pyramid_block(32, 28, 32, 28, 4, 4)
+        # self.aspp_mhsa2_3 = Pyramid_block(64, 28, 32, 28, 4, 3)
+
+        self.aspp_mhsa3_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
+        self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
+        # self.aspp_mhsa3_3_vgg = Pyramid_block(32, 14, 32, 14, 4, 3)
+        # self.aspp_mhsa3_4 = Pyramid_block(32, 14, 32, 14, 4, 4)
+        # self.aspp_mhsa3_3 = Pyramid_block(128, 14, 32, 14, 4, 3)
+
+        self.aspp_mhsa4_1 = Pyramid_block(32, 7, 32, 7, 4, 1)
+        # self.aspp_mhsa4_2_vgg = Pyramid_block(32, 7, 32, 7, 4, 2)
+        # self.aspp_mhsa4_3 = Pyramid_block(32, 7, 32, 7, 4, 3)
+        # self.aspp_mhsa4_4 = Pyramid_block(32, 7, 32, 7, 4, 4)
+
+
+        # self.b1_layers = nn.ModuleList()
+        # self.b2_layers = nn.ModuleList()
+        # self.b3_layers = nn.ModuleList()
+        # self.b4_layers = nn.ModuleList()
+
+        # self.b1_layers.append(Pyramid_block(256,56,256,56,4,1))
+        # self.b1_layers.append(Pyramid_block(256, 56, 32, 56, 4, 2))
+        # self.b1_layers.append(Pyramid_block(128, 56, 128, 56, 4, 3))
+        # self.b1_layers.append(Pyramid_block(128, 56, 32, 56, 4, 4))
+        #
+        # self.b2_layers.append(Pyramid_block(512, 28, 256, 28, 4, 1))
+        # self.b2_layers.append(Pyramid_block(256, 28, 32, 28, 4, 2))
+        # self.b2_layers.append(Pyramid_block(128, 28, 32, 28, 4, 3))
+
+        # self.b3_layers.append(Pyramid_block(1024, 14, 256, 14, 4, 1))
+        # self.b3_layers.append(Pyramid_block(256, 14, 32, 14, 4, 2))
+        #
+        # self.b4_layers.append(Pyramid_block(2048, 7, 32, 7, 4, 2))
+
 
         self.resnet = B2_ResNet()
         # self.relu = nn.ReLU(inplace=True)
@@ -327,11 +401,11 @@ class Saliency_feat_encoder(nn.Module):
         order_index = torch.LongTensor(np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])).to(device)
         return torch.index_select(a, dim, order_index)
 
-    def forward(self, x):
+    def forward(self, x, depth):
 
         # x1_vgg, x2_vgg, x3_vgg, x4_vgg = self.vgg_features(x)
-        # x = torch.cat((x, depth), 1)
-        # x = self.conv_depth1(x)
+        x = torch.cat((x, depth), 1)
+        x = self.conv_depth1(x)
 
         x = self.resnet.conv1(x)
         x = self.resnet.bn1(x)
@@ -345,17 +419,82 @@ class Saliency_feat_encoder(nn.Module):
 
 
         # depth estimation
-        # conv1_depth = self.conv1_depth(x1)
-        # conv2_depth = self.upsample2(self.conv2_depth(x2))
-        # conv3_depth = self.upsample4(self.conv3_depth(x3))
-        # conv4_depth = self.upsample8(self.conv4_depth(x4))
-        # conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
-        # depth_pred = self.layer_depth(conv_depth)
-        # depth_pred = self.conv4_depth1(depth_pred)
+        conv1_depth = self.conv1_depth(x1)
+        conv2_depth = self.upsample2(self.conv2_depth(x2))
+        conv3_depth = self.upsample4(self.conv3_depth(x3))
+        conv4_depth = self.upsample8(self.conv4_depth(x4))
+        conv_depth = torch.cat((conv4_depth, conv3_depth, conv2_depth, conv1_depth), 1)
+        depth_pred = self.layer_depth(conv_depth)
+        depth_pred = self.conv4_depth1(depth_pred)
 
 
+        # conv1_feat = self.b1_layers[0](x1)
+        # conv1_feat = self.b1_layers[1](conv1_feat)
+        # # conv1_feat = self.b1_layers[2](conv1_feat)
+        # # conv1_feat = self.b1_layers[3](conv1_feat)
+        #
+        # conv2_feat = self.b2_layers[0](x2)
+        # conv2_feat = self.b2_layers[1](conv2_feat)
+        # conv2_feat = self.b2_layers[2](conv2_feat)
 
-        return x1, x2, x3, x4 #self.upsample4(sal_init) , self.upsample4(depth_pred)
+
+        # conv3_feat = self.b3_layers[0](x3)
+        # conv3_feat = self.b3_layers[1](conv3_feat)
+        #
+        # conv4_feat = self.b4_layers[0](x4)
+
+        conv1_feat = self.conv1(x1)
+        conv1_feat = self.aspp_mhsa1_1(conv1_feat)
+        conv1_feat = self.aspp_mhsa1_2(conv1_feat)
+        # conv1_feat = self.aspp_mhsa1_4(conv1_feat)
+        conv1_feat = self.conv1_1(torch.cat((self.conv1(x1), conv1_feat),1))
+        # print (conv1_feat.shape)
+
+        conv2_feat = self.conv2(x2)
+        conv2_feat = self.aspp_mhsa2_1(conv2_feat)
+        conv2_feat = self.aspp_mhsa2_2(conv2_feat)
+        # conv2_feat = self.aspp_mhsa2_4(conv2_feat)
+        conv2_feat = self.conv1_1(torch.cat((self.conv2(x2), conv2_feat),1))
+        # conv2_feat = self.aspp_mhsa2_2(conv2_feat)
+        # conv2_feat = self.aspp_mhsa2_3(conv2_feat)
+
+        # conv2_feat = self.asppconv2(conv2_feat)
+        conv3_feat = self.conv3(x3)
+        conv3_feat = self.aspp_mhsa3_1(conv3_feat)
+        conv3_feat = self.aspp_mhsa3_2(conv3_feat)
+        # conv3_feat_vgg = self.aspp_mhsa3_3_vgg(x3_vgg)
+        # conv3_feat = self.aspp_mhsa3_4(conv3_feat)
+        conv3_feat = self.conv1_1(torch.cat((self.conv3(x3), conv3_feat),1))
+        # conv3_feat = self.aspp_mhsa3_2(conv3_feat)
+        # conv3_feat = self.aspp_mhsa3_3(conv3_feat)
+        # conv3_feat = self.asppconv3(conv3_feat)
+        conv4_feat = self.conv4(x4)
+        conv4_feat = self.aspp_mhsa4_1(conv4_feat)
+        # conv4_feat_vgg = self.aspp_mhsa4_2_vgg(x4_vgg)
+        # conv4_feat = self.aspp_mhsa4_3(conv4_feat)
+        # conv4_feat = self.aspp_mhsa4_4(conv4_feat)
+        conv4_feat = self.conv1_1(torch.cat((self.conv4(x4), conv4_feat),1))
+        # conv4_feat = self.asppconv4(conv4_feat)
+        conv4_feat = self.upsample2(conv4_feat)
+
+        conv43 = torch.cat((conv4_feat, conv3_feat), 1)
+        # conv43 = self.racb_43(conv43)
+        conv43 = self.conv43(conv43)
+
+        conv43 = self.upsample2(conv43)
+        conv432 = torch.cat((self.upsample2(conv4_feat), conv43, conv2_feat), 1)
+        # conv432 = self.racb_432(conv432)
+        conv432 = self.conv432(conv432)
+
+        conv432 = self.upsample2(conv432)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
+        # conv4321 = self.racb_4321(conv4321)
+        conv4321 = self.conv4321(conv4321)
+
+        sal_init = self.layer6(conv4321)
+
+
+        return self.upsample4(sal_init) , self.upsample4(depth_pred)
 
     def initialize_weights(self):
         res50 = models.resnet50(pretrained=True)

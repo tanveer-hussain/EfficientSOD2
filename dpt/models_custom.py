@@ -83,7 +83,7 @@ class DPT(BaseModel):
 
         out = self.scratch.output_conv(path_1)
 
-        return out , path_1, path_2, path_3, path_4 #, out
+        return path_1, path_2, path_3, path_4 #, out
 
 
 class DPTDepthModel(DPT):
