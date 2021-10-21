@@ -157,7 +157,7 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, (images, _, gts, _) in enumerate(train_loader, start=1):
+            for i, (images, gts, _) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
                 images = Variable(images).cuda()
@@ -187,8 +187,8 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                # visualize_gt(gts)
-                # visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                visualize_gt(gts)
+                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))

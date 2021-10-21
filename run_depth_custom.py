@@ -7,7 +7,6 @@ import argparse
 
 import torch
 import torch.nn.functional as F
-
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 
 
@@ -30,7 +29,7 @@ if optimize == True and device == torch.device("cuda"):
 
 model.to(device)
 
-
+from util import io
 
 print("start processing")
 
@@ -52,15 +51,34 @@ with torch.no_grad():
         sample = sample.half()
 
     out, x1, x2, x3, x4 = model.forward(sample)
-    # out = model.forward(sample)
-    #
-    # prediction = torch.nn.functional.interpolate(
-    #     out, size=img.shape[:2], mode="bicubic", align_corners=False
+    # prediction = (
+    #     torch.nn.functional.interpolate(
+    #         out.unsqueeze(1),
+    #         size=img.shape[:2],
+    #         mode="bicubic",
+    #         align_corners=False,
+    #     )
+    #         .squeeze()
+    #         .cpu()
+    #         .numpy()
     # )
-    # prediction = torch.argmax(prediction, dim=1) + 1
-    # prediction = prediction.squeeze().cpu().numpy()
-    # filename = "output_semseg/150"
-    # util.io.write_segm_img(filename, img, prediction, alpha=0.5)
 
-    print (x4.shape, "\n", x3.shape, "\n",  x2.shape, "\n",  x1.shape)
+    # filename = "150"
+    # bits = 2
+    # depth_min = prediction.min()
+    # depth_max = prediction.max()
+    #
+    # max_val = (2 ** (8 * bits)) - 1
+    #
+    # if depth_max - depth_min > np.finfo("float").eps:
+    #     out = max_val * (prediction - depth_min) / (depth_max - depth_min)
+    # else:
+    #     out = np.zeros(prediction.shape, dtype=prediction.dtype)
+    #
+    # if bits == 1:
+    #     cv2.imwrite(filename + ".png", out.astype("uint8"))
+    # elif bits == 2:
+    #     cv2.imwrite(filename + ".png", out.astype("uint16"))
+    #
+    # print (x4.shape, "\n", x3.shape, "\n",  x2.shape, "\n",  x1.shape)
 

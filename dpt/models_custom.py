@@ -83,7 +83,7 @@ class DPT(BaseModel):
 
         out = self.scratch.output_conv(path_1)
 
-        return out #path_4, path_3, path_2, path_1 #, out
+        return out , path_1, path_2, path_3, path_4 #, out
 
 
 class DPTDepthModel(DPT):
@@ -112,15 +112,16 @@ class DPTDepthModel(DPT):
             self.load(path)
 
     def forward(self, x):
-        inv_depth = super().forward(x).squeeze(dim=1)
+        inv_depth , path_1, path_2, path_3, path_4 = super().forward(x)
+        inv_depth = inv_depth.squeeze(dim=1)
 
         if self.invert:
             depth = self.scale * inv_depth + self.shift
             depth[depth < 1e-8] = 1e-8
             depth = 1.0 / depth
-            return depth
+            return depth , path_1, path_2, path_3, path_4
         else:
-            return inv_depth
+            return inv_depth, path_1, path_2, path_3, path_4
 
 
 class DPTSegmentationModel(DPT):

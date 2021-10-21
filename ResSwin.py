@@ -39,13 +39,11 @@ class Pyramid_block(nn.Module):
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
-        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
-        self.dpt_model = DPTDepthModel(
-            150,
+        model_path = "weights/dpt_hybrid-midas-501f0c75.pt"
+        self.dpt_model = DPTSegmentationModel(
+            224,
             path=model_path,
             backbone="vitb_rn50_384",
-            non_negative=True,
-            enable_attention_hooks=False,
         )
         self.dpt_model.eval()
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,9 +59,9 @@ class ResSwinModel(nn.Module):
         self.conv1_1 = Triple_Conv(64, channel)
 
         self.conv1 = Triple_Conv(256, channel)
-        self.conv2 = Triple_Conv(512, channel)
-        self.conv3 = Triple_Conv(1024, channel)
-        self.conv4 = Triple_Conv(2048, channel)
+        # self.conv2 = Triple_Conv(512, channel)
+        # self.conv3 = Triple_Conv(1024, channel)
+        # self.conv4 = Triple_Conv(2048, channel)
         # self.liner1024 = nn.Linear(2048, 1024)
         # self.upsampling = nn.Sequential(
         #     nn.Upsample(size=(64, 64), mode='bilinear', align_corners=True),
@@ -75,29 +73,29 @@ class ResSwinModel(nn.Module):
     def forward(self, x , training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        self.depth, self.p1, self.p2, self.p3, self.p4 = self.dpt_model(x)
-        self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
+        self.p1, self.p2, self.p3, self.p4 = self.dpt_model(x)
+        # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(self.p1)
         conv1_feat = self.aspp_mhsa1_1(conv1_feat)
         conv1_feat = self.aspp_mhsa1_2(conv1_feat)
         # conv1_feat = self.aspp_mhsa1_4(conv1_feat)
-        conv1_feat = self.conv1_1(torch.cat((self.conv1(self.x1), conv1_feat), 1))
+        conv1_feat = self.conv1_1(torch.cat((self.conv1(self.p1), conv1_feat), 1))
         # print (conv1_feat.shape)
 
         conv2_feat = self.conv1(self.p2)
         conv2_feat = self.aspp_mhsa2_1(conv2_feat)
         conv2_feat = self.aspp_mhsa2_2(conv2_feat)
-        conv2_feat = self.conv1_1(torch.cat((self.conv2(self.x2), conv2_feat), 1))
+        conv2_feat = self.conv1_1(torch.cat((self.conv2(self.p2), conv2_feat), 1))
 
         conv3_feat = self.conv1(self.p3)
         conv3_feat = self.aspp_mhsa3_1(conv3_feat)
         conv3_feat = self.aspp_mhsa3_2(conv3_feat)
-        conv3_feat = self.conv1_1(torch.cat((self.conv3(self.x3), conv3_feat), 1))
+        conv3_feat = self.conv1_1(torch.cat((self.conv3(self.p3), conv3_feat), 1))
 
         conv4_feat = self.conv1(self.p4)
         conv4_feat = self.aspp_mhsa4_1(conv4_feat)
-        conv4_feat = self.conv1_1(torch.cat((self.conv4(self.x4), conv4_feat), 1))
+        conv4_feat = self.conv1_1(torch.cat((self.conv4(self.p4), conv4_feat), 1))
 
         conv4_feat = self.upsample2(conv4_feat)
 
@@ -117,7 +115,7 @@ class ResSwinModel(nn.Module):
 
         sal_init = self.layer6(conv4321)
 
-        return sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+        return self.upsample4(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         # else:
         #     # self.x_sal = self.sal_encoder(x)
         #     # self.x_sal, _ = self.sal_encoder(x, depth)
@@ -130,8 +128,8 @@ class ResSwinModel(nn.Module):
         #     return self.x_sal
 
 # x = torch.randn((12, 3, 224, 224)).to(device)
-# depth = torch.randn((12, 3, 224, 224)).to(device)
-# gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = ResSwin(32,3).to(device)
-# a, b, c, d, e = model(x,depth, gt)
+# # depth = torch.randn((12, 3, 224, 224)).to(device)
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+# model = ResSwinModel(32,3).to(device)
+# y = model(x)
 # print ('done')
