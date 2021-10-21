@@ -53,9 +53,9 @@ class ModelTesting():
         self.evaluate()
 
     def prediction(self):
-        for iter, (X, depth, _, name) in enumerate(self.loader):
+        for iter, (X, _, name) in enumerate(self.loader):
             X = X.to(device)
-            depth = depth.to(device)
+            # depth = depth.to(device)
             pred = self.model.forward(X, training=False)
             output = torch.squeeze(pred, 0)
             output = output.detach().cpu().numpy()

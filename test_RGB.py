@@ -7,6 +7,7 @@ from data import RetreiveTestData, TestDatasetLoader
 from torch.utils.data import DataLoader
 from EvaluateSOD import Evaluator
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
+import shutil
 
 class ModelTesting():
     def __init__(self, model, test_loader, output_root, gt_root, dataset_name):
@@ -29,8 +30,12 @@ class ModelTesting():
             output *= output.max() / 255.0
             output = np.transpose(output, (1, 2, 0))
             image_name , _ = name[0].split('.')
+            if not os.path.exists(self.output_path + "/gt/"):
+                os.mkdir(self.output_path + "/gt/")
+            gt_path = self.output_path + "/gt/" #+ image_name
+            shutil.copy(os.path.join(self.gt_root, image_name,'.png'), gt_path)
             output_path = self.output_path + image_name + '.png'
-            print ("Saving Image at.. ", output_path)
+            print ("Saving Image at.. ", output_path, ", Copying from ", gt_path, ", to ", gt_path)
             cv2.imwrite(output_path, output)
     def evaluate(self):
         print (self.output_path, self.gt_root)
