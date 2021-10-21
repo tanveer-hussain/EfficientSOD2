@@ -102,7 +102,7 @@ class ResSwinModel(nn.Module):
     def forward(self, x , training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        p1, p2, p3, p4 = self.dpt_model(x)
+        out, p1, p2, p3, p4 = self.dpt_model(x)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(p1)
