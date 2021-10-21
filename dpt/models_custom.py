@@ -136,7 +136,7 @@ class DPTSegmentationModel(DPT):
             nn.BatchNorm2d(features),
             nn.ReLU(True),
             nn.Dropout(0.1, False),
-            nn.Conv2d(features, 1, kernel_size=1),
+            nn.Conv2d(features, num_classes, kernel_size=1),
             Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
         )
 
