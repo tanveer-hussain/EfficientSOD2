@@ -30,11 +30,12 @@ class ModelTesting():
             output *= output.max() / 255.0
             output = np.transpose(output, (1, 2, 0))
             image_name , _ = name[0].split('.')
+            image_name = image_name + '.png'
             if not os.path.exists(self.output_path + "/gt/"):
                 os.mkdir(self.output_path + "/gt/")
             gt_path = self.output_path + "/gt/" #+ image_name
-            shutil.copy(os.path.join(self.gt_root, image_name,'.png'), gt_path)
-            output_path = self.output_path + image_name + '.png'
+            shutil.copy(os.path.join(self.gt_root, image_name), gt_path)
+            output_path = self.output_path + image_name
             print ("Saving Image at.. ", output_path, ", Copying from ", gt_path, ", to ", gt_path)
             cv2.imwrite(output_path, output)
     def evaluate(self):
