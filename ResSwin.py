@@ -102,7 +102,7 @@ class ResSwinModel(nn.Module):
     def forward(self, x , training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        out, p1, p2, p3, p4 = self.dpt_model(x)
+        _, p1, p2, p3, p4 = self.dpt_model(x)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(p1)
@@ -130,10 +130,10 @@ class ResSwinModel(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
-        out = self.conv2(out)
+        # out = self.conv2(out)
 
 
-        return out#self.upsample2(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+        return self.upsample2(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         # else:
         #     # self.x_sal = self.sal_encoder(x)
         #     # self.x_sal, _ = self.sal_encoder(x, depth)

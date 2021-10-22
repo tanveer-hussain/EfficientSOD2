@@ -22,7 +22,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 parser = argparse.ArgumentParser()
 parser.add_argument('--epoch', type=int, default=1, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=8, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -136,7 +136,8 @@ if __name__ == '__main__':
         print ("Datasets:", rgb_datasets, "\n ****Currently Training > ", dataset_name)
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
-        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB1/' + dataset_name  ######################################
+        # dataset_path = r'../RGBDatasets/' + dataset_name  ######################################
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB/' + dataset_name
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         # d_type = ['Train', 'Test']
         d_type = ''
@@ -160,7 +161,7 @@ if __name__ == '__main__':
                 # x_sal, d_sal = resswin.forward(images, depths)
                 x_sal = resswin.forward(images)
                 # total_loss = mse_loss(x_sal,gts)
-                reg_loss = l2_regularisation(resswin.dpt_model)
+                reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = opt.reg_weight * reg_loss
                 #
                 # depth_loss = l1_criterion(d_sal, gts)
@@ -179,8 +180,8 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                # visualize_gt(gts)
-                # visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                #visualize_gt(gts)
+                #visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
@@ -198,7 +199,7 @@ if __name__ == '__main__':
                 #     ResultsFile.write(writing_string)
         image_save_path = 'results/' + dataset_name +  "/"
         image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
-        print (image_save_path, "<<<< ")
+        #print (image_save_path, "<<<< ")
         test_loader = DataLoader(test_set)
         
         from test_RGB import ModelTesting

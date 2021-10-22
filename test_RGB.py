@@ -30,16 +30,17 @@ class ModelTesting():
             output *= output.max() / 255.0
             output = np.transpose(output, (1, 2, 0))
             image_name , _ = name[0].split('.')
-            image_name = image_name + '.png'
-
-            gt_path = "results/gt/" if os.path.exists("results/gt/") else os.mkdir("results/gt/")
-            gt_path = gt_path + self.dataset_name if os.path.exists(gt_path + self.dataset_name) else os.mkdir(gt_path + self.dataset_name)
-            # gt_path =
-            shutil.copy(os.path.join(self.gt_root, image_name), gt_path)
-            output_path = self.output_path + image_name
-            print ("Saving Image at.. ", output_path, ", Copying from ", gt_path, ", to ", gt_path)
+            output_path = self.output_path + image_name + '.png'
+            
+            None if os.path.exists("results/gt/") else os.mkdir("results/gt/")
+            gt_output_path = "results/gt/" + self.dataset_name
+            gt_output_path if os.path.exists(gt_output_path) else os.mkdir(gt_output_path)
+            
+            gt_complete_path = self.gt_root + "/" + image_name + '.png'
+            shutil.copy(gt_complete_path, gt_output_path)
+            
+            print ("Saving Image at.. ", output_path, ", and copying", gt_complete_path, ", to", gt_output_path)
             cv2.imwrite(output_path, output)
-
     def evaluate(self):
         print (self.output_path, self.gt_root)
         eval_data = TestDatasetLoader(self.output_path, self.gt_root)
