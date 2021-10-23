@@ -40,12 +40,23 @@ class Pyramid_block(nn.Module):
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
-        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
-        self.dpt_model = DPTSegmentationModel(
-            150,
+
+        model_path = "weights/dpt_hybrid-midas-501f0c75.pt"
+        self.dpt_model = DPTDepthModel(
             path=model_path,
             backbone="vitb_rn50_384",
+            non_negative=True,
+            enable_attention_hooks=False,
         )
+
+        #
+        # model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
+        # self.dpt_model = DPTSegmentationModel(
+        #     150,
+        #     path=model_path,
+        #     backbone="vitb_rn50_384",
+        # )
+
         self.dpt_model.eval()
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
