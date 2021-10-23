@@ -5,7 +5,6 @@ from ResNet_models_Custom import Saliency_feat_encoder, Triple_Conv, multi_scale
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
-from depth_model import DepthNet
 
 class Pyramid_block(nn.Module):
     def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
@@ -40,27 +39,15 @@ class Pyramid_block(nn.Module):
 class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
-
-        model_path = "weights/dpt_hybrid-midas-501f0c75.pt"
-        self.dpt_model = DPTDepthModel(
+        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
+        self.dpt_model = DPTSegmentationModel(
+            150,
             path=model_path,
             backbone="vitb_rn50_384",
-            non_negative=True,
-            enable_attention_hooks=False,
         )
-
-        #
-        # model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
-        # self.dpt_model = DPTSegmentationModel(
-        #     150,
-        #     path=model_path,
-        #     backbone="vitb_rn50_384",
-        # )
-
         self.dpt_model.eval()
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
-        self.depth_model = DepthNet()
 
         # self.asppconv1 = multi_scale_aspp(channel)
         # self.asppconv2 = multi_scale_aspp(channel)
@@ -83,7 +70,7 @@ class ResSwinModel(nn.Module):
         self.aspp_mhsa3_1 = Pyramid_block(32, 28, 32, 14, 4, 1)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
-        self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
+        self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 14, 4, 1)
 
         # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
         # if optimize == True and device == torch.device("cuda"):
@@ -113,11 +100,10 @@ class ResSwinModel(nn.Module):
         # )
 
 
-    def forward(self, x , d, training=True):
+    def forward(self, x , training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
-        # d2, d3, d4 = self.depth_model(d)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(p1)
