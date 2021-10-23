@@ -80,7 +80,7 @@ class ResSwinModel(nn.Module):
         self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
         self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
         #
-        self.aspp_mhsa3_1 = Pyramid_block(64, 28, 32, 14, 4, 2)
+        self.aspp_mhsa3_1 = Pyramid_block(32, 28, 32, 14, 4, 1)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
         self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
@@ -137,8 +137,7 @@ class ResSwinModel(nn.Module):
         # conv2_feat = self.asppconv2(conv2_feat)
         conv3_feat = self.conv1(p3)
         d3 = F.interpolate(d3, size=(28,28), mode='bilinear',align_corners=True)
-        conv3_feat_x3_d3 = torch.cat((conv3_feat,d3),1)
-        print (conv3_feat_x3_d3.shape)
+        conv3_feat_x3_d3 = self.conv1_1(torch.cat((conv3_feat,d3),1))
         conv3_feat = self.aspp_mhsa3_1(conv3_feat_x3_d3)
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv1(p4)
@@ -178,9 +177,9 @@ class ResSwinModel(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-x = torch.randn((2, 3, 224, 224)).to(device)
-depth = torch.randn((2, 3, 224, 224)).to(device)
-# # gt = torch.randn((12, 1, 224, 224)).to(device)
-model = ResSwinModel(32,3).to(device)
-y = model(x,depth)
+# x = torch.randn((2, 3, 224, 224)).to(device)
+# depth = torch.randn((2, 3, 224, 224)).to(device)
+# # # gt = torch.randn((12, 1, 224, 224)).to(device)
+# model = ResSwinModel(32,3).to(device)
+# y = model(x,depth)
 # print ('done')
