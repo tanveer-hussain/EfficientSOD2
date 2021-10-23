@@ -80,7 +80,7 @@ class ResSwinModel(nn.Module):
         self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
         self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
         #
-        self.aspp_mhsa3_1 = Pyramid_block(64, 28, 32, 14, 4, 1)
+        self.aspp_mhsa3_1 = Pyramid_block(64, 28, 32, 14, 4, 2)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
         self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
