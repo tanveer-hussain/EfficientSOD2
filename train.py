@@ -130,6 +130,7 @@ if __name__ == '__main__':
     for dataset_name in datasets:
 
         resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        print ("Resswin parameters > ", count_parameters(resswin))
         resswin.to(device)
         resswin.train()
         resswin_params = resswin.parameters()
