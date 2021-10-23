@@ -62,10 +62,10 @@ class ResSwinModel(nn.Module):
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
         self.depth_model = DepthNet()
 
-        self.asppconv1 = multi_scale_aspp(channel)
-        self.asppconv2 = multi_scale_aspp(channel)
-        self.asppconv3 = multi_scale_aspp(channel)
-        self.asppconv4 = multi_scale_aspp(channel)
+        # self.asppconv1 = multi_scale_aspp(channel)
+        # self.asppconv2 = multi_scale_aspp(channel)
+        # self.asppconv3 = multi_scale_aspp(channel)
+        # self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
         self.conv_depth1 = BasicConv2d(6 + latent_dim, 3, kernel_size=3, padding=1)
