@@ -115,7 +115,7 @@ class ResSwinModel(nn.Module):
         conv2_feat = self.aspp_mhsa2_1(conv2_feat)
         # conv2_feat = self.asppconv2(conv2_feat)
         conv3_feat = self.conv1(p3)
-        conv4_feat = self.aspp_mhsa4_1(conv3_feat)
+        conv3_feat = self.aspp_mhsa3_1(conv3_feat)
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv1(p4)
         conv4_feat = self.aspp_mhsa4_1(conv4_feat)
