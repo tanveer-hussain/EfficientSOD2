@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+
+import torch
 import torch.nn as nn
 
 BN_MOMENTUM = 0.1
@@ -64,7 +66,7 @@ class DepthNet(nn.Module):
         num_stages = 3
         blocks = BasicBlock
         num_blocks = [4, 4, 4]
-        num_channels = [32, 32, 128]
+        num_channels = [32, 32, 32]
         self.stage = self._make_stages(num_stages, blocks, num_blocks, num_channels)
         self.transition1 = nn.Sequential(
             nn.Conv2d(128, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
@@ -72,8 +74,8 @@ class DepthNet(nn.Module):
             nn.ReLU(inplace=True)
         )
         self.transition2 = nn.Sequential(
-            nn.Conv2d(32, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
-            nn.BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
+            nn.Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+            nn.BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             nn.ReLU(inplace=True)
         )
 
@@ -130,3 +132,8 @@ class DepthNet(nn.Module):
                 for name, _ in m.named_parameters():
                     if name in ['bias']:
                         nn.init.constant_(m.bias, 0)
+
+# x = torch.randn(1,3,224,224)
+# m = DepthNet()
+# y1, y2, y3 = m(x)
+# print (y1.shape, "\n", y2.shape, "\n", y3.shape)

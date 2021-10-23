@@ -5,6 +5,7 @@ from ResNet_models_Custom import Saliency_feat_encoder, Triple_Conv, multi_scale
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
+from depth_model import DepthNet
 
 class Pyramid_block(nn.Module):
     def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
@@ -48,8 +49,7 @@ class ResSwinModel(nn.Module):
         self.dpt_model.eval()
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
-        # self.aspp_mhsa1_1 = Pyramid_block(32, 112, 32, 56, 4, 1)
-        # self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
+        self.depth_model = DepthNet()
 
         self.asppconv1 = multi_scale_aspp(channel)
         self.asppconv2 = multi_scale_aspp(channel)
@@ -62,6 +62,9 @@ class ResSwinModel(nn.Module):
         self.racb_43 = RCAB(channel * 2)
         self.racb_432 = RCAB(channel * 3)
         self.racb_4321 = RCAB(channel * 4)
+
+        # self.aspp_mhsa1_1 = Pyramid_block(32, 112, 32, 56, 4, 1)
+        # self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
 
         # self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
         # # self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
@@ -99,10 +102,11 @@ class ResSwinModel(nn.Module):
         # )
 
 
-    def forward(self, x , training=True):
+    def forward(self, x , d, training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
+        # d2, d3, d4 = self.depth_model(d)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(p1)
