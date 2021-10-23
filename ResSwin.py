@@ -80,7 +80,7 @@ class ResSwinModel(nn.Module):
         self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
         self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
         #
-        self.aspp_mhsa3_1 = Pyramid_block(32, 28, 32, 14, 4, 1)
+        self.aspp_mhsa3_1 = Pyramid_block(64, 28, 32, 14, 4, 1)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
         self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
@@ -123,7 +123,7 @@ class ResSwinModel(nn.Module):
 
         conv1_feat = self.conv1(p1)
         conv1_feat_x1 = F.interpolate(conv1_feat, size=(56,56), mode='bilinear',align_corners=True)
-        conv1_feat_x1 = self.conv1_1(torch.cat(conv1_feat_x1,d1),1)
+        conv1_feat_x1 = self.conv1_1(torch.cat((conv1_feat_x1,d1)),1)
         conv1_feat = self.aspp_mhsa1_1(conv1_feat_x1)
         conv1_feat = self.aspp_mhsa1_2(conv1_feat)
         conv1_feat = self.aspp_mhsa1_3(conv1_feat)
@@ -131,12 +131,14 @@ class ResSwinModel(nn.Module):
         conv1_feat = self.conv1_1(conv1_feat)
 
         conv2_feat_x2 = self.conv1(p2)
-        conv2_feat_x2 = self.conv1_1(torch.cat(conv2_feat_x2,d2),1)
+        conv2_feat_x2 = self.conv1_1(torch.cat((conv2_feat_x2,d2),1))
         conv2_feat = self.aspp_mhsa2_1(conv2_feat_x2)
         conv2_feat = self.aspp_mhsa2_2(conv2_feat)
         # conv2_feat = self.asppconv2(conv2_feat)
         conv3_feat = self.conv1(p3)
-        conv3_feat = self.aspp_mhsa3_1(conv3_feat)
+        d3 = F.interpolate(d3, size=(28,28), mode='bilinear',align_corners=True)
+        conv3_feat_x3_d3 = torch.cat((conv3_feat,d3),1)
+        conv3_feat = self.aspp_mhsa3_1(conv3_feat_x3_d3)
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv1(p4)
         conv4_feat = self.aspp_mhsa4_1(conv4_feat)
