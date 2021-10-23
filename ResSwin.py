@@ -63,16 +63,16 @@ class ResSwinModel(nn.Module):
         self.racb_432 = RCAB(channel * 3)
         self.racb_4321 = RCAB(channel * 4)
 
-        # self.aspp_mhsa1_1 = Pyramid_block(32, 112, 32, 56, 4, 1)
+        self.aspp_mhsa1_1 = Pyramid_block(32, 112, 32, 56, 4, 1)
         # self.aspp_mhsa1_2 = Pyramid_block(32, 56, 32, 56, 4, 2)
 
-        # self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
+        self.aspp_mhsa2_1 = Pyramid_block(32, 56, 32, 28, 4, 1)
         # # self.aspp_mhsa2_2 = Pyramid_block(32, 28, 32, 28, 4, 2)
         #
-        # self.aspp_mhsa3_1 = Pyramid_block(32, 28, 32, 14, 4, 1)
+        self.aspp_mhsa3_1 = Pyramid_block(32, 28, 32, 14, 4, 1)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
-        # self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
+        self.aspp_mhsa4_1 = Pyramid_block(32, 14, 32, 7, 4, 1)
 
         # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
         # if optimize == True and device == torch.device("cuda"):
@@ -110,13 +110,17 @@ class ResSwinModel(nn.Module):
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
         conv1_feat = self.conv1(p1)
-        conv1_feat = self.asppconv1(conv1_feat)
+        conv1_feat = self.aspp_mhsa1_1(conv1_feat)
+        # conv1_feat = self.asppconv1(conv1_feat)
         conv2_feat = self.conv1(p2)
-        conv2_feat = self.asppconv2(conv2_feat)
+        conv2_feat = self.aspp_mhsa2_1(conv2_feat)
+        # conv2_feat = self.asppconv2(conv2_feat)
         conv3_feat = self.conv1(p3)
-        conv3_feat = self.asppconv3(conv3_feat)
+        conv4_feat = self.aspp_mhsa4_1(conv3_feat)
+        # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv1(p4)
-        conv4_feat = self.asppconv4(conv4_feat)
+        conv4_feat = self.aspp_mhsa4_1(conv4_feat)
+        # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
