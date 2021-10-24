@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
         # dataset_path = r'../RGBDatasets/' + dataset_name  ######################################
-        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB1/' + dataset_name
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB/' + dataset_name
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         # d_type = ['Train', 'Test']
         d_type = ''
