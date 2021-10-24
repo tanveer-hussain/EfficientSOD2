@@ -88,7 +88,7 @@ class ResSwinModel(nn.Module):
         self.aspp_mhsa3 = Pyramid_block(32, 28, 32, 28, 4, 3)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
-        self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 7, 4, 1)
+        self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 1)
 
 
         # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
@@ -156,7 +156,7 @@ class ResSwinModel(nn.Module):
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, conv1_feat), 1)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, self.upsample2(conv1_feat)), 1)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
@@ -178,9 +178,9 @@ class ResSwinModel(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-x = torch.randn((2, 3, 224, 224)).to(device)
-depth = torch.randn((2, 3, 224, 224)).to(device)
-# # gt = torch.randn((12, 1, 224, 224)).to(device)
-model = ResSwinModel(32,3).to(device)
-y = model(x,depth)
-print ('done')
+# x = torch.randn((2, 3, 224, 224)).to(device)
+# depth = torch.randn((2, 3, 224, 224)).to(device)
+# # # gt = torch.randn((12, 1, 224, 224)).to(device)
+# model = ResSwinModel(32,3).to(device)
+# y = model(x,depth)
+# print ('done')
