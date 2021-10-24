@@ -19,9 +19,15 @@ class Pyramid_block(nn.Module):
 
 
         if initial==1:
-            self.block1.append(MHSA(out_channels, width=in_resolution, height=in_resolution, heads=heads))
             self.block1.append(multi_scale_aspp(in_channels))
-        else:
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(MHSA(out_channels, width=in_resolution, height=in_resolution, heads=heads))
+        elif initial==2:
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(multi_scale_aspp(in_channels))
+            self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
+        elif initial==3:
             self.block1.append(multi_scale_aspp(in_channels))
             self.block1.append(MHSA(in_channels, width=in_resolution, height=in_resolution, heads=heads))
         self.block1 = nn.Sequential(*self.block1)
@@ -60,6 +66,13 @@ class ResSwinModel(nn.Module):
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
         self.depth_model = DepthNet()
+
+        self.block1 = nn.ModuleList()
+        self.block1.append(multi_scale_aspp(channel))
+        self.block1.append(multi_scale_aspp(channel))
+        self.block1.append(multi_scale_aspp(channel))
+        self.aspp_mhsa_b1 = MHSA(out_channels, width=in_resolution, height=in_resolution, heads=heads)
+
 
         # self.asppconv1 = multi_scale_aspp(channel)
         # self.asppconv2 = multi_scale_aspp(channel)
