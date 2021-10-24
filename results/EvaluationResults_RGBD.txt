@@ -7,6 +7,7 @@ SIP	MAE: 0.024, FMeasure: 0.906, EMeasure: 0.975, SMeasure: 0.906
 DUT-RGBD	MAE: 0.03, FMeasure: 0.929, EMeasure: 0.961, SMeasure: 0.929
 NLPR	MAE: 0.023, FMeasure: 0.914, EMeasure: 0.96, SMeasure: 0.914
 NJU2K	MAE: 0.043, FMeasure: 0.894, EMeasure: 0.937, SMeasure: 0.894
+# Segmentation model baseline weights with pyramid mhsa and aspp results
 DUT-RGBD	MAE: 0.027, FMeasure: 0.931, EMeasure: 0.964, SMeasure: 0.931
 NLPR	MAE: 0.022, FMeasure: 0.906, EMeasure: 0.96, SMeasure: 0.906
 NJU2K	MAE: 0.039, FMeasure: 0.897, EMeasure: 0.946, SMeasure: 0.897

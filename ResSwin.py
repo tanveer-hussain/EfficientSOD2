@@ -129,7 +129,7 @@ class ResSwinModel(nn.Module):
         conv1_feat = self.conv1(p1)
         conv1_feat_x1 = F.interpolate(conv1_feat, size=(56,56), mode='bilinear',align_corners=True)
         # conv1_feat_x1_d1 = self.conv1_1(torch.cat((conv1_feat_x1,d1),1))
-        conv1_feat = self.aspp_mhsa1(conv1_feat)
+        conv1_feat = self.aspp_mhsa1(conv1_feat_x1)
         conv1_feat = self.conv1_1(torch.cat((conv1_feat,conv1_feat_x1),1))
 
         conv2_feat_x2 = self.conv1(p2)
