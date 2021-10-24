@@ -17,3 +17,4 @@ DUT-RGBD	MAE: 0.024, FMeasure: 0.944, EMeasure: 0.967, SMeasure: 0.944
 NLPR	MAE: 0.022, FMeasure: 0.912, EMeasure: 0.961, SMeasure: 0.912
 NJU2K	MAE: 0.032, FMeasure: 0.916, EMeasure: 0.953, SMeasure: 0.916
 SIP	MAE: 0.02, FMeasure: 0.924, EMeasure: 0.981, SMeasure: 0.924
+DUT-RGBD	MAE: 0.026, FMeasure: 0.932, EMeasure: 0.96, SMeasure: 0.932

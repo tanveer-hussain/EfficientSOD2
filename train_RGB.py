@@ -6,7 +6,7 @@ import numpy as np
 import os, argparse
 # from ResNet_models import Generator
 # from ResNet_models_UCNet import Generator
-from data import TrainDatasetLoader
+from data_RGB import TrainDatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
@@ -22,7 +22,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 parser = argparse.ArgumentParser()
 parser.add_argument('--epoch', type=int, default=30, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=8, help='training batch size')
+parser.add_argument('--batchsize', type=int, default=4, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -111,7 +111,7 @@ def linear_annealing(init, fin, step, annealing_steps):
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-from ResSwin import ResSwinModel
+from ResSwin_RGB import ResSwinModel
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
 resswin.to(device)
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
         # dataset_path = r'../RGBDatasets/' + dataset_name  ######################################
-        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB/' + dataset_name
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB1/' + dataset_name
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         # d_type = ['Train', 'Test']
         d_type = ''

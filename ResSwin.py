@@ -122,31 +122,32 @@ class ResSwinModel(nn.Module):
     def forward(self, x , d, training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        _, p1, p2, p3, p4 = self.dpt_model(x) # p1 > 256x112x112 , p2 > 256x56x56, p3 > 256x28x28
-        d1, d2, d3 = self.depth_model(d) # d1 > 32x56x56, d2 > 32x56x56, d3 > 32x56x56
+        _, p1, p2, p3, p4 = self.dpt_model(x)
+        d1, d2, d3 = self.depth_model(d)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
-        conv1_feat = self.conv1(p1) # 32x112x112
-        conv1_feat_x1 = F.interpolate(conv1_feat, size=(56,56), mode='bilinear',align_corners=True) # 32x56x56
-        conv1_feat_x1_d1 = self.conv1_1(torch.cat((conv1_feat_x1,d1),1)) # 32x56x56
-        conv1_feat = self.aspp_mhsa1(conv1_feat_x1_d1) # 32x56x56
-        conv1_feat = self.conv1_1(torch.cat((conv1_feat,conv1_feat_x1),1)) # 32x56x56
 
-        conv2_feat_x2 = self.conv1(p2) # 32x56x56
-        conv2_feat_x2_d2 = self.conv1_1(torch.cat((conv2_feat_x2,d2),1)) # 32x56x56
-        conv2_feat = self.aspp_mhsa2(conv2_feat_x2_d2) # 32x56x56
-        conv2_feat = self.conv1_1(torch.cat((conv2_feat,conv2_feat_x2),1)) # 32x56x56
 
-        conv3_feat_x3 = self.conv1(p3) # 32x28x28
-        d3 = F.interpolate(d3, size=(28, 28), mode='bilinear', align_corners=True)
-        conv2_feat_x3_d3 = self.conv1_1(torch.cat((conv3_feat_x3, d3), 1))
-        conv3_feat = self.aspp_mhsa3(conv2_feat_x3_d3)
-        conv3_feat = self.conv1_1(torch.cat((conv3_feat, conv3_feat_x3), 1)) #32x28x28
+
+        conv1_feat = self.conv1(p1)
+        conv1_feat_x1 = F.interpolate(conv1_feat, size=(56,56), mode='bilinear',align_corners=True)
+        # conv1_feat_x1_d1 = self.conv1_1(torch.cat((conv1_feat_x1,d1),1))
+        conv1_feat = self.aspp_mhsa1(conv1_feat_x1)
+        conv1_feat = self.conv1_1(torch.cat((conv1_feat,conv1_feat_x1),1))
+
+        conv2_feat_x2 = self.conv1(p2)
+        # conv2_feat_x2_d2 = self.conv1_1(torch.cat((conv2_feat_x2,d2),1))
+        conv2_feat = self.aspp_mhsa2(conv2_feat_x2)
+        conv2_feat = self.conv1_1(torch.cat((conv2_feat,conv2_feat_x2),1))
+
+        conv3_feat_x3 = self.conv1(p3)
+        conv3_feat = self.aspp_mhsa3(conv3_feat_x3)
+        conv3_feat = self.conv1_1(torch.cat((conv3_feat, conv3_feat_x3), 1))
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv1(p4)
         conv4_feat = self.aspp_mhsa4(conv4_feat)
         # conv4_feat = self.asppconv4(conv4_feat)
-        conv4_feat = self.upsample2(conv4_feat) # 32x28x28
+        conv4_feat = self.upsample2(conv4_feat)
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
         conv43 = self.racb_43(conv43)
@@ -180,9 +181,9 @@ class ResSwinModel(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-x = torch.randn((2, 3, 224, 224)).to(device)
-depth = torch.randn((2, 3, 224, 224)).to(device)
-# # gt = torch.randn((12, 1, 224, 224)).to(device)
-model = ResSwinModel(32,3).to(device)
-y = model(x,depth)
-print ('done')
+# x = torch.randn((2, 3, 224, 224)).to(device)
+# depth = torch.randn((2, 3, 224, 224)).to(device)
+# # # gt = torch.randn((12, 1, 224, 224)).to(device)
+# model = ResSwinModel(32,3).to(device)
+# y = model(x,depth)
+# print ('done')
