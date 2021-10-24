@@ -213,3 +213,4 @@ if __name__ == '__main__':
         from test import ModelTesting
 
         ModelTesting(resswin, test_loader, image_save_path, dataset_path, dataset_name)
+        torch.cuda.empty_cache()
