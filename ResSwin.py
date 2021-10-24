@@ -138,14 +138,15 @@ class ResSwinModel(nn.Module):
         conv2_feat = self.conv1_1(torch.cat((conv2_feat,conv2_feat_x2),1)) # 32x56x56
 
         conv3_feat_x3 = self.conv1(p3) # 32x28x28
-        conv2_feat_x3_d3 = self.conv1_1(torch.cat((self.upsample2(conv3_feat_x3), d2), 1))
+        d3 = F.interpolate(d3, size=(28, 28), mode='bilinear', align_corners=True)
+        conv2_feat_x3_d3 = self.conv1_1(torch.cat((conv3_feat_x3, d3), 1))
         conv3_feat = self.aspp_mhsa3(conv2_feat_x3_d3)
-        conv3_feat = self.conv1_1(torch.cat((self.upsample2(conv3_feat), conv3_feat_x3), 1))
+        conv3_feat = self.conv1_1(torch.cat((conv3_feat, conv3_feat_x3), 1)) #32x28x28
         # conv3_feat = self.asppconv3(conv3_feat)
         conv4_feat = self.conv1(p4)
         conv4_feat = self.aspp_mhsa4(conv4_feat)
         # conv4_feat = self.asppconv4(conv4_feat)
-        conv4_feat = self.upsample2(conv4_feat)
+        conv4_feat = self.upsample2(conv4_feat) # 32x28x28
 
         conv43 = torch.cat((conv4_feat, conv3_feat), 1)
         conv43 = self.racb_43(conv43)
