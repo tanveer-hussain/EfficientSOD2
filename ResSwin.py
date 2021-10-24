@@ -122,7 +122,7 @@ class ResSwinModel(nn.Module):
     def forward(self, x , d, training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        _, p1, p2, p3, p4 = self.dpt_model(x)
+        _, p1, p2, p3, p4 = self.dpt_model(x) #
         d1, d2, d3 = self.depth_model(d) # d1 > , d2 > , d3 >
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
@@ -179,9 +179,9 @@ class ResSwinModel(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-# x = torch.randn((2, 3, 224, 224)).to(device)
-# depth = torch.randn((2, 3, 224, 224)).to(device)
-# # # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = ResSwinModel(32,3).to(device)
-# y = model(x,depth)
-# print ('done')
+x = torch.randn((2, 3, 224, 224))
+depth = torch.randn((2, 3, 224, 224))
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+model = ResSwinModel(32,3)
+y = model(x,depth)
+print ('done')
