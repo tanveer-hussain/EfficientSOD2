@@ -79,8 +79,6 @@ class ModelTesting():
                 emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
         print ("Testing done")
 
-pred_edge_kk *= 255.0
-pred_edge_kk = pred_edge_kk.astype(np.uint8)
 #
 #
 
