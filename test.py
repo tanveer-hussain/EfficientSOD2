@@ -79,22 +79,11 @@ class ModelTesting():
                 emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
         print ("Testing done")
 
+pred_edge_kk *= 255.0
+pred_edge_kk = pred_edge_kk.astype(np.uint8)
+#
+#
 
-#
-#
-# for dataset in test_datasets:
-#     save_path = 'results/' + dataset + '/'
-#     if not os.path.exists(save_path):
-#         os.makedirs(save_path)
-#
-#     resswin.load_state_dict(torch.load("models/" + dataset + 'RGBD' + '_%d' % epoch + '_Pyramid.pth'))
-#
-#     print('Model loaded')
-#     image_root = dataset_path + dataset + "/Test" + '/Images/'
-#     resswin.eval()
-#     test_loader = RetreiveTestData(image_root)
-#     # for writing results
-#     model_testing = ModelTesting(resswin,test_loader,save_path)
 #
 #     # for evaluating results
 #     predictions_root = 'results/' + dataset + '/'
