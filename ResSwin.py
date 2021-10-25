@@ -109,6 +109,7 @@ class ResSwinModel(nn.Module):
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         self.conv2 = Triple_Conv(150, 1)
+        self.conv11 = Triple_Conv(6,3)
         # self.conv3 = Triple_Conv(1024, channel)
         # self.conv4 = Triple_Conv(2048, channel)
         # self.liner1024 = nn.Linear(2048, 1024)
@@ -122,23 +123,22 @@ class ResSwinModel(nn.Module):
     def forward(self, x , d, training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
+        # x = torch.cat((x,d),1)
+        # x = self.conv11(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
-        d1, d2, d3 = self.depth_model(d)
+        # d1, d2, d3 = self.depth_model(d)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
-
-
-
         conv1_feat = self.conv1(p1)
-        conv1_feat_x1 = F.interpolate(conv1_feat, size=(56,56), mode='bilinear',align_corners=True)
+        conv1_feat_x1 = F.interpolate(conv1_feat, size=(56, 56), mode='bilinear', align_corners=True)
         # conv1_feat_x1_d1 = self.conv1_1(torch.cat((conv1_feat_x1,d1),1))
         conv1_feat = self.aspp_mhsa1(conv1_feat_x1)
-        conv1_feat = self.conv1_1(torch.cat((conv1_feat,conv1_feat_x1),1))
+        conv1_feat = self.conv1_1(torch.cat((conv1_feat, conv1_feat_x1), 1))
 
         conv2_feat_x2 = self.conv1(p2)
         # conv2_feat_x2_d2 = self.conv1_1(torch.cat((conv2_feat_x2,d2),1))
         conv2_feat = self.aspp_mhsa2(conv2_feat_x2)
-        conv2_feat = self.conv1_1(torch.cat((conv2_feat,conv2_feat_x2),1))
+        conv2_feat = self.conv1_1(torch.cat((conv2_feat, conv2_feat_x2), 1))
 
         conv3_feat_x3 = self.conv1(p3)
         conv3_feat = self.aspp_mhsa3(conv3_feat_x3)
@@ -159,7 +159,8 @@ class ResSwinModel(nn.Module):
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, self.upsample2(conv1_feat)), 1)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, self.upsample2(conv1_feat)),
+                             1)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 

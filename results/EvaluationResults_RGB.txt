@@ -1,0 +1,4 @@
+(DUTS-E Dataset) Emeasure: 0.902; Smeasure 0.866; weighted_F: 0.838; Fmeasure 0.858; MAE: 0.042.
+(ECSSD Dataset) Emeasure: 0.919; Smeasure 0.911; weighted_F: 0.917; Fmeasure 0.928; MAE: 0.033.
+(HKU-IS Dataset) Emeasure: 0.956; Smeasure 0.906; weighted_F: 0.901; Fmeasure 0.909; MAE: 0.029.
+Pascal-S	MAE: 0.303, FMeasure: 0.365, EMeasure: 0.547, SMeasure: 0.365
