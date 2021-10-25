@@ -153,7 +153,7 @@ class ResSwinModel(nn.Module):
         conv4_feat_x4 = self.conv1(p4)
         d4 = self.conv1(d4)
         conv4_feat = self.aspp_mhsa4(conv4_feat_x4)
-        conv4_feat = self.conv1_1(torch.cat(conv4_feat,d4,conv4_feat_x4),1)
+        conv4_feat = self.conv1_1(torch.cat((conv4_feat,d4,conv4_feat_x4),1))
         # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
