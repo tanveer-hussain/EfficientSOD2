@@ -169,7 +169,7 @@ if __name__ == '__main__':
                 x_sal = resswin.forward(images, depths)
                 # total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
-                reg_loss = l2_regularisation(resswin.dpt_model)
+                reg_loss = l2_regularisation(resswin.dpt_model) + l2_regularisation(resswin.dpt_depth_model)
                 reg_loss = opt.reg_weight * reg_loss
                 #
                 #depth_loss = l1_criterion(d_sal, gts)
@@ -207,10 +207,10 @@ if __name__ == '__main__':
                 #     ResultsFile.write(writing_string)
         image_save_path = 'results/' + dataset_name + "/"
         image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
-        image_root = dataset_path + dataset_name + '/Images/'
+        # image_root = dataset_path + dataset_name + '/Images/'
         test_data = TrainDatasetLoader(dataset_path, d_type[1])
         test_loader = DataLoader(test_data)
         from test import ModelTesting
 
         ModelTesting(resswin, test_loader, image_save_path, dataset_path, dataset_name)
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
