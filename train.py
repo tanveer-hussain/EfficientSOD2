@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=3, help='epoch number')
+parser.add_argument('--epoch', type=int, default=20, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -120,6 +120,7 @@ if __name__ == '__main__':
     ## load data
     # datasets = ['SIP']
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    # datasets = ["SIP", "NLPR", 'NJU2K', 'DUT-RGBD']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
