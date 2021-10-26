@@ -104,11 +104,11 @@ datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
 dataset_name = datasets[0]
 dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD\\' + dataset_name
 
-epoch = 1
+
 from ResSwin import ResSwinModel
 resswin = ResSwinModel(channel=32, latent_dim=3)
 resswin.cuda()
-msg = resswin.load_state_dict(torch.load("models/DUT-RGBDRGBD_20_Pyramid.pth"))
+msg = resswin.load_state_dict(torch.load(r"C:\Users\user02\Documents\GitHub\EfficientSOD2\models/DUT-RGBDRGBD_D_1_Pyramid.pth"))
 print ('Weights loaded', msg)
 resswin.eval()
 
@@ -116,19 +116,16 @@ from data import TrainDatasetLoader
 save_path = r'C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD'
 
 print (dataset_path)
-test_loader = TrainDatasetLoader(dataset_path, '/Test')
-for i in range(test_loader.size):
+test_loader = TrainDatasetLoader(dataset_path, 'Test')
+for iter, (X, depth, _, name) in enumerate(test_loader):
 
-    image, depth, _, name = test_loader.load_data()
-
-
-    image = image.cuda()
+    image = X.cuda()
     depth = depth.cuda()
 
     import timeit
 
     start_time = timeit.default_timer()
-    generator_pred = resswin.forward(image, depth, training=True)
+    generator_pred = resswin.forward(image, depth)
     #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
     print (generator_pred.shape)
     res = generator_pred
