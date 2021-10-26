@@ -53,28 +53,10 @@ class ModelTesting():
         self.prediction()
         self.evaluate()
 
-    def visualize_uncertainty_prior_init(self,var_map,nature):
-
-        for kk in range(var_map.shape[0]):
-            pred_edge_kk = var_map[kk, :, :, :]
-            pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-            # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-            pred_edge_kk *= 255.0
-            pred_edge_kk = pred_edge_kk.astype(np.uint8)
-            # print('proir_edge_kk shape', pred_edge_kk.shape)
-            save_path = './confirm/'
-            if nature == "i":
-                name = '{:02d}_image.png'.format(kk)
-            else:
-                name = '{:02d}_depth.png'.format(kk)
-            imageio.imwrite(save_path + name, pred_edge_kk)
-
     def prediction(self):
         for iter, (X, depth, _, name) in enumerate(self.loader):
             X = X.to(device)
             depth = depth.to(device)
-            self.visualize_uncertainty_prior_init(X, 'i')
-            self.visualize_uncertainty_prior_init(depth, 'd')
 
             pred = self.model.forward(X, depth)
             output = torch.squeeze(pred, 0)
@@ -98,46 +80,71 @@ class ModelTesting():
             f.write(self.dataset_name + "\tMAE: " + str(mae) + ", FMeasure: " + str(fmeasure) + ", EMeasure: " + str(
                 emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
         print ("Testing done")
+import cv2
+def visualize_uncertainty_prior_init(var_map,nature):
+
+    for kk in range(var_map.shape[0]):
+        pred_edge_kk = var_map[kk, :, :, :]
+        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+        pred_edge_kk *= 255.0
+        pred_edge_kk = pred_edge_kk.astype(np.uint8)
+        # print('proir_edge_kk shape', pred_edge_kk.shape)
+        save_path = './confirm/'
+        if nature == "i":
+            name = '{:02d}_image.png'.format(kk)
+        else:
+            name = '{:02d}_depth.png'.format(kk)
+        pred_edge_kk = np.transpose(pred_edge_kk, (1, 2, 0))
+        cv2.imwrite(save_path + name, pred_edge_kk)
 
 
-datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-dataset_name = datasets[0]
-dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD\\' + dataset_name
-
-
-from ResSwin import ResSwinModel
-resswin = ResSwinModel(channel=32, latent_dim=3)
-resswin.cuda()
-msg = resswin.load_state_dict(torch.load(r"C:\Users\user02\Documents\GitHub\EfficientSOD2\models/DUT-RGBDRGBD_D_1_Pyramid.pth"))
-print ('Weights loaded', msg)
-resswin.eval()
-
-from data import TrainDatasetLoader
-save_path = r'C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD'
-
-print (dataset_path)
-test_loader = TrainDatasetLoader(dataset_path, 'Test')
-for iter, (X, depth, _, name) in enumerate(test_loader):
-
-    image = X.cuda()
-    depth = depth.cuda()
-
-    import timeit
-
-    start_time = timeit.default_timer()
-    generator_pred = resswin.forward(image, depth)
-    #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
-    print (generator_pred.shape)
-    res = generator_pred
-    # res = F.upsample(res, size=[WW,HH], mode='bilinear', align_corners=False)
-    res = res.sigmoid().data.cpu().numpy().squeeze()
-    # name = name[:-3]
-    output_path = os.path.join(save_path,name)
-    # cv2.imshow('',res)
-    # cv2.waitKey(0)
-    print(output_path)
-
-    cv2.imwrite(output_path, res*255)
+#
+# datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+# dataset_name = datasets[0]
+# dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD\\' + dataset_name
+#
+#
+# from ResSwin import ResSwinModel
+# resswin = ResSwinModel(channel=32, latent_dim=3)
+# resswin.cuda()
+# msg = resswin.load_state_dict(torch.load(r"C:\Users\user02\Documents\GitHub\EfficientSOD2\models/DUT-RGBDRGBD_D_1_Pyramid.pth"))
+# print ('Weights loaded', msg)
+# resswin.eval()
+#
+# from data import TrainDatasetLoader
+# save_path = r'C:\Users\user02\Documents\GitHub\EfficientSOD2\results\DUT-RGBD'
+#
+# print (dataset_path)
+# test_loader = TrainDatasetLoader(dataset_path, 'Test')
+# for iter, (X, depth, _, name) in enumerate(test_loader):
+#
+#     X = X.unsqueeze(0)
+#     depth = depth.unsqueeze(0)
+#
+#
+#     image = X.cuda()
+#     depth = depth.cuda()
+#
+#     visualize_uncertainty_prior_init(X, 'i')
+#     visualize_uncertainty_prior_init(depth, 'd')
+#
+#     import timeit
+#
+#     start_time = timeit.default_timer()
+#     generator_pred = resswin.forward(image, depth)
+#     #print('Single prediction time consumed >> , ', timeit.default_timer() - start_time, ' seconds')
+#     print (generator_pred.shape)
+#     res = generator_pred
+#     # res = F.upsample(res, size=[WW,HH], mode='bilinear', align_corners=False)
+#     res = res.sigmoid().data.cpu().numpy().squeeze()
+#     # name = name[:-3]
+#     output_path = os.path.join(save_path,name)
+#     # cv2.imshow('',res)
+#     # cv2.waitKey(0)
+#     print(output_path)
+#
+#     cv2.imwrite(output_path, res*255)
 
 #
 #     # for evaluating results

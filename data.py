@@ -37,6 +37,8 @@ class TrainDatasetLoader(Dataset):
         y_full_path = os.path.join(self.y_path, self.Y[index])
         d_full_path = os.path.join(self.d_path, self.D[index])
 
+        print ('Depth path >>>', d_full_path, "\t", "x path >>> ", x_full_path)
+
         x = Image.open(x_full_path).convert('RGB')
         y = Image.open(y_full_path).convert('L')
         d = Image.open(d_full_path).convert('RGB')
