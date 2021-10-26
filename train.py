@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=5, help='epoch number')
+parser.add_argument('--epoch', type=int, default=3, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -158,7 +158,7 @@ if __name__ == '__main__':
         total_step = len(train_loader)
 
         for epoch in range(1, opt.epoch+1):
-            for i, (images, depths, gts, _) in enumerate(train_loader, start=1):
+            for i, (images, depths,_, _ , gts, _) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
                 images = Variable(images).cuda()

@@ -43,6 +43,7 @@ class TrainDatasetLoader(Dataset):
         y = Image.open(y_full_path).convert('L')
         d = Image.open(d_full_path).convert('RGB')
 
+        width , height = x.size
 
         x = self.img_transform(x)
         y = self.gt_transform(y)
@@ -51,7 +52,7 @@ class TrainDatasetLoader(Dataset):
         # print ('x', x.shape, ', y', y.shape, ', d', d.shape)
 
 
-        return x , d, y, self.X[index]
+        return x , d, width, height, y, self.X[index]
 
 from torch.utils import data
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")

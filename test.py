@@ -6,40 +6,21 @@ import os
 from data import RetreiveTestData, TestDatasetLoader
 from torch.utils.data import DataLoader
 from EvaluateSOD import Evaluator
-
-class ModelTesting():
-    def __init__(self, model, test_loader, output_root):
-        self.model = model
-        self.loader = test_loader
-        self.output_path = output_root
-        self.prediction()
-
-    def prediction(self):
-        for iter, (X, name) in enumerate(self.loader):
-            X = X.to(device)
-            pred = self.model.forward(X, training=False)
-            output = torch.squeeze(pred, 0)
-            output = output.detach().cpu().numpy()
-            output = output.dot(255)
-            output *= output.max() / 255.0
-            output = np.transpose(output, (1, 2, 0))
-            name, _ = name.split('.')
-            output_path = self.output_path + name + '.png'
-            print ("Saving Image at.. ", output_path)
-            cv2.imwrite(output_path, output)
-
+import torch.nn.functional as F
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-latent_dim=3
-feat_channel=32
-test_datasets = ['DUT-RGBD', "NJU2K", "NLPR", 'SIP']
-# test_datasets = ['DUT-RGBD', "NJU2K"]
-dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'
-# dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
-epoch = 40
-from ResSwin import ResSwinModel
-import imageio
-resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
-resswin.to(device)
+
+# device = torch.device('cuda' if torch.cuda.is_available else "cpu")
+# latent_dim=3
+# feat_channel=32
+# test_datasets = ['DUT-RGBD', "NJU2K", "NLPR", 'SIP']
+# # test_datasets = ['DUT-RGBD', "NJU2K"]
+# dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'
+# # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
+# epoch = 40
+# from ResSwin import ResSwinModel
+# import imageio
+# resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
+# resswin.to(device)
 
 
 class ModelTesting():
@@ -54,20 +35,21 @@ class ModelTesting():
         self.evaluate()
 
     def prediction(self):
-        for iter, (X, depth, _, name) in enumerate(self.loader):
+        for iter, (X, depth, width, height, _, name) in enumerate(self.loader):
             X = X.to(device)
             depth = depth.to(device)
 
             pred = self.model.forward(X, depth)
-            output = torch.squeeze(pred, 0)
-            output = output.detach().cpu().numpy()
-            output = output.dot(255)
-            output *= output.max() / 255.0
-            output = np.transpose(output, (1, 2, 0))
+            pred = F.upsample(pred, size=[width, height], mode='bilinear', align_corners=False)
+            output = pred.sigmoid().data.cpu().numpy().squeeze()
+            # output = output.detach().cpu().numpy()
+            # output = output.dot(255)
+            # output *= output.max() / 255.0
+            # output = np.transpose(output, (1, 2, 0))
             image_name , _ = name[0].split('.')
             output_path = self.output_path + image_name + '.png'
             print ("Saving Image at.. ", output_path)
-            cv2.imwrite(output_path, output)
+            cv2.imwrite(output_path, output*255)
     def evaluate(self):
         print (self.output_path, self.gt_root)
         eval_data = TestDatasetLoader(self.output_path, self.gt_root)
@@ -80,23 +62,23 @@ class ModelTesting():
             f.write(self.dataset_name + "\tMAE: " + str(mae) + ", FMeasure: " + str(fmeasure) + ", EMeasure: " + str(
                 emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
         print ("Testing done")
-import cv2
-def visualize_uncertainty_prior_init(var_map,nature):
-
-    for kk in range(var_map.shape[0]):
-        pred_edge_kk = var_map[kk, :, :, :]
-        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-        pred_edge_kk *= 255.0
-        pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        # print('proir_edge_kk shape', pred_edge_kk.shape)
-        save_path = './confirm/'
-        if nature == "i":
-            name = '{:02d}_image.png'.format(kk)
-        else:
-            name = '{:02d}_depth.png'.format(kk)
-        pred_edge_kk = np.transpose(pred_edge_kk, (1, 2, 0))
-        cv2.imwrite(save_path + name, pred_edge_kk)
+# import cv2
+# def visualize_uncertainty_prior_init(var_map,nature):
+#
+#     for kk in range(var_map.shape[0]):
+#         pred_edge_kk = var_map[kk, :, :, :]
+#         pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
+#         # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
+#         pred_edge_kk *= 255.0
+#         pred_edge_kk = pred_edge_kk.astype(np.uint8)
+#         # print('proir_edge_kk shape', pred_edge_kk.shape)
+#         save_path = './confirm/'
+#         if nature == "i":
+#             name = '{:02d}_image.png'.format(kk)
+#         else:
+#             name = '{:02d}_depth.png'.format(kk)
+#         pred_edge_kk = np.transpose(pred_edge_kk, (1, 2, 0))
+#         cv2.imwrite(save_path + name, pred_edge_kk)
 
 
 #
