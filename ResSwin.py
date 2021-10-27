@@ -94,13 +94,20 @@ class ResSwinModel(nn.Module):
         features = 256
         non_negative = True
 
-        self.head = nn.Sequential(
+        self.head_depth = nn.Sequential(
             nn.Conv2d(features, features // 2, kernel_size=3, stride=1, padding=1),
             nn.Conv2d(features // 2, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(True),
             nn.Conv2d(32, 32, kernel_size=1, stride=1, padding=0),
             nn.ReLU(True) if non_negative else nn.Identity(),
             nn.Identity(),
+        )
+        self.head_seg = nn.Sequential(
+            nn.Conv2d(features, features, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(features),
+            nn.ReLU(True),
+            nn.Dropout(0.1, False),
+            nn.Conv2d(features, channel, kernel_size=1),
         )
 
 
@@ -115,15 +122,16 @@ class ResSwinModel(nn.Module):
         self.conv43 = Triple_Conv(2 * channel, channel)
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
-        self.conv1_1 = Triple_Conv(96, channel)
-        self.conv1_11 = Triple_Conv(64, channel)
+        self.conv1_1 = Triple_Conv(64, channel)
+        self.conv1_11 = Triple_Conv(96, channel)
         self.conv1 = Triple_Conv(256, channel)
         self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         self.conv2 = Triple_Conv(150, 1)
-        self.conv11 = Triple_Conv(6,3)
+        self.conv11 = Triple_Conv(32,1)
+        self.conv_depth_pred = Triple_Conv(32,1)
         # self.conv3 = Triple_Conv(1024, channel)
         # self.conv4 = Triple_Conv(2048, channel)
         # self.liner1024 = nn.Linear(2048, 1024)
@@ -141,38 +149,40 @@ class ResSwinModel(nn.Module):
         # x = self.conv11(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
         _, d1, d2, d3, d4 = self.dpt_depth_model(d)
-        p1 = self.head(p1)
-        p2 = self.head(p2)
-        p3 = self.head(p3)
-        p4 = self.head(p4)
+        p1 = self.head_seg(p1)
+        p2 = self.head_seg(p2)
+        p3 = self.head_seg(p3)
+        p4 = self.head_seg(p4)
+        # d1 = self.head(d1)
+        # d2 = self.head(d2)
+        # d3 = self.head(d3)
+        d4 = self.head_depth(d4)
+        d4_pred = self.conv_depth_pred(d4)
+        d4_pred = F.interpolate(d4_pred, size=(224, 224), mode='bilinear', align_corners=True)
 
-        d1 = self.head(d1)
-        d2 = self.head(d2)
-        d3 = self.head(d3)
-        d4 = self.head(d4)
         # d1, d2, d3 = self.depth_model(d)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
-        # conv1_feat = self.conv1(p1)
-        d1 = F.interpolate(d1, size=(56,56), mode='bilinear', align_corners=True)
-        conv1_feat_x1 = F.interpolate(p1, size=(56, 56), mode='bilinear', align_corners=True)
+        conv1_feat = p1 #self.conv1(p1)
+        # d1 = F.interpolate(d1, size=(56,56), mode='bilinear', align_corners=True)
+        conv1_feat_x1 = F.interpolate(conv1_feat, size=(56, 56), mode='bilinear', align_corners=True)
         # conv1_feat_x1_d1 = self.conv1_1(torch.cat((conv1_feat_x1,d1),1))
         conv1_feat = self.aspp_mhsa1(conv1_feat_x1)
-        conv1_feat = self.conv1_1(torch.cat((conv1_feat, conv1_feat_x1,d1), 1))
+        conv1_feat = self.conv1_1(torch.cat((conv1_feat, conv1_feat_x1), 1))
 
-        conv2_feat_x2 = p2#self.conv1(p2)
+        conv2_feat_x2 = p2 # self.conv1(p2)
         # conv2_feat_x2_d2 = self.conv1_1(torch.cat((conv2_feat_x2,d2),1))
         conv2_feat = self.aspp_mhsa2(conv2_feat_x2)
-        conv2_feat = self.conv1_1(torch.cat((conv2_feat, conv2_feat_x2,d2), 1))
+        conv2_feat = self.conv1_1(torch.cat((conv2_feat, conv2_feat_x2), 1))
 
         conv3_feat_x3 = p3 #self.conv1(p3)
         conv3_feat = self.aspp_mhsa3(conv3_feat_x3)
-        conv3_feat = self.conv1_1(torch.cat((conv3_feat, conv3_feat_x3,d3), 1))
+        conv3_feat = self.conv1_1(torch.cat((conv3_feat, conv3_feat_x3), 1))
         # conv3_feat = self.asppconv3(conv3_feat)
-        conv4_feat_x4 = p4 #self.conv1(p4)
+        conv4_feat_x4 = p4 # self.conv1(p4)
         # d4 = self.conv1(d4)
         conv4_feat = self.aspp_mhsa4(conv4_feat_x4)
-        conv4_feat = self.conv1_1(torch.cat((conv4_feat,d4,conv4_feat_x4),1))
+        conv4_feat = self.conv1_11(torch.cat((conv4_feat,d4,conv4_feat_x4),1))
         # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 
@@ -195,7 +205,7 @@ class ResSwinModel(nn.Module):
         # out = self.conv2(out)
 
 
-        return self.upsample2(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
+        return self.upsample2(sal_init), d4_pred #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
         # else:
         #     # self.x_sal = self.sal_encoder(x)
         #     # self.x_sal, _ = self.sal_encoder(x, depth)
