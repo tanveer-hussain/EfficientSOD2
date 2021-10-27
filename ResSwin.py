@@ -145,6 +145,7 @@ class ResSwinModel(nn.Module):
         p2 = self.head(p2)
         p3 = self.head(p3)
         p4 = self.head(p4)
+
         d1 = self.head(d1)
         d2 = self.head(d2)
         d3 = self.head(d3)
