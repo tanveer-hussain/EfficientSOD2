@@ -40,16 +40,17 @@ class ModelTesting():
             depth = depth.to(device)
 
             pred = self.model.forward(X, depth)
-            output = F.upsample(pred, size=[width, height], mode='bilinear', align_corners=False)
-            # output = pred.sigmoid().data.cpu().numpy().squeeze()
-            output = output.detach().cpu().numpy()
+            pred = F.upsample(pred, size=[width, height], mode='bilinear', align_corners=False)
+            output = pred.sigmoid().data.cpu().numpy().squeeze()
+            # output = torch.squeeze(pred, 0)
+            # output = output.detach().cpu().numpy()
             output = output.dot(255)
             output *= output.max() / 255.0
-            output = np.transpose(output, (1, 2, 0))
+            # output = np.transpose(output, (1, 2, 0))
             image_name , _ = name[0].split('.')
             output_path = self.output_path + image_name + '.png'
             print ("Saving Image at.. ", output_path)
-            cv2.imwrite(output_path, output*255)
+            cv2.imwrite(output_path, output)
     def evaluate(self):
         print (self.output_path, self.gt_root)
         eval_data = TestDatasetLoader(self.output_path, self.gt_root)

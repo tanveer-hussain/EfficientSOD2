@@ -23,3 +23,14 @@ NLPR	MAE: 0.024, FMeasure: 0.906, EMeasure: 0.956, SMeasure: 0.906
 NJU2K	MAE: 0.053, FMeasure: 0.875, EMeasure: 0.924, SMeasure: 0.875
 SIP	MAE: 0.017, FMeasure: 0.934, EMeasure: 0.984, SMeasure: 0.934
 # segmentation baseline and pyramid aspp and mhsa with depth model features cat
+DUT-RGBD	MAE: 0.202, FMeasure: 0.645, EMeasure: 0.757, SMeasure: 0.645
+NLPR	MAE: 0.141, FMeasure: 0.879, EMeasure: 0.932, SMeasure: 0.879
+NJU2K	MAE: 0.163, FMeasure: 0.871, EMeasure: 0.918, SMeasure: 0.871
+SIP	MAE: 0.144, FMeasure: 0.92, EMeasure: 0.975, SMeasure: 0.92
+DUT-RGBD	MAE: 0.175, FMeasure: 0.929, EMeasure: 0.959, SMeasure: 0.929
+NLPR	MAE: 0.141, FMeasure: 0.373, EMeasure: 0.723, SMeasure: 0.373
+NJU2K	MAE: 0.189, FMeasure: 0.894, EMeasure: 0.943, SMeasure: 0.894
+# segmentation baseline and pyramid aspp and mhsa with depth model features cat and head operation
+DUT-RGBD	MAE: 0.041, FMeasure: 0.943, EMeasure: 0.966, SMeasure: 0.943
+DUT-RGBD	MAE: 0.061, FMeasure: 0.923, EMeasure: 0.964, SMeasure: 0.923
+# segmentation baseline and pyramid aspp and mhsa with depth model features cat and head operation d1,d2,d3,d4 cosideration
