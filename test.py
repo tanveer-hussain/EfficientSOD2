@@ -39,7 +39,7 @@ class ModelTesting():
             X = X.to(device)
             depth = depth.to(device)
 
-            pred, _ = self.model.forward(X, depth)
+            pred = self.model.forward(X, depth)
             pred = F.upsample(pred, size=[width, height], mode='bilinear', align_corners=False)
             output = pred.sigmoid().data.cpu().numpy().squeeze()
             # output = torch.squeeze(pred, 0)
