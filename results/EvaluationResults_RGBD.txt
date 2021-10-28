@@ -38,3 +38,4 @@ DUT-RGBD	MAE: 0.067, FMeasure: 0.948, EMeasure: 0.968, SMeasure: 0.948
 NLPR	MAE: 0.061, FMeasure: 0.921, EMeasure: 0.964, SMeasure: 0.921
 NJU2K	MAE: 0.092, FMeasure: 0.907, EMeasure: 0.945, SMeasure: 0.907
 # segmentation baseline and pyramid aspp and mhsa with depth model features cat and head operation d1,d2,d3,d4 cosideration
+SIP	MAE: 0.062, FMeasure: 0.959, EMeasure: 0.988, SMeasure: 0.959
