@@ -1,0 +1,1 @@
+DUT-RGBD	MAE: 0.048, FMeasure: 0.93, EMeasure: 0.959, SMeasure: 0.93
