@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from EvaluateSOD import Evaluator
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 import shutil
+import torch.nn.functional as F
 
 class ModelTesting():
     def __init__(self, model, test_loader, output_root, gt_root, dataset_name):

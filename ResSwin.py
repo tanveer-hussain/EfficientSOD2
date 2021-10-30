@@ -49,15 +49,15 @@ class ResSwinModel(nn.Module):
     def __init__(self, channel, latent_dim):
         super(ResSwinModel, self).__init__()
 
-        model_d_path = "weights/dpt_hybrid-midas-501f0c75.pt"
-        self.dpt_depth_model = DPTDepthModel(
-            path=model_d_path,
-            backbone="vitb_rn50_384",
-            non_negative=True,
-            enable_attention_hooks=False,
-        )
-        self.dpt_depth_model.eval()
-        self.dpt_depth_model = self.dpt_depth_model.to(memory_format=torch.channels_last)
+        # model_d_path = "weights/dpt_hybrid-midas-501f0c75.pt"
+        # self.dpt_depth_model = DPTDepthModel(
+        #     path=model_d_path,
+        #     backbone="vitb_rn50_384",
+        #     non_negative=True,
+        #     enable_attention_hooks=False,
+        # )
+        # self.dpt_depth_model.eval()
+        # self.dpt_depth_model = self.dpt_depth_model.to(memory_format=torch.channels_last)
 
         #
         model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
@@ -140,9 +140,9 @@ class ResSwinModel(nn.Module):
         # x = torch.cat((x,d),1)
         # x = self.conv11(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
-        _, _, _, _, d4 = self.dpt_depth_model(d)
+        # _, _, _, _, d4 = self.dpt_depth_model(d)
 
-        d4 = self.head(d4)
+        # d4 = self.head(d4)
         # d1, d2, d3 = self.depth_model(d)
         # self.x1, self.x2, self.x3, self.x4 = self.sal_encoder(x, self.depth)
 
@@ -167,7 +167,7 @@ class ResSwinModel(nn.Module):
         conv4_feat_x4 = self.conv1(p4)
         # d4 = self.conv1(d4)
         conv4_feat = self.aspp_mhsa4(conv4_feat_x4)
-        conv4_feat = self.conv1_1(torch.cat((conv4_feat,d4,conv4_feat_x4),1))
+        conv4_feat = self.conv1_11(torch.cat((conv4_feat,conv4_feat_x4),1))
         # conv4_feat = self.asppconv4(conv4_feat)
         conv4_feat = self.upsample2(conv4_feat)
 

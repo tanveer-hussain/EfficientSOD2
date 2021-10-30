@@ -41,6 +41,7 @@ class TrainDatasetLoader(Dataset):
         x = self.img_transform(x)
         y = self.gt_transform(y)
 
+
         # print ('x', x.shape, ', y', y.shape, ', d', d.shape)
 
 

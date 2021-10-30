@@ -11,7 +11,7 @@ class TrainDatasetLoader(Dataset):
     def __init__(self, dir, d_type):
         self.x_path = os.path.join(dir, str(d_type), 'Images')
         self.y_path = os.path.join(dir, str(d_type), 'Labels')
-        self.d_path = os.path.join(dir, str(d_type), 'Depth_Synthetic')
+        self.d_path = os.path.join(dir, str(d_type), 'Depth')
 
         # print (self.x_path, "\n", self.y_path, "\n", self.d_path)
 

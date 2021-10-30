@@ -1,4 +1,9 @@
-(DUTS-E Dataset) Emeasure: 0.902; Smeasure 0.866; weighted_F: 0.838; Fmeasure 0.858; MAE: 0.042.
-(ECSSD Dataset) Emeasure: 0.919; Smeasure 0.911; weighted_F: 0.917; Fmeasure 0.928; MAE: 0.033.
+DUTS-TE	MAE: 0.212, FMeasure: 0.265, EMeasure: 0.608, SMeasure: 0.265
+ECSSD	MAE: 0.265, FMeasure: 0.409, EMeasure: 0.609, SMeasure: 0.409
+HKU-IS	MAE: 0.258, FMeasure: 0.352, EMeasure: 0.63, SMeasure: 0.352
+Pascal-S	MAE: 0.299, FMeasure: 0.374, EMeasure: 0.556, SMeasure: 0.374
+
+(ECSSD Dataset) Emeasure: 0.925; Smeasure 0.919; weighted_F: 0.927; Fmeasure 0.938; MAE: 0.030.
 (HKU-IS Dataset) Emeasure: 0.956; Smeasure 0.906; weighted_F: 0.901; Fmeasure 0.909; MAE: 0.029.
-Pascal-S	MAE: 0.303, FMeasure: 0.365, EMeasure: 0.547, SMeasure: 0.365
+(DUTS-E Dataset) Emeasure: 0.899; Smeasure 0.863; weighted_F: 0.824; Fmeasure 0.829; MAE: 0.039.
+(Pascal-S Dataset) Emeasure: 0.856; Smeasure 0.839; weighted_F: 0.796; Fmeasure 0.815; MAE: 0.068.

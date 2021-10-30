@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=20, help='epoch number')
+parser.add_argument('--epoch', type=int, default=25, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -169,7 +169,7 @@ if __name__ == '__main__':
                 x_sal = resswin.forward(images, depths)
                 # total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
-                reg_loss = l2_regularisation(resswin.dpt_model) + l2_regularisation(resswin.dpt_depth_model)
+                reg_loss = l2_regularisation(resswin.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
                 reg_loss = opt.reg_weight * reg_loss
                 #
                 #depth_loss = l1_criterion(d_sal, gts)
