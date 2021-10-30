@@ -44,8 +44,3 @@ SIP	MAE: 0.062, FMeasure: 0.959, EMeasure: 0.988, SMeasure: 0.959
 DUT-RGBD	MAE: 0.072, FMeasure: 0.936, EMeasure: 0.963, SMeasure: 0.936
 NLPR	MAE: 0.072, FMeasure: 0.918, EMeasure: 0.962, SMeasure: 0.918
 NJU2K	MAE: 0.08, FMeasure: 0.915, EMeasure: 0.949, SMeasure: 0.915
-
-
-
-# Final RGB-D segmentation and depth baseline with pyramidal aspp and mhsa, only consideration of d4 from depth model
-DUT-RGBD	MAE: 0.217, FMeasure: 0.284, EMeasure: 0.611, SMeasure: 0.284

@@ -90,7 +90,7 @@ class ResSwinModel(nn.Module):
         self.aspp_mhsa3 = Pyramid_block(32, 28, 32, 28, 4, 3)
         # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
         #
-        self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 1)
+        self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         features = 256
         non_negative = True
 
