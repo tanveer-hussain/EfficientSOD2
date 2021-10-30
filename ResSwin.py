@@ -12,7 +12,7 @@ import numpy as np
 def visualize_uncertainty_prior_init(var_map):
 
     for kk in range(var_map.shape[0]):
-        pred_edge_kk = var_map[kk,:,:,:]
+        pred_edge_kk = var_map[kk,1,:,:]
         pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
         # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
         pred_edge_kk *= 255.0
