@@ -18,8 +18,8 @@ def visualize_uncertainty_prior_init(var_map):
         pred_edge_kk *= 255.0
         pred_edge_kk = pred_edge_kk.astype(np.uint8)
         # print('proir_edge_kk shape', pred_edge_kk.shape)
-        save_path = './temp/'
-        name = '{:02d}_prior_int.png'.format(kk)
+        save_path = './intermediate/'
+        name = '{:02d}_t1.png'.format(kk)
         imageio.imwrite(save_path + name, pred_edge_kk)
 
 
