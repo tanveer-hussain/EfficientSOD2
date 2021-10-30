@@ -157,7 +157,7 @@ class ResSwinModel(nn.Module):
         # x = self.conv11(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
         _, _, _, _, d4 = self.dpt_depth_model(d)
-        visualize_uncertainty_prior_init(p1)
+
 
         d4 = self.head(d4)
         # d1, d2, d3 = self.depth_model(d)
