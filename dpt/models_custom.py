@@ -71,17 +71,19 @@ class DPT(BaseModel):
 
         layer_1, layer_2, layer_3, layer_4 = forward_vit(self.pretrained, x)
 
-        layer_1_rn = self.scratch.layer1_rn(layer_1)
-        layer_2_rn = self.scratch.layer2_rn(layer_2)
-        layer_3_rn = self.scratch.layer3_rn(layer_3)
-        layer_4_rn = self.scratch.layer4_rn(layer_4)
+        #print (layer_1.shape, layer_2.shape, layer_3.shape, layer_4.shape, "<<< shapes")
 
-        path_4 = self.scratch.refinenet4(layer_4_rn)
-        path_3 = self.scratch.refinenet3(path_4, layer_3_rn)
-        path_2 = self.scratch.refinenet2(path_3, layer_2_rn)
-        path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
+        layer_1_rn = self.scratch.layer1_rn(layer_1) # [2, 256, 56, 56]
+        layer_2_rn = self.scratch.layer2_rn(layer_2) # [2, 256, 28, 28]
+        layer_3_rn = self.scratch.layer3_rn(layer_3) # [2, 256, 14, 14]
+        layer_4_rn = self.scratch.layer4_rn(layer_4) # [2, 256, 7, 7]
 
-        out = self.scratch.output_conv(path_1)
+        path_4 = self.scratch.refinenet4(layer_4_rn) # [2, 256, 14, 14]
+        path_3 = self.scratch.refinenet3(path_4, layer_3_rn) # [2, 256, 28, 28]
+        path_2 = self.scratch.refinenet2(path_3, layer_2_rn) # [2, 256, 56, 56]
+        path_1 = self.scratch.refinenet1(path_2, layer_1_rn) # [2, 256, 112, 112]
+
+        out = self.scratch.output_conv(path_1) # [2, 150, 224, 224]
 
         return out, path_1, path_2, path_3, path_4 #, out
 
