@@ -167,7 +167,7 @@ if __name__ == '__main__':
 
                 # x_sal, d_sal = resswin.forward(images, depths)
                 x_sal = resswin.forward(images, depths)
-                # total_loss = mse_loss(x_sal,gts)
+                total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = l2_regularisation(resswin.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
                 reg_loss = opt.reg_weight * reg_loss
@@ -182,7 +182,7 @@ if __name__ == '__main__':
                 #d_loss = (0.2 * structure_loss(d_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.3 * d_ssim_loss) + (0.2 * depth_loss)
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                total_loss = reg_loss + x_loss # + d_loss
+                # total_loss = reg_loss + x_loss # + d_loss
 
                 #
                 resswin_optimizer.zero_grad()

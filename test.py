@@ -58,7 +58,7 @@ class ModelTesting():
 
         eval = Evaluator(eval_loader)
         mae, fmeasure, emeasure, smeasure = eval.execute()
-        logfile = 'results/EvaluationResults_RGBD.txt'
+        logfile = 'results/Ablation_RGBD.txt'
         with open(logfile, 'a+') as f:
             f.write(self.dataset_name + "\tMAE: " + str(mae) + ", FMeasure: " + str(fmeasure) + ", EMeasure: " + str(
                 emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
