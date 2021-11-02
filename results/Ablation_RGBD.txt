@@ -3,3 +3,4 @@ DUT-RGBD	MAE: 0.407, FMeasure: 0.939, EMeasure: 0.966, SMeasure: 0.939
 NLPR	MAE: 0.421, FMeasure: 0.899, EMeasure: 0.956, SMeasure: 0.899
 NJU2K	MAE: 0.408, FMeasure: 0.883, EMeasure: 0.93, SMeasure: 0.883
 SIP	MAE: 0.413, FMeasure: 0.949, EMeasure: 0.985, SMeasure: 0.949
+Without pyramidal blocks
