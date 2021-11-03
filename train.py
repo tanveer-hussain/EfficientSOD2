@@ -182,14 +182,14 @@ if __name__ == '__main__':
                 #d_loss = (0.2 * structure_loss(d_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.3 * d_ssim_loss) + (0.2 * depth_loss)
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                total_loss = reg_loss + x_loss # + d_loss
+                total_loss = sal_loss # reg_loss + x_loss # + d_loss
 
                 #
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                # visualize_gt(gts)
-                # visualize_uncertainty_post_init(torch.sigmoid(x_sal))
+                visualize_gt(gts)
+                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
                 # visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
