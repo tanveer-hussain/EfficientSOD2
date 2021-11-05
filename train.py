@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=25, help='epoch number')
+parser.add_argument('--epoch', type=int, default=10, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -42,6 +42,7 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 
 ## define loss
 
+criterion = nn.MSELoss().to('cuda')
 CE = torch.nn.BCELoss()
 mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
 smooth_loss = smoothness.smoothness_loss(size_average=True)
@@ -175,14 +176,14 @@ if __name__ == '__main__':
                 #depth_loss = l1_criterion(d_sal, gts)
                 #d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
                 #
-                sal_loss = l1_criterion(x_sal, gts)
-                x_ssim_loss = torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
+                # sal_loss = CE(x_sal, gts)
+                x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
                 #
-                x_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) + (0.3 * x_ssim_loss) + (0.2 * sal_loss)
+                #x_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) + (0.3 * x_ssim_loss) + (0.2 * sal_loss)
                 #d_loss = (0.2 * structure_loss(d_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.3 * d_ssim_loss) + (0.2 * depth_loss)
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                total_loss = sal_loss # reg_loss + x_loss # + d_loss
+                total_loss = criterion(x_sal,gts)#x_ssim_loss + reg_loss # + x_loss # + d_loss
 
                 #
                 resswin_optimizer.zero_grad()

@@ -11,3 +11,7 @@ NJU2K	MAE: 0.067, FMeasure: 0.903, EMeasure: 0.943, SMeasure: 0.903
 SIP	MAE: 0.071, FMeasure: 0.954, EMeasure: 0.986, SMeasure: 0.954
 (SIP Dataset) Emeasure: 0.981; Smeasure 0.934; weighted_F: 0.922; Fmeasure 0.923; MAE: 0.016.
 
+DUT-RGBD	MAE: 0.401, FMeasure: 0.934, EMeasure: 0.962, SMeasure: 0.934
+NLPR	MAE: 0.427, FMeasure: 0.904, EMeasure: 0.959, SMeasure: 0.904
+NJU2K	MAE: 0.392, FMeasure: 0.859, EMeasure: 0.916, SMeasure: 0.859
+SIP	MAE: 0.412, FMeasure: 0.942, EMeasure: 0.984, SMeasure: 0.942
