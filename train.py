@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
                 # x_sal, d_sal = resswin.forward(images, depths)
                 x_sal = resswin.forward(images, depths)
-                x_sal = torch.sigmoid(x_sal)
+                # x_sal = torch.sigmoid(x_sal)
                 # total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = l2_regularisation(resswin.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
