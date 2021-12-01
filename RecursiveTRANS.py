@@ -28,7 +28,7 @@ class ResidualAttentionUnit(nn.Module):
             Triple_Conv(num_features, num_features),
             multi_scale_aspp(num_features),
             multi_scale_aspp(num_features),
-            MHSA(num_features, width=28, height=28, heads=4)
+            MHSA(num_features, width=56, height=56, heads=4)
         )
 
     def forward(self, x0, x):
@@ -101,8 +101,8 @@ class RANet(nn.Module):
         # self.x_sal = self.sal_encoder(x)
         # x = torch.cat((x,d),1)
         # x = self.conv11(x)
-        _, _, _, p3, p4 = self.dpt_model(x) # p1: [2, 256, 112, 112], p2: [2, 256, 56, 56], p3: [2, 256, 28, 28], p4: [2, 256, 14, 14]
-        p4 = self.RA(p3)
+        _, _, p2, p3, p4 = self.dpt_model(x) # p1: [2, 256, 112, 112], p2: [2, 256, 56, 56], p3: [2, 256, 28, 28], p4: [2, 256, 14, 14]
+        p4 = self.RA(p2)
 
         p4 = self.transconv1(p4)
         p4 = self.transconv2(p4)
