@@ -11,6 +11,7 @@ from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
 import imageio
+from RecursiveTRANS import RANet
 import torch.nn as nn
 from customlosses import ssim
 from torch.utils.data import Dataset, DataLoader
@@ -19,7 +20,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=10, help='epoch number')
+parser.add_argument('--epoch', type=int, default=25, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -130,7 +131,7 @@ if __name__ == '__main__':
 
     for dataset_name in datasets:
 
-        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        resswin = RANet(channel=opt.feat_channel, latent_dim=opt.latent_dim)
         print ("Resswin parameters > ", count_parameters(resswin))
         resswin.to(device)
         resswin.train()
@@ -190,7 +191,7 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                visualize_gt(gts)
+                # visualize_gt(gts)
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
@@ -207,7 +208,7 @@ if __name__ == '__main__':
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
-        image_save_path = 'results/' + dataset_name + "/"
+        image_save_path = 'results_pami/' + dataset_name + "/"
         image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
         # image_root = dataset_path + dataset_name + '/Images/'
         test_data = TrainDatasetLoader(dataset_path, d_type[1])
