@@ -220,20 +220,7 @@ class ResSwinModel(nn.Module):
         #     return self.x_sal
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
-import torchvision.models as models
-import torch
-from ptflops import get_model_complexity_info
 
-
-with torch.cuda.device(0):
-  net = ResSwinModel(32,3)
-  x = torch.randn((2, 3, 224, 224))
-  depth = torch.randn((2, 3, 224, 224))
-  input = dict(x=[x, depth])
-  macs, params = get_model_complexity_info(net,input, as_strings=True,
-                                           print_per_layer_stat=True, verbose=True)
-  print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
-  print('{:<30}  {:<8}'.format('Number of parameters: ', params))
 # x = torch.randn((2, 3, 224, 224)).to(device)
 # depth = torch.randn((2, 3, 224, 224)).to(device)
 # # # gt = torch.randn((12, 1, 224, 224)).to(device)

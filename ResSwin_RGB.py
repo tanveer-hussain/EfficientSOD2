@@ -129,6 +129,7 @@ class ResSwinModel(nn.Module):
         # if training:
         # self.x_sal = self.sal_encoder(x)
         _, p1, p2, p3, p4 = self.dpt_model(x)
+        p1 = torch.randn((1,256,56,56))
         # _, _, _, _, d4 = self.dpt_depth_model(d)
 
         # d4 = self.head(d4)
@@ -192,6 +193,20 @@ class ResSwinModel(nn.Module):
         #     return self.x_sal
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
+
+import torchvision.models as models
+import torch
+from ptflops import get_model_complexity_info
+
+
+with torch.cuda.device(0):
+  net = ResSwinModel(32,3)
+  x = torch.randn((3, 224, 224))
+  macs, params = get_model_complexity_info(net,(3, 224, 224), as_strings=True,
+                                           print_per_layer_stat=True, verbose=True)
+  print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+  print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+
 
 # x = torch.randn((2, 3, 224, 224)).to(device)
 # depth = torch.randn((2, 3, 224, 224)).to(device)
