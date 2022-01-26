@@ -15,3 +15,5 @@ SIP	MAE: 0.071, FMeasure: 0.954, EMeasure: 0.986, SMeasure: 0.954
 NLPR	MAE: 0.422, FMeasure: 0.887, EMeasure: 0.947, SMeasure: 0.887
 NJU2K	MAE: 0.405, FMeasure: 0.895, EMeasure: 0.936, SMeasure: 0.895
 SIP	MAE: 0.416, FMeasure: 0.951, EMeasure: 0.987, SMeasure: 0.951
+DUT-RGBD	MAE: 0.429, FMeasure: 0.752, EMeasure: 0.858, SMeasure: 0.752
+DUT-RGBD	MAE: 0.4, FMeasure: 0.926, EMeasure: 0.961, SMeasure: 0.926

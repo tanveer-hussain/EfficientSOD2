@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
     for dataset_name in datasets:
 
-        resswin = RANet(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
         print ("Resswin parameters > ", count_parameters(resswin))
         resswin.to(device)
         resswin.train()
@@ -195,7 +195,7 @@ if __name__ == '__main__':
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
                 # print (x_sal.shape)
 
-                visualize_uncertainty_prior_init(torch.sigmoid(d_sal))
+                visualize_uncertainty_prior_init(torch.sigmoid(gts))
                 #
                 if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.

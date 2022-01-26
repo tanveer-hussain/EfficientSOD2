@@ -4,6 +4,7 @@ device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 from ResNet_models_Custom import Saliency_feat_encoder, Triple_Conv, multi_scale_aspp, Classifier_Module, RCAB, BasicConv2d
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
+import torchvision
 
 class BasicTransConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, stride, padding=0, dilation=1):
@@ -16,7 +17,6 @@ class BasicTransConv2d(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        x0 = x
         x = self.convT(x)
         x = self.bn(x)
         return x
@@ -26,9 +26,9 @@ class ResidualAttentionUnit(nn.Module):
         super(ResidualAttentionUnit, self).__init__()
         self.AttentionBlock = nn.Sequential(
             Triple_Conv(num_features, num_features),
-            multi_scale_aspp(num_features),
-            multi_scale_aspp(num_features),
-            MHSA(num_features, width=56, height=56, heads=4)
+            # multi_scale_aspp(num_features),
+            # multi_scale_aspp(num_features),
+            MHSA(num_features, width=28, height=28, heads=4)
         )
 
     def forward(self, x0, x):
@@ -71,6 +71,12 @@ class RANet(nn.Module):
         self.dpt_model.eval()
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
 
+        original_model = torchvision.models.densenet121(pretrained=True, progress=True, memory_efficient=True)
+        self.features = nn.Sequential(
+            *list(original_model.features.children())[:-5]
+        )
+        # torch.Size([1, 512, 28, 28])
+
 
         features = 256
         non_negative = True
@@ -101,8 +107,9 @@ class RANet(nn.Module):
         # self.x_sal = self.sal_encoder(x)
         # x = torch.cat((x,d),1)
         # x = self.conv11(x)
+        # p3 = self.features(x) #  # torch.Size([1, 512, 28, 28])
         _, _, p2, p3, p4 = self.dpt_model(x) # p1: [2, 256, 112, 112], p2: [2, 256, 56, 56], p3: [2, 256, 28, 28], p4: [2, 256, 14, 14]
-        p4 = self.RA(p2)
+        p4 = self.RA(p3)
 
         p4 = self.transconv1(p4)
         p4 = self.transconv2(p4)
