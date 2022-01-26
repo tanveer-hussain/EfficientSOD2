@@ -224,11 +224,13 @@ import torchvision.models as models
 import torch
 from ptflops import get_model_complexity_info
 
+
 with torch.cuda.device(0):
   net = ResSwinModel(32,3)
   x = torch.randn((2, 3, 224, 224))
   depth = torch.randn((2, 3, 224, 224))
-  macs, params = get_model_complexity_info(net(x,depth), as_strings=True,
+  input = dict(x=[x, depth])
+  macs, params = get_model_complexity_info(net,input, as_strings=True,
                                            print_per_layer_stat=True, verbose=True)
   print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
   print('{:<30}  {:<8}'.format('Number of parameters: ', params))
