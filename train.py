@@ -87,7 +87,7 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-from ResSwin import ResSwinModel
+from PASModel import PASNet
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 
 if __name__ == '__main__':
@@ -117,10 +117,10 @@ if __name__ == '__main__':
 
     for dataset_name in rgbd_datasets:
 
-        resswin = ResSwinModel(channel=feature_channels, latent_dim=dim)
-        resswin.to(device)
-        resswin.train()
-        resswin_params = resswin.parameters()
+        PASNet = PASNet(channel=feature_channels, latent_dim=dim)
+        PASNet.to(device)
+        PASNet.train()
+        resswin_params = PASNet.parameters()
         resswin_optimizer = torch.optim.Adam(resswin_params, lr, betas=[beta1_gen, 0.999])
         print ("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
         dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
@@ -128,11 +128,6 @@ if __name__ == '__main__':
 
         train_data = TrainDatasetLoader(dataset_path, d_type[0])
         train_loader = DataLoader(train_data, batch_size=batchsize, shuffle=True, num_workers=8, drop_last=True)
-
-        # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-        # gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
-        # depth_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
-        # gray_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
         total_step = len(train_loader)
 
         for epoch in range(1, epochs):
@@ -143,11 +138,11 @@ if __name__ == '__main__':
                 depths = Variable(depths).cuda()
 
                 # x_sal, d_sal = resswin.forward(images, depths)
-                x_sal = resswin.forward(images, depths)
+                x_sal = PASNet.forward(images, depths)
                 # x_sal = torch.sigmoid(x_sal)
                 # total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
-                reg_loss = l2_regularisation(resswin.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
+                reg_loss = l2_regularisation(PASNet.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
                 reg_loss = regularization_weight * reg_loss
                 #
                 #depth_loss = l1_criterion(d_sal, gts)
@@ -176,7 +171,7 @@ if __name__ == '__main__':
 
             adjust_lr(resswin_optimizer, lr, epoch, decay_rate, decay_epoch)
             if epoch % 20 == 0 or epoch == epochs:
-                torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD_D' + '_%d' % epoch + '_Pyramid.pth')
+                torch.save(PASNet.state_dict(), save_path + dataset_name + 'RGBD_D' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
@@ -186,5 +181,5 @@ if __name__ == '__main__':
         test_loader = DataLoader(test_data)
         from test import ModelTesting
 
-        ModelTesting(resswin, test_loader, image_save_path, dataset_path, dataset_name)
+        ModelTesting(PASNet, test_loader, image_save_path, dataset_path, dataset_name)
         torch.cuda.empty_cache()

@@ -45,9 +45,9 @@ class Pyramid_block(nn.Module):
 
         return x
 
-class ResSwinModel(nn.Module):
+class PASNet(nn.Module):
     def __init__(self, channel, latent_dim):
-        super(ResSwinModel, self).__init__()
+        super(PASNet, self).__init__()
 
         model_d_path = "weights/dpt_hybrid-midas-501f0c75.pt"
         self.dpt_depth_model = DPTDepthModel(
