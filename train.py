@@ -16,8 +16,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--sm_weight', type=float, default=0.1, help='weight for smoothness loss')
-parser.add_argument('--reg_weight', type=float, default=1e-4, help='weight for regularization term')
 parser.add_argument('--lat_weight', type=float, default=10.0, help='weight for latent loss')
 parser.add_argument('--vae_loss_weight', type=float, default=0.4, help='weight for vae loss')
 parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight for depth loss')
@@ -117,6 +115,9 @@ if __name__ == '__main__':
     # weight_decay = 0.001
     feature_channels = 32
     dim = 3
+    # smoothness_weight = 0.1
+    regularization_weight = 1e-4
+
     ############################################################
 
     if not os.path.exists(save_path):
@@ -155,7 +156,7 @@ if __name__ == '__main__':
                 # total_loss = mse_loss(x_sal,gts)
                 # reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = l2_regularisation(resswin.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
-                reg_loss = opt.reg_weight * reg_loss
+                reg_loss = regularization_weight * reg_loss
                 #
                 #depth_loss = l1_criterion(d_sal, gts)
                 #d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
