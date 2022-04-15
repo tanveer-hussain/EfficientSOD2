@@ -16,11 +16,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
-parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
-parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
-parser.add_argument('--decay_epoch', type=int, default=80, help='every n epochs decay learning rate')
-parser.add_argument('-beta1_gen', type=float, default=0.5,help='beta of Adam for generator')
 parser.add_argument('--weight_decay', type=float, default=0.001, help='weight_decay')
 parser.add_argument('--latent_dim', type=int, default=3, help='latent dim')
 parser.add_argument('--feat_channel', type=int, default=32, help='reduced channel of saliency feat')
@@ -115,9 +110,13 @@ if __name__ == '__main__':
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
+    ## Hyper parameters
     epochs = 2
     batchsize = 6
     lr = 5e-5
+    decay_rate = 0.9
+    decay_epoch = 20
+    beta1_gen = 0.5
     ############################################################
 
     if not os.path.exists(save_path):
@@ -129,7 +128,7 @@ if __name__ == '__main__':
         resswin.to(device)
         resswin.train()
         resswin_params = resswin.parameters()
-        resswin_optimizer = torch.optim.Adam(resswin_params, lr, betas=[opt.beta1_gen, 0.999])
+        resswin_optimizer = torch.optim.Adam(resswin_params, lr, betas=[beta1_gen, 0.999])
 
         print ("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
 
@@ -143,8 +142,6 @@ if __name__ == '__main__':
         # gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
         # depth_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Depth/'
         # gray_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Gray/'
-
-        # train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
         total_step = len(train_loader)
 
         for epoch in range(1, epochs):
@@ -186,7 +183,7 @@ if __name__ == '__main__':
                         format(epoch, epochs, i, total_step, total_loss.data))
                     print("Dataset: ", dataset_name)
 
-            adjust_lr(resswin_optimizer, lr, epoch, opt.decay_rate, opt.decay_epoch)
+            adjust_lr(resswin_optimizer, lr, epoch, decay_rate, decay_epoch)
             if epoch % 20 == 0 or epoch == epochs:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD_D' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
