@@ -118,16 +118,6 @@ class ResSwinModel(nn.Module):
             nn.ReLU(True) if non_negative else nn.Identity(),
             nn.Identity(),
         )
-
-
-        # self.sal_encoder = Saliency_feat_encoder(channel, latent_dim)
-        # if optimize == True and device == torch.device("cuda"):
-        #     self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
-        #     self.dpt_model = self.dpt_model.half()
-        #     self.sal_encoder = self.sal_encoder.half()
-
-        # self.relu = nn.ReLU(inplace=True)
-        # self.swin_saliency = SwinSaliency()
         self.conv43 = Triple_Conv(2 * channel, channel)
         self.conv432 = Triple_Conv(3 * channel, channel)
         self.conv4321 = Triple_Conv(4 * channel, channel)
@@ -140,14 +130,6 @@ class ResSwinModel(nn.Module):
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         self.conv2 = Triple_Conv(150, 1)
         self.conv11 = Triple_Conv(6,3)
-        # self.conv3 = Triple_Conv(1024, channel)
-        # self.conv4 = Triple_Conv(2048, channel)
-        # self.liner1024 = nn.Linear(2048, 1024)
-        # self.upsampling = nn.Sequential(
-        #     nn.Upsample(size=(64, 64), mode='bilinear', align_corners=True),
-        # nn.Upsample(size=(128, 128), mode='bilinear', align_corners=True),
-        # nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
-        # )
 
 
     def forward(self, x , d, training=True):

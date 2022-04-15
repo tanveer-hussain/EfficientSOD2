@@ -118,9 +118,6 @@ device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
-    print("Let's Play!")
-    ## load data
-    # datasets = ['SIP']
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"

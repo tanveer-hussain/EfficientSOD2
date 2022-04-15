@@ -4,8 +4,6 @@ from torch.autograd import Variable
 
 import numpy as np
 import os, argparse
-# from ResNet_models import Generator
-# from ResNet_models_UCNet import Generator
 from data_RGB import TrainDatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
