@@ -13,14 +13,6 @@ from customlosses import ssim
 from torch.utils.data import Dataset, DataLoader
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--lat_weight', type=float, default=10.0, help='weight for latent loss')
-parser.add_argument('--vae_loss_weight', type=float, default=0.4, help='weight for vae loss')
-parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight for depth loss')
-
-opt = parser.parse_args()
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 ## define loss
