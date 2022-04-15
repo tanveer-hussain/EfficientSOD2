@@ -17,7 +17,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
-parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -119,6 +118,7 @@ if __name__ == '__main__':
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     epochs = 2
+    batchsize = 6
     ############################################################
 
     if not os.path.exists(save_path):
@@ -135,13 +135,11 @@ if __name__ == '__main__':
 
         print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
-        # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
         dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
-        # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
         train_data = TrainDatasetLoader(dataset_path, d_type[0])
-        train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=8, drop_last=True)
+        train_loader = DataLoader(train_data, batch_size=batchsize, shuffle=True, num_workers=8, drop_last=True)
 
         # image_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
         # gt_root = r'D:\My Research\Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
@@ -154,7 +152,6 @@ if __name__ == '__main__':
         for epoch in range(1, epochs):
             for i, (images, depths, _, _, gts, _) in enumerate(train_loader, start=1):
 
-                # print(index_batch)
                 images = Variable(images).cuda()
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
