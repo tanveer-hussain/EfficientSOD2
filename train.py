@@ -1,17 +1,13 @@
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
-
 import numpy as np
 import os, argparse
-# from ResNet_models import Generator
-# from ResNet_models_UCNet import Generator
 from data import TrainDatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
 import smoothness
 import imageio
-from RecursiveTRANS import RANet
 import torch.nn as nn
 from customlosses import ssim
 from torch.utils.data import Dataset, DataLoader
@@ -20,7 +16,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epoch', type=int, default=25, help='epoch number')
 parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--batchsize', type=int, default=6, help='training batch size')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -118,10 +113,13 @@ device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
+    ######################### Inputs ############################
     datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
+    epochs = 2
+    ############################################################
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -142,9 +140,6 @@ if __name__ == '__main__':
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
-        # image_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Images/'
-        # gt_root = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Train/Labels/'
-
         train_data = TrainDatasetLoader(dataset_path, d_type[0])
         train_loader = DataLoader(train_data, batch_size=opt.batchsize, shuffle=True, num_workers=8, drop_last=True)
 
@@ -156,7 +151,7 @@ if __name__ == '__main__':
         # train_loader, training_set_size = get_loader(image_root, gt_root, depth_root, gray_root,batchsize=opt.batchsize, trainsize=opt.trainsize)
         total_step = len(train_loader)
 
-        for epoch in range(1, opt.epoch+1):
+        for epoch in range(1, epochs):
             for i, (images, depths, _, _, gts, _) in enumerate(train_loader, start=1):
 
                 # print(index_batch)
@@ -196,7 +191,7 @@ if __name__ == '__main__':
                 #
                 if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
-                        format(epoch, opt.epoch, i, total_step, total_loss.data))
+                        format(epoch, epochs, i, total_step, total_loss.data))
                     print("Dataset: ", dataset_name)
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
@@ -205,7 +200,7 @@ if __name__ == '__main__':
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
-        image_save_path = 'results_pami/' + dataset_name + "/"
+        image_save_path = 'results/' + dataset_name + "/"
         image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
         # image_root = dataset_path + dataset_name + '/Images/'
         test_data = TrainDatasetLoader(dataset_path, d_type[1])
