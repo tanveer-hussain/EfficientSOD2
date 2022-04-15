@@ -16,9 +16,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--weight_decay', type=float, default=0.001, help='weight_decay')
-parser.add_argument('--latent_dim', type=int, default=3, help='latent dim')
-parser.add_argument('--feat_channel', type=int, default=32, help='reduced channel of saliency feat')
 parser.add_argument('--sm_weight', type=float, default=0.1, help='weight for smoothness loss')
 parser.add_argument('--reg_weight', type=float, default=1e-4, help='weight for regularization term')
 parser.add_argument('--lat_weight', type=float, default=10.0, help='weight for latent loss')
@@ -117,6 +114,9 @@ if __name__ == '__main__':
     decay_rate = 0.9
     decay_epoch = 20
     beta1_gen = 0.5
+    # weight_decay = 0.001
+    feature_channels = 32
+    dim = 3
     ############################################################
 
     if not os.path.exists(save_path):
@@ -124,14 +124,12 @@ if __name__ == '__main__':
 
     for dataset_name in rgbd_datasets:
 
-        resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
+        resswin = ResSwinModel(channel=feature_channels, latent_dim=dim)
         resswin.to(device)
         resswin.train()
         resswin_params = resswin.parameters()
         resswin_optimizer = torch.optim.Adam(resswin_params, lr, betas=[beta1_gen, 0.999])
-
         print ("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
-
         dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
