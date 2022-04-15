@@ -1,26 +1,11 @@
 import torch
 import torch.nn as nn
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-from ResNet_models_Custom import Saliency_feat_encoder, Triple_Conv, multi_scale_aspp, Classifier_Module, RCAB, BasicConv2d
+from ResNet_models_Custom import Triple_Conv, multi_scale_aspp, Classifier_Module, RCAB, BasicConv2d
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
 from depth_model import DepthNet
-import imageio
-import numpy as np
-
-def visualize_uncertainty_prior_init(var_map):
-
-    for kk in range(var_map.shape[0]):
-        pred_edge_kk = var_map[kk,1,:,:]
-        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-        pred_edge_kk *= 255.0
-        pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        # print('proir_edge_kk shape', pred_edge_kk.shape)
-        save_path = './intermediate/'
-        name = '{:02d}_t1.png'.format(kk)
-        imageio.imwrite(save_path + name, pred_edge_kk)
 
 
 class Pyramid_block(nn.Module):
@@ -32,7 +17,6 @@ class Pyramid_block(nn.Module):
 
         if in_channels != out_channels:
             self.block1.append(Triple_Conv(in_channels, out_channels))
-
 
         if initial==1:
             self.block1.append(multi_scale_aspp(in_channels))
@@ -87,9 +71,6 @@ class ResSwinModel(nn.Module):
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
         self.depth_model = DepthNet()
 
-        # self.asppconv1 = multi_scale_aspp(channel)
-        # self.asppconv2 = multi_scale_aspp(channel)
-        # self.asppconv3 = multi_scale_aspp(channel)
         self.asppconv4 = multi_scale_aspp(channel)
 
         self.spatial_axes = [2, 3]
@@ -100,12 +81,8 @@ class ResSwinModel(nn.Module):
         self.racb_4321 = RCAB(channel * 4)
 
         self.aspp_mhsa1 = Pyramid_block(32, 56, 32, 56, 4, 1)
-
         self.aspp_mhsa2 = Pyramid_block(32, 56, 32, 56, 4, 2)
-        #
         self.aspp_mhsa3 = Pyramid_block(32, 28, 32, 28, 4, 3)
-        # # self.aspp_mhsa3_2 = Pyramid_block(32, 14, 32, 14, 4, 2)
-        #
         self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 1)
         features = 256
         non_negative = True

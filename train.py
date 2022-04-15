@@ -16,7 +16,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lr_gen', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
 parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
 parser.add_argument('--decay_rate', type=float, default=0.9, help='decay rate of learning rate')
@@ -32,7 +31,6 @@ parser.add_argument('--vae_loss_weight', type=float, default=0.4, help='weight f
 parser.add_argument('--depth_loss_weight', type=float, default=0.1, help='weight for depth loss')
 
 opt = parser.parse_args()
-print('Generator Learning Rate: {}'.format(opt.lr_gen))
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 ## define loss
@@ -113,27 +111,27 @@ device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     ######################### Inputs ############################
-    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    rgbd_datasets = ['SIP', "DUT-RGBD", "NLPR", 'NJU2K']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     epochs = 2
     batchsize = 6
+    lr = 5e-5
     ############################################################
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    for dataset_name in datasets:
+    for dataset_name in rgbd_datasets:
 
         resswin = ResSwinModel(channel=opt.feat_channel, latent_dim=opt.latent_dim)
-        print ("Resswin parameters > ", count_parameters(resswin))
         resswin.to(device)
         resswin.train()
         resswin_params = resswin.parameters()
-        resswin_optimizer = torch.optim.Adam(resswin_params, opt.lr_gen, betas=[opt.beta1_gen, 0.999])
+        resswin_optimizer = torch.optim.Adam(resswin_params, lr, betas=[opt.beta1_gen, 0.999])
 
-        print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
+        print ("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
 
         dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
         d_type = ['Train', 'Test']
@@ -180,10 +178,7 @@ if __name__ == '__main__':
                 resswin_optimizer.zero_grad()
                 total_loss.backward()
                 resswin_optimizer.step()
-                # visualize_gt(gts)
                 visualize_uncertainty_post_init(torch.sigmoid(x_sal))
-                # print (x_sal.shape)
-
                 visualize_uncertainty_prior_init(torch.sigmoid(gts))
                 #
                 if i % 2 == 0 or i == total_step:
@@ -191,18 +186,17 @@ if __name__ == '__main__':
                         format(epoch, epochs, i, total_step, total_loss.data))
                     print("Dataset: ", dataset_name)
 
-            adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
-            if epoch % 20 == 0 or epoch == opt.epoch:
+            adjust_lr(resswin_optimizer, lr, epoch, opt.decay_rate, opt.decay_epoch)
+            if epoch % 20 == 0 or epoch == epochs:
                 torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD_D' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
         image_save_path = 'results/' + dataset_name + "/"
         image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
-        # image_root = dataset_path + dataset_name + '/Images/'
         test_data = TrainDatasetLoader(dataset_path, d_type[1])
         test_loader = DataLoader(test_data)
         from test import ModelTesting
 
         ModelTesting(resswin, test_loader, image_save_path, dataset_path, dataset_name)
-        # torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
