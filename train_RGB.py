@@ -124,20 +124,20 @@ if __name__ == '__main__':
     print("Let's Play!")
     ## load data
     # datasets = ['SIP']
-    # datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
-    rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
+    datasets = ["DUT-RGBD", "NLPR", 'NJU2K', 'SIP']
+    # rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     save_path = 'models/'
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    for dataset_name in rgb_datasets:
+    for dataset_name in datasets:
 
-        print ("Datasets:", rgb_datasets, "\n ****Currently Training > ", dataset_name)
+        print ("Datasets:", datasets, "\n ****Currently Training > ", dataset_name)
 
         # dataset_path = r'C:\Users\khank\Desktop\Temp data/' + dataset_name
         # dataset_path = r'../RGBDatasets/' + dataset_name  ######################################
-        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGB/' + dataset_name
+        dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBDatasets/' + dataset_name
         # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name
         # d_type = ['Train', 'Test']
         d_type = ''
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
             adjust_lr(resswin_optimizer, opt.lr_gen, epoch, opt.decay_rate, opt.decay_epoch)
             if epoch % 10 == 0 or epoch == opt.epoch:
-                torch.save(resswin.state_dict(), save_path + dataset_name + 'RGB' + '_%d' % epoch + '_Pyramid.pth')
+                torch.save(resswin.state_dict(), save_path + dataset_name + 'RGBD' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)

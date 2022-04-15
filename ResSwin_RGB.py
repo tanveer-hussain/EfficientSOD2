@@ -60,16 +60,16 @@ class ResSwinModel(nn.Module):
         # self.dpt_depth_model = self.dpt_depth_model.to(memory_format=torch.channels_last)
 
         #
-        # model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
-        # self.dpt_model = DPTSegmentationModel(
-        #     150,
-        #     path=model_path,
-        #     backbone="vitb_rn50_384",
-        # )
-        # self.dpt_model.eval()
-        # # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
-        # self.depth_model = DepthNet()
+        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
+        self.dpt_model = DPTSegmentationModel(
+            150,
+            path=model_path,
+            backbone="vitb_rn50_384",
+        )
+        self.dpt_model.eval()
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
+        self.depth_model = DepthNet()
 
         # self.asppconv1 = multi_scale_aspp(channel)
         # self.asppconv2 = multi_scale_aspp(channel)
@@ -128,12 +128,12 @@ class ResSwinModel(nn.Module):
     def forward(self, x , training=True):
         # if training:
         # self.x_sal = self.sal_encoder(x)
-        # _, p1, p2, p3, p4 = self.dpt_model(x)
+        _, p1, p2, p3, p4 = self.dpt_model(x)
         # print (p1.shape, p2.shape, p3.shape, p4.shape)
-        p1 = torch.randn((1,256,112,112))
-        p2 = torch.randn((1, 256, 56, 56))
-        p3 = torch.randn((1, 256, 28, 28))
-        p4 = torch.randn((1, 256, 14, 14))
+        # p1 = torch.randn((1,256,112,112))
+        # p2 = torch.randn((1, 256, 56, 56))
+        # p3 = torch.randn((1, 256, 28, 28))
+        # p4 = torch.randn((1, 256, 14, 14))
         # _, _, _, _, d4 = self.dpt_depth_model(d)
 
         # d4 = self.head(d4)
