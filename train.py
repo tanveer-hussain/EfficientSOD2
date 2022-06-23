@@ -53,17 +53,21 @@ if __name__ == '__main__':
 
     ############################################################
 
+    PASNet = PASNet(channel=feature_channels, latent_dim=latent_dim)
+    PASNet.to(device)
+    PASNet.train()
+    PASNet_params = PASNet.parameters()
+    PASNet_optimizer = torch.optim.Adam(PASNet_params, lr, betas=[beta1_gen, 0.999])
+
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     for dataset_name in rgbd_datasets:
 
-        PASNet = PASNet(channel=feature_channels, latent_dim=latent_dim)
-        PASNet.to(device)
-        PASNet.train()
-        PASNet_params = PASNet.parameters()
-        PASNet_optimizer = torch.optim.Adam(PASNet_params, lr, betas=[beta1_gen, 0.999])
-        print ("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
+        print("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
+
+
+
         dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
         d_type = ['Train', 'Test']
 
@@ -106,11 +110,11 @@ if __name__ == '__main__':
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
-        image_save_path = 'results/' + dataset_name + "/"
-        image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
-        test_data = TrainDatasetLoader(dataset_path, d_type[1])
-        test_loader = DataLoader(test_data)
-        from test import ModelTesting
-
-        ModelTesting(PASNet, test_loader, image_save_path, dataset_path, dataset_name)
-        torch.cuda.empty_cache()
+        # image_save_path = 'results/' + dataset_name + "/"
+        # image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
+        # test_data = TrainDatasetLoader(dataset_path, d_type[1])
+        # test_loader = DataLoader(test_data)
+        # from test import ModelTesting
+        #
+        # ModelTesting(PASNet, test_loader, image_save_path, dataset_path, dataset_name)
+        # torch.cuda.empty_cache()
