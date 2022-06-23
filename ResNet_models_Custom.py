@@ -218,45 +218,6 @@ class ResidualBlock(nn.Module):
 
     def forward(self, x):
         return x + self.main(x)
-
-# class VGGFeatures(nn.Module):
-#     def __init__(self, input_channels, channels):
-#         super(VGGFeatures, self).__init__()
-#
-#         self.input_channels = input_channels
-#         self.relu = nn.ReLU(inplace=True)
-#         self.layer1 = nn.Conv2d(input_channels, channels, kernel_size=4, stride=2, padding=1)
-#         self.bn1 = nn.BatchNorm2d(channels)
-#         self.layer2 = nn.Conv2d(channels, 2*channels, kernel_size=4, stride=2, padding=1)
-#         self.bn2 = nn.BatchNorm2d(channels * 2)
-#         self.layer3 = nn.Conv2d(2*channels, 4*channels, kernel_size=4, stride=2, padding=1)
-#         self.bn3 = nn.BatchNorm2d(channels * 4)
-#         self.layer4 = nn.Conv2d(4*channels, 8*channels, kernel_size=4, stride=2, padding=1)
-#         self.bn4 = nn.BatchNorm2d(channels * 8)
-#         self.layer5 = nn.Conv2d(8*channels, 8*channels, kernel_size=4, stride=2, padding=1)
-#         self.bn5 = nn.BatchNorm2d(channels * 8)
-#         self.channel = channels
-#         self.leakyrelu = nn.LeakyReLU()
-#
-#     def forward(self, input):
-#         output = self.leakyrelu(self.bn1(self.layer1(input))) # [1, 4, 112, 112]
-#         # print(output.size())
-#         x1 = self.leakyrelu(self.bn2(self.layer2(output))) # [1, 8, 56, 56]
-#         # print(output.size())
-#         x2 = self.leakyrelu(self.bn3(self.layer3(x1))) # [1, 16, 28, 28]
-#         # print(output.size())
-#         x3 = self.leakyrelu(self.bn4(self.layer4(x2))) # [1, 32, 14, 14]
-#         # print(output.size())
-#         x4 = self.leakyrelu(self.bn4(self.layer5(x3))) # [1, 32, 7, 7]
-#
-#
-#         return x1, x2, x3, x4
-#
-# # vgg_features = VGGFeatures(3,4)
-# # x = torch.randn(1,3,224,224)
-# # y = vgg_features(x)
-
-
 class Pyramid_block(nn.Module):
     def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
         super(Pyramid_block, self).__init__()
