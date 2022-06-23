@@ -35,7 +35,7 @@ if __name__ == '__main__':
     ######################### Inputs ############################
     rgbd_datasets = ['SIP', "DUT-RGBD", "NLPR", 'NJU2K']
     # rgbd_datasets = ['SIP']
-    rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
+    # rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     # save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     ## Hyper parameters
