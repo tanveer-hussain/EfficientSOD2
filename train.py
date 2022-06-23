@@ -35,54 +35,6 @@ def structure_loss(pred, mask):
     return (wbce+wiou).sum()
 
 
-## visualize predictions and gt
-def visualize_uncertainty_post_init(var_map):
-
-    for kk in range(var_map.shape[0]):
-        pred_edge_kk = var_map[kk,:,:,:]
-        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-        pred_edge_kk *= 255.0
-        pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        # print ('pred_edge_kk shape', pred_edge_kk.shape)
-        save_path = './temp/'
-        name = '{:02d}_post_int.png'.format(kk)
-        imageio.imwrite(save_path + name, pred_edge_kk)
-
-def visualize_uncertainty_prior_init(var_map):
-
-    for kk in range(var_map.shape[0]):
-        pred_edge_kk = var_map[kk,:,:,:]
-        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-        pred_edge_kk *= 255.0
-        pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        # print('proir_edge_kk shape', pred_edge_kk.shape)
-        save_path = './temp/'
-        name = '{:02d}_prior_int.png'.format(kk)
-        imageio.imwrite(save_path + name, pred_edge_kk)
-
-def visualize_gt(var_map):
-
-    for kk in range(var_map.shape[0]):
-        pred_edge_kk = var_map[kk,:,:,:]
-        pred_edge_kk = pred_edge_kk.detach().cpu().numpy().squeeze()
-        # pred_edge_kk = (pred_edge_kk - pred_edge_kk.min()) / (pred_edge_kk.max() - pred_edge_kk.min() + 1e-8)
-        pred_edge_kk *= 255.0
-        pred_edge_kk = pred_edge_kk.astype(np.uint8)
-        save_path = './temp/'
-        name = '{:02d}_depth.png'.format(kk)
-        imageio.imwrite(save_path + name, pred_edge_kk)
-
-## linear annealing to avoid posterior collapse
-def linear_annealing(init, fin, step, annealing_steps):
-    """Linear annealing of a parameter."""
-    if annealing_steps == 0:
-        return fin
-    assert fin > init
-    delta = fin - init
-    annealed = min(init + delta * step / annealing_steps, fin)
-    return annealed
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
@@ -94,8 +46,9 @@ if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     ######################### Inputs ############################
     rgbd_datasets = ['SIP', "DUT-RGBD", "NLPR", 'NJU2K']
+    # rgbd_datasets = ['SIP']
     rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
-    save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
+    # save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     ## Hyper parameters
     epochs = 2
@@ -106,7 +59,7 @@ if __name__ == '__main__':
     beta1_gen = 0.5
     # weight_decay = 0.001
     feature_channels = 32
-    dim = 3
+    latent_dim = 3
     # smoothness_weight = 0.1
     regularization_weight = 1e-4
 
@@ -117,11 +70,11 @@ if __name__ == '__main__':
 
     for dataset_name in rgbd_datasets:
 
-        PASNet = PASNet(channel=feature_channels, latent_dim=dim)
+        PASNet = PASNet(channel=feature_channels, latent_dim=latent_dim)
         PASNet.to(device)
         PASNet.train()
-        resswin_params = PASNet.parameters()
-        resswin_optimizer = torch.optim.Adam(resswin_params, lr, betas=[beta1_gen, 0.999])
+        PASNet_params = PASNet.parameters()
+        PASNet_optimizer = torch.optim.Adam(PASNet_params, lr, betas=[beta1_gen, 0.999])
         print ("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
         dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/' + dataset_name
         d_type = ['Train', 'Test']
@@ -137,18 +90,10 @@ if __name__ == '__main__':
                 gts = Variable(gts).cuda()
                 depths = Variable(depths).cuda()
 
-                # x_sal, d_sal = resswin.forward(images, depths)
                 x_sal = PASNet.forward(images, depths)
-                # x_sal = torch.sigmoid(x_sal)
-                # total_loss = mse_loss(x_sal,gts)
-                # reg_loss = l2_regularisation(resswin.sal_encoder)
                 reg_loss = l2_regularisation(PASNet.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
                 reg_loss = regularization_weight * reg_loss
-                #
-                #depth_loss = l1_criterion(d_sal, gts)
-                #d_ssim_loss = torch.clamp((1 - ssim(d_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1)
-                #
-                # sal_loss = CE(x_sal, gts)
+
                 x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
                 #
                 #x_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) + (0.3 * x_ssim_loss) + (0.2 * sal_loss)
@@ -158,18 +103,16 @@ if __name__ == '__main__':
                 total_loss = criterion(x_sal,gts) + reg_loss#x_ssim_loss + reg_loss # + x_loss # + d_loss
 
                 #
-                resswin_optimizer.zero_grad()
+                PASNet_optimizer.zero_grad()
                 total_loss.backward()
-                resswin_optimizer.step()
-                visualize_uncertainty_post_init(torch.sigmoid(x_sal))
-                visualize_uncertainty_prior_init(torch.sigmoid(gts))
+                PASNet_optimizer.step()
                 #
                 if i % 2 == 0 or i == total_step:
                     print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
                         format(epoch, epochs, i, total_step, total_loss.data))
                     print("Dataset: ", dataset_name)
 
-            adjust_lr(resswin_optimizer, lr, epoch, decay_rate, decay_epoch)
+            adjust_lr(PASNet_optimizer, lr, epoch, decay_rate, decay_epoch)
             if epoch % 20 == 0 or epoch == epochs:
                 torch.save(PASNet.state_dict(), save_path + dataset_name + 'RGBD_D' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:

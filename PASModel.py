@@ -11,13 +11,9 @@ from depth_model import DepthNet
 class Pyramid_block(nn.Module):
     def __init__(self, in_channels, in_resolution,out_channels,out_resolution,heads,initial):
         super(Pyramid_block, self).__init__()
-
-
         self.block1 = nn.ModuleList()
-
         if in_channels != out_channels:
             self.block1.append(Triple_Conv(in_channels, out_channels))
-
         if initial==1:
             self.block1.append(multi_scale_aspp(in_channels))
             self.block1.append(multi_scale_aspp(in_channels))
@@ -33,8 +29,6 @@ class Pyramid_block(nn.Module):
         elif initial==4:
             self.block1.append(multi_scale_aspp(in_channels))
         self.block1 = nn.Sequential(*self.block1)
-
-
         self.in_resolution = in_resolution
         self.out_resolution = out_resolution
 
@@ -109,7 +103,7 @@ class PASNet(nn.Module):
         self.conv11 = Triple_Conv(6,3)
 
 
-    def forward(self, x , d, training=True):
+    def forward(self, x , d):
         # if training:
         # self.x_sal = self.sal_encoder(x)
         # x = torch.cat((x,d),1)
