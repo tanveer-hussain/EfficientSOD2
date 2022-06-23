@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     ## Hyper parameters
-    epochs = 2
+    epochs = 26
     batchsize = 6
     lr = 5e-5
     decay_rate = 0.9
@@ -65,6 +65,8 @@ if __name__ == '__main__':
     for dataset_name in rgbd_datasets:
 
         print("Datasets:", rgbd_datasets, "\n ****Currently Training > ", dataset_name)
+
+
 
 
 
@@ -110,11 +112,12 @@ if __name__ == '__main__':
                 # with open(save_results_path, "a+") as ResultsFile:
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
-        # image_save_path = 'results/' + dataset_name + "/"
-        # image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
-        # test_data = TrainDatasetLoader(dataset_path, d_type[1])
-        # test_loader = DataLoader(test_data)
-        # from test import ModelTesting
-        #
-        # ModelTesting(PASNet, test_loader, image_save_path, dataset_path, dataset_name)
-        # torch.cuda.empty_cache()
+
+        image_save_path = 'results/' + dataset_name + "/"
+        image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
+        test_data = TrainDatasetLoader(dataset_path, d_type[1])
+        test_loader = DataLoader(test_data)
+        from test import ModelTesting
+
+        ModelTesting(PASNet, test_loader, image_save_path, dataset_path, dataset_name)
+        torch.cuda.empty_cache()
