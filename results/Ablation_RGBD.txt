@@ -24,3 +24,4 @@ SIP	MAE: 0.417, FMeasure: 0.923, EMeasure: 0.976, SMeasure: 0.923
 SIP	MAE: 0.411, FMeasure: 0.926, EMeasure: 0.978, SMeasure: 0.926
 SIP	MAE: 0.409, FMeasure: 0.924, EMeasure: 0.976, SMeasure: 0.924
 SIP	MAE: 0.386, FMeasure: 0.923, EMeasure: 0.975, SMeasure: 0.923
+SIP	MAE: 0.4, FMeasure: 0.926, EMeasure: 0.977, SMeasure: 0.926

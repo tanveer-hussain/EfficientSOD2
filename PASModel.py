@@ -5,7 +5,6 @@ from ResNet_models_Custom import Triple_Conv, multi_scale_aspp, Classifier_Modul
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
-from depth_model import DepthNet
 
 
 class Pyramid_block(nn.Module):
@@ -63,7 +62,6 @@ class PASNet(nn.Module):
         self.dpt_model.eval()
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
-        self.depth_model = DepthNet()
 
         self.asppconv4 = multi_scale_aspp(channel)
 
@@ -174,9 +172,9 @@ class PASNet(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-# x = torch.randn((2, 3, 224, 224)).to(device)
-# depth = torch.randn((2, 3, 224, 224)).to(device)
-# # # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = ResSwinModel(32,3).to(device)
-# y = model(x,depth)
-# print ('done')
+x = torch.randn((2, 3, 224, 224)).to(device)
+depth = torch.randn((2, 3, 224, 224)).to(device)
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+model = PASNet(32,3).to(device)
+y = model(x,depth)
+print ('done')
