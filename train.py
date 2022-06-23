@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
-import os, argparse
+import os
 from data import TrainDatasetLoader
 from utils import adjust_lr
 from utils import l2_regularisation
@@ -10,7 +10,7 @@ import smoothness
 import imageio
 import torch.nn as nn
 from customlosses import ssim
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
