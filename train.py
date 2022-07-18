@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     ## Hyper parameters
-    epochs = 2
+    epochs = 26
     batchsize = 6
     lr = 5e-5
     decay_rate = 0.9
