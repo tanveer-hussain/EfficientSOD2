@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     ## Hyper parameters
-    epochs = 26
+    epochs = 6
     batchsize = 6
     lr = 5e-5
     decay_rate = 0.9
@@ -80,7 +80,8 @@ if __name__ == '__main__':
 
                 x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
                 #
-                total_loss = ((0.2 * structure_loss(x_sal, gts)) + (0.3 * x_ssim_loss) + (0.2 * reg_loss) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)))/10000
+                # total_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * x_ssim_loss) + (0.2 * reg_loss) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts))
+                total_loss = structure_loss(x_sal, gts) + (x_ssim_loss) + ( reg_loss) + (smooth_loss(torch.sigmoid(x_sal), gts))
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
                 # total_loss = criterion(x_sal,gts) + reg_loss#x_ssim_loss + reg_loss # + x_loss # + d_loss
