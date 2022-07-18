@@ -77,15 +77,13 @@ if __name__ == '__main__':
 
                 x_sal = PASNet.forward(images, depths)
                 reg_loss = l2_regularisation(PASNet.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
-                reg_loss = regularization_weight * reg_loss
 
                 x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
                 #
-                x_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) + (0.3 * x_ssim_loss) + (0.2 * sal_loss)
-                #d_loss = (0.2 * structure_loss(d_sal, gts)) + (0.3 * smooth_loss(torch.sigmoid(d_sal), gts))  + (0.3 * d_ssim_loss) + (0.2 * depth_loss)
+                total_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * x_ssim_loss) + (0.2 * reg_loss) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts)) 
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                total_loss = criterion(x_sal,gts) + reg_loss#x_ssim_loss + reg_loss # + x_loss # + d_loss
+                # total_loss = criterion(x_sal,gts) + reg_loss#x_ssim_loss + reg_loss # + x_loss # + d_loss
 
                 #
                 PASNet_optimizer.zero_grad()
