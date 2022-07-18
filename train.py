@@ -16,19 +16,14 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 ## define loss
-
 criterion = nn.MSELoss().to('cuda')
 CE = torch.nn.BCELoss()
 mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
 smooth_loss = smoothness.smoothness_loss(size_average=True)
 l1_criterion = nn.L1Loss()
 
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
 
 from PASModel import PASNet
-device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
