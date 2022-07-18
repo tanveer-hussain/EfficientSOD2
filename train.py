@@ -1,7 +1,6 @@
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
-import numpy as np
 import os
 from data import TrainDatasetLoader
 from utils import adjust_lr
@@ -12,18 +11,20 @@ import torch.nn as nn
 from customlosses import ssim, structure_loss
 from torch.utils.data import DataLoader
 
+from PASModel import PASNet
+
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-## define loss
-criterion = nn.MSELoss().to('cuda')
-CE = torch.nn.BCELoss()
-mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
+# ## define loss
+# criterion = nn.MSELoss().to('cuda')
+# CE = torch.nn.BCELoss()
+# mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
 smooth_loss = smoothness.smoothness_loss(size_average=True)
-l1_criterion = nn.L1Loss()
+# l1_criterion = nn.L1Loss()
 
 
-from PASModel import PASNet
+
 
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
@@ -91,7 +92,7 @@ if __name__ == '__main__':
                 PASNet_optimizer.step()
                 #
                 if i % 2 == 0 or i == total_step:
-                    print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], gen vae Loss: {:.4f}'.
+                    print('Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], total Loss: {:.4f}'.
                         format(epoch, epochs, i, total_step, total_loss.data))
                     print("Dataset: ", dataset_name)
 
@@ -102,7 +103,7 @@ if __name__ == '__main__':
                 #     writing_string = dataset_name + "  Epoch [" + str(epoch) + "/" + str(opt.epoch) + "] Step [" + str(i) + "/" + str(total_step) + "], Loss:" + str(round(total_loss.data.item(),4))  + "\n"
                 #     ResultsFile.write(writing_string)
 
-        image_save_path = 'results/' + dataset_name + "/"
+        image_save_path = 'results/testing/' + dataset_name + "/"
         image_save_path if os.path.exists(image_save_path) else os.mkdir(image_save_path)
         test_data = TrainDatasetLoader(dataset_path, d_type[1])
         test_loader = DataLoader(test_data)

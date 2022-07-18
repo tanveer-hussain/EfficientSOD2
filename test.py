@@ -9,19 +9,6 @@ from EvaluateSOD import Evaluator
 import torch.nn.functional as F
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 
-# device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-# latent_dim=3
-# feat_channel=32
-# test_datasets = ['DUT-RGBD', "NJU2K", "NLPR", 'SIP']
-# # test_datasets = ['DUT-RGBD', "NJU2K"]
-# dataset_path = r'D:\My Research\Datasets\Saliency Detection\RGBD/'
-# # dataset_path = r'/media/tinu/새 볼륨/My Research/Datasets/Saliency Detection/RGBD/' + dataset_name + '/Test'
-# epoch = 40
-# from ResSwin import ResSwinModel
-# import imageio
-# resswin = ResSwinModel(channel=feat_channel, latent_dim=latent_dim)
-# resswin.to(device)
-
 
 class ModelTesting():
     def __init__(self, model, test_loader, output_root, gt_root, dataset_name):
@@ -51,6 +38,7 @@ class ModelTesting():
             output_path = self.output_path + image_name + '.png'
             print ("Saving Image at.. ", output_path)
             cv2.imwrite(output_path, output)
+
     def evaluate(self):
         print (self.output_path, self.gt_root)
         eval_data = TestDatasetLoader(self.output_path, self.gt_root)
@@ -58,7 +46,7 @@ class ModelTesting():
 
         eval = Evaluator(eval_loader)
         mae, fmeasure, emeasure, smeasure = eval.execute()
-        logfile = 'results/Ablation_RGBD.txt'
+        logfile = 'results/Testing_RGBD.txt'
         with open(logfile, 'a+') as f:
             f.write(self.dataset_name + "\tMAE: " + str(mae) + ", FMeasure: " + str(fmeasure) + ", EMeasure: " + str(
                 emeasure) + ", SMeasure: " + str(fmeasure) + "\n")
