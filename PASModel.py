@@ -76,7 +76,7 @@ class PASNet(nn.Module):
         self.aspp_mhsa3 = Pyramid_block(32, 28, 32, 28, 4, 3)
         self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         features = 256
-        # non_negative = True
+        non_negative = True
 
         self.head = nn.Sequential(
             nn.Conv2d(features, features // 2, kernel_size=3, stride=1, padding=1),
