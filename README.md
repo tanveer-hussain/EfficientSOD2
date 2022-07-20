@@ -18,9 +18,9 @@ You need to install Pytorch (preferred 1.7.1) and some basic libraries including
 ### 3.1. Datasets
 The datasets can be downloaded from the following links. We follow the training and testing data similar to the previous methods.
 
-Option 1: Download from GitHub of an existing SOD Method ([UCNet](https://github.com/JingZhang617/UCNet)): [Click here](https://drive.google.com/file/d/1zslnkJaD_8h3UjxonBz0ESEZ2eguR_Zi/view)
+Option 1: Download from Google drive of an existing SOD Method ([UCNet](https://github.com/JingZhang617/UCNet)): [Click here](https://drive.google.com/file/d/1zslnkJaD_8h3UjxonBz0ESEZ2eguR_Zi/view)
 
-Option 2: Download from Google drive of existing SOD Method (D3Net): [Click here](https://github.com/DengPingFan/D3NetBenchmark/blob/master/README.md)
+Option 2: Download from GitHub of existing SOD Method (D3Net): [Click here](https://github.com/DengPingFan/D3NetBenchmark/blob/master/README.md)
 
 Option 3: Follow a dedicated GitHub page for SOD datasets: [Click here](https://github.com/GrassBro/SODdataset)
 
