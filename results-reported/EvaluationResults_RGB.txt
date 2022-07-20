@@ -1,4 +1,0 @@
-DUTS-TE	MAE: 0.206, FMeasure: 0.259, EMeasure: 0.604, SMeasure: 0.259
-ECSSD	MAE: 0.274, FMeasure: 0.402, EMeasure: 0.615, SMeasure: 0.402
-HKU-IS	MAE: 0.255, FMeasure: 0.353, EMeasure: 0.639, SMeasure: 0.353
-Pascal-S	MAE: 0.309, FMeasure: 0.362, EMeasure: 0.55, SMeasure: 0.362

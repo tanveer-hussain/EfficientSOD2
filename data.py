@@ -4,7 +4,6 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as T
 import numpy as np
 import torch.nn.functional as F
-import torch
 
 class TrainDatasetLoader(Dataset):
 
@@ -55,7 +54,6 @@ class TrainDatasetLoader(Dataset):
         return x , d, width, height, y, self.X[index]
 
 from torch.utils import data
-device = torch.device('cuda' if torch.cuda.is_available else "cpu")
 
 class TestDatasetLoader(data.Dataset):
 
@@ -114,46 +112,4 @@ class RetreiveTestData(data.Dataset):
         x = self.img_transform (x).unsqueeze(0)
 
         return x, self.X[index]
-
-
-# class test_dataset:
-#     def __init__(self, image_root, depth_root, testsize):
-#         self.testsize = testsize
-#         self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg')]
-#         self.depths = [depth_root + f for f in os.listdir(depth_root) if f.endswith('.jpg')
-#                     or f.endswith('.png')]
-#         self.images = sorted(self.images)
-#         self.depths = sorted(self.depths)
-#         self.transform = T.Compose([
-#             T.Resize((224, 224)),
-#             T.ToTensor(),
-#             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-#         self.depth_transform = T.Compose([
-#             T.Resize((224, 224)),
-#             T.ToTensor()])
-#         self.size = len(self.images)
-#         self.index = 0
-#
-#     def load_data(self):
-#         image = self.rgb_loader(self.images[self.index])
-#         depth = self.rgb_loader(self.depths[self.index])
-#         HH = image.size[0]
-#         WW = image.size[1]
-#         image = self.transform(image).unsqueeze(0)
-#         depth = self.depth_transform(depth).unsqueeze(0)
-#         name = self.images[self.index].split('/')[-1]
-#         if name.endswith('.jpg'):
-#             name = name.split('.jpg')[0] + '.png'
-#         self.index += 1
-#         return image, HH, WW, name #image, depth, HH, WW, name
-#
-#     def rgb_loader(self, path):
-#         with open(path, 'rb') as f:
-#             img = Image.open(f)
-#             return img.convert('RGB')
-#
-#     def binary_loader(self, path):
-#         with open(path, 'rb') as f:
-#             img = Image.open(f)
-#             return img.convert('L')
 
