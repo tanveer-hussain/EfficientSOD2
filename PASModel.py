@@ -60,12 +60,11 @@ class PASNet(nn.Module):
             backbone="vitb_rn50_384",
         )
         self.dpt_model.eval()
-        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
 
         self.asppconv4 = multi_scale_aspp(channel)
 
-        self.spatial_axes = [2, 3]
+        # self.spatial_axes = [2, 3]
         self.conv_depth1 = BasicConv2d(6 + latent_dim, 3, kernel_size=3, padding=1)
 
         self.racb_43 = RCAB(channel * 2)
@@ -75,9 +74,9 @@ class PASNet(nn.Module):
         self.aspp_mhsa1 = Pyramid_block(32, 56, 32, 56, 4, 1)
         self.aspp_mhsa2 = Pyramid_block(32, 56, 32, 56, 4, 2)
         self.aspp_mhsa3 = Pyramid_block(32, 28, 32, 28, 4, 3)
-        self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 1)
+        self.aspp_mhsa4 = Pyramid_block(32, 14, 32, 14, 4, 4)
         features = 256
-        non_negative = True
+        # non_negative = True
 
         self.head = nn.Sequential(
             nn.Conv2d(features, features // 2, kernel_size=3, stride=1, padding=1),
