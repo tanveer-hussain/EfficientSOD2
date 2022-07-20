@@ -148,8 +148,7 @@ class PASNet(nn.Module):
         conv432 = self.conv432(conv432)
 
         conv432 = self.upsample2(conv432)
-        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, self.upsample2(conv1_feat)),
-                             1)
+        conv4321 = torch.cat((self.upsample4(conv4_feat), self.upsample2(conv43), conv432, self.upsample2(conv1_feat)),1)
         conv4321 = self.racb_4321(conv4321)
         conv4321 = self.conv4321(conv4321)
 
@@ -157,17 +156,8 @@ class PASNet(nn.Module):
         # out = self.conv2(out)
 
 
-        return self.upsample2(sal_init) #sal_init# , self.d_sal #self.prob_pred_post, self.prob_pred_prior, lattent_loss, self.depth_pred_post, self.depth_pred_prior
-        # else:
-        #     # self.x_sal = self.sal_encoder(x)
-        #     # self.x_sal, _ = self.sal_encoder(x, depth)
-        #     self.x_sal = self.dpt_model(x)
-        #     self.x_sal = self.conv1(self.x_sal)
-        #     # _, mux, logvarx = self.x_encoder(torch.cat((x, depth), 1))
-        #     # z_noise = self.reparametrize(mux, logvarx)
-        #     # self.prob_pred, _ = self.sal_encoder(x, depth, z_noise)
-        #     # self.prob_pred, _ = self.sal_encoder(x, depth)
-        #     return self.x_sal
+        return self.upsample2(sal_init)
+
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
@@ -176,4 +166,4 @@ class PASNet(nn.Module):
 # # # gt = torch.randn((12, 1, 224, 224)).to(device)
 # model = PASNet(32,3).to(device)
 # y = model(x,depth)
-# print ('done')
+# print (y.shape)
