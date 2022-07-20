@@ -17,7 +17,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 # ## define loss
-# criterion = nn.MSELoss().to('cuda')
+criterion = nn.MSELoss().to('cuda')
 # CE = torch.nn.BCELoss()
 # mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
 smooth_loss = smoothness.smoothness_loss(size_average=True)
@@ -29,12 +29,12 @@ smooth_loss = smoothness.smoothness_loss(size_average=True)
 if __name__ == '__main__':
     # torch.multiprocessing.freeze_support()
     ######################### Inputs ############################
-    rgbd_datasets = ['SIP', "DUT-RGBD", "NLPR", 'NJU2K']
+    rgbd_datasets = ["DUT-RGBD", 'SIP', "NLPR", 'NJU2K']
     # rgb_datasets = ["DUTS-TE", "ECSSD", 'HKU-IS', 'Pascal-S']
     # save_results_path = r"/home/tinu/PycharmProjects/EfficientSOD2/TempResults.dat"
     save_path = 'models/'
     ## Hyper parameters
-    epochs = 6
+    epochs = 26
     batchsize = 6
     lr = 5e-5
     decay_rate = 0.9
@@ -81,10 +81,10 @@ if __name__ == '__main__':
                 x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
                 #
                 # total_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * x_ssim_loss) + (0.2 * reg_loss) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts))
-                total_loss = structure_loss(x_sal, gts) + (x_ssim_loss) + ( reg_loss) + (smooth_loss(torch.sigmoid(x_sal), gts))
+                # total_loss = structure_loss(x_sal, gts) + (x_ssim_loss) + ( reg_loss) + (smooth_loss(torch.sigmoid(x_sal), gts))
                 #
                 # anneal_reg = linear_annealing(0, 1, epoch, opt.epoch)
-                # total_loss = criterion(x_sal,gts) + reg_loss#x_ssim_loss + reg_loss # + x_loss # + d_loss
+                total_loss = criterion(x_sal,gts) #+ reg_loss#x_ssim_loss + reg_loss # + x_loss # + d_loss
 
                 #
                 PASNet_optimizer.zero_grad()
@@ -96,7 +96,7 @@ if __name__ == '__main__':
                         format(epoch, epochs, i, total_step, total_loss.data))
                     print("Dataset: ", dataset_name)
 
-            adjust_lr(PASNet_optimizer, lr, epoch, decay_rate, decay_epoch)
+            PASNet_optimizer = adjust_lr(PASNet_optimizer, lr, epoch, decay_rate, decay_epoch)
             if epoch % 20 == 0 or epoch == epochs:
                 torch.save(PASNet.state_dict(), save_path + dataset_name + 'RGBD_D' + '_%d' % epoch + '_Pyramid.pth')
                 # with open(save_results_path, "a+") as ResultsFile:

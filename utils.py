@@ -12,6 +12,8 @@ def adjust_lr(optimizer, init_lr, epoch, decay_rate=0.1, decay_epoch=5):
     for param_group in optimizer.param_groups:
         param_group['lr'] *= decay
 
+    return optimizer
+
 
 def truncated_normal_(tensor, mean=0, std=1):
     size = tensor.shape
