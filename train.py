@@ -76,9 +76,9 @@ if __name__ == '__main__':
                 depths = Variable(depths).cuda()
 
                 x_sal = PASNet.forward(images, depths)
-                reg_loss = l2_regularisation(PASNet.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
+                # reg_loss = l2_regularisation(PASNet.dpt_model) #+ l2_regularisation(resswin.dpt_depth_model)
 
-                x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
+                # x_ssim_loss = torch.sigmoid(torch.clamp((1 - ssim(x_sal, gts, val_range=1000.0 / 10.0)) * 0.5, 0, 1))
                 #
                 # total_loss = (0.2 * structure_loss(x_sal, gts)) + (0.3 * x_ssim_loss) + (0.2 * reg_loss) + (0.3 * smooth_loss(torch.sigmoid(x_sal), gts))
                 # total_loss = structure_loss(x_sal, gts) + (x_ssim_loss) + ( reg_loss) + (smooth_loss(torch.sigmoid(x_sal), gts))
