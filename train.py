@@ -20,7 +20,7 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 criterion = nn.MSELoss().to('cuda')
 # CE = torch.nn.BCELoss()
 # mse_loss = torch.nn.MSELoss(size_average=True, reduce=True)
-smooth_loss = smoothness.smoothness_loss(size_average=True)
+# smooth_loss = smoothness.smoothness_loss(size_average=True)
 # l1_criterion = nn.L1Loss()
 
 
