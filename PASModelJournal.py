@@ -119,7 +119,6 @@ class PASNet(nn.Module):
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
-        # self.conv2 = Triple_Conv(150, 1)
         self.conv11 = Triple_Conv(6,3)
 
 
@@ -136,6 +135,11 @@ class PASNet(nn.Module):
         p3 = self.features3(x) # [1, 1024, 14, 14]
         p4 = self.features4(x) # [1, 2048, 7, 7]
 
+        p1 = self.upsample2(p1)
+        p2 = self.upsample2(p2)
+        p3 = self.upsample2(p3)
+        p4 = self.upsample2(p4)
+        
 
 
         d4 = self.head(d4) # [2, 32, 14, 14]
@@ -182,7 +186,6 @@ class PASNet(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
-        # out = self.conv2(out)
 
 
         return self.upsample2(sal_init)
