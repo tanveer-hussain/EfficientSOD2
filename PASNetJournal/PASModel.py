@@ -1,9 +1,11 @@
 import torch
 import torch.nn as nn
+import sys
+sys.path.append("..")
 device = torch.device('cuda' if torch.cuda.is_available else "cpu")
-from ResNet_models_Custom import Triple_Conv, multi_scale_aspp, Classifier_Module, RCAB, BasicConv2d
-from Multi_head import MHSA
-from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
+from ..ResNet_models_Custom import Triple_Conv, multi_scale_aspp, Classifier_Module, RCAB, BasicConv2d
+from ..Multi_head import MHSA
+from ..dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
 
 
@@ -96,6 +98,7 @@ class PASNet(nn.Module):
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.conv2 = Triple_Conv(150, 1)
         self.conv11 = Triple_Conv(6,3)
 
 
@@ -152,6 +155,7 @@ class PASNet(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
+        # out = self.conv2(out)
 
 
         return self.upsample2(sal_init)
@@ -159,9 +163,9 @@ class PASNet(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-# x = torch.randn((2, 3, 224, 224)).to(device)
-# depth = torch.randn((2, 3, 224, 224)).to(device)
-# # # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = PASNet(32,3).to(device)
-# y = model(x,depth)
-# print (y.shape)
+x = torch.randn((2, 3, 224, 224)).to(device)
+depth = torch.randn((2, 3, 224, 224)).to(device)
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+model = PASNet(32,3).to(device)
+y = model(x,depth)
+print (y.shape)

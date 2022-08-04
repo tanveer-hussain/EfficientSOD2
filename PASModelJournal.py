@@ -5,6 +5,7 @@ from ResNet_models_Custom import Triple_Conv, multi_scale_aspp, Classifier_Modul
 from Multi_head import MHSA
 from dpt.models_custom import DPTSegmentationModel, DPTDepthModel
 import torch.nn.functional as F
+import torchvision
 
 
 class Pyramid_block(nn.Module):
@@ -53,14 +54,30 @@ class PASNet(nn.Module):
         self.dpt_depth_model = self.dpt_depth_model.to(memory_format=torch.channels_last)
 
         #
-        model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
-        self.dpt_model = DPTSegmentationModel(
-            150,
-            path=model_path,
-            backbone="vitb_rn50_384",
+        # model_path = "weights/dpt_hybrid-ade20k-53898607.pt"
+        # self.dpt_model = DPTSegmentationModel(
+        #     150,
+        #     path=model_path,
+        #     backbone="vitb_rn50_384",
+        # )
+        # self.dpt_model.eval()
+        # self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
+        self.original_model = torchvision.models.resnet152(pretrained=True)
+        self.features1 = nn.Sequential(
+            *list(self.original_model.children())[:-5]
         )
-        self.dpt_model.eval()
-        self.dpt_model = self.dpt_model.to(memory_format=torch.channels_last)
+
+        self.features2 = nn.Sequential(
+            *list(self.original_model.children())[:-4]
+        )
+
+        self.features3 = nn.Sequential(
+            *list(self.original_model.children())[:-3]
+        )
+
+        self.features4 = nn.Sequential(
+            *list(self.original_model.children())[:-2]
+        )
 
         self.asppconv4 = multi_scale_aspp(channel)
 
@@ -91,11 +108,18 @@ class PASNet(nn.Module):
         self.conv4321 = Triple_Conv(4 * channel, channel)
         self.conv1_1 = Triple_Conv(96, channel)
         self.conv1_11 = Triple_Conv(64, channel)
+        
+
         self.conv1 = Triple_Conv(256, channel)
+        self.conv2 = Triple_Conv(512, channel)
+        self.conv3 = Triple_Conv(1024, channel)
+        self.conv4 = Triple_Conv(2048, channel)
+        
         self.layer6 = self._make_pred_layer(Classifier_Module, [6, 12, 18, 24], [6, 12, 18, 24], 1, channel)
         self.upsample8 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)
         self.upsample4 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)
         self.upsample2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        # self.conv2 = Triple_Conv(150, 1)
         self.conv11 = Triple_Conv(6,3)
 
 
@@ -104,8 +128,14 @@ class PASNet(nn.Module):
         # self.x_sal = self.sal_encoder(x)
         # x = torch.cat((x,d),1)
         # x = self.conv11(x)
-        _, p1, p2, p3, p4 = self.dpt_model(x) # p1: [2, 256, 112, 112], p2: [2, 256, 56, 56], p3: [2, 256, 28, 28], p4: [2, 256, 14, 14]
+        # _, p1, p2, p3, p4 = self.dpt_model(x) # p1: [2, 256, 112, 112], p2: [2, 256, 56, 56], p3: [2, 256, 28, 28], p4: [2, 256, 14, 14]
         _, _, _, _, d4 = self.dpt_depth_model(d) # d4: [2, 256, 14, 14]
+
+        p1 = self.features1(x) # [1, 256, 56, 56]
+        p2 = self.features2(x) # [1, 512, 28, 28]
+        p3 = self.features3(x) # [1, 1024, 14, 14]
+        p4 = self.features4(x) # [1, 2048, 7, 7]
+
 
 
         d4 = self.head(d4) # [2, 32, 14, 14]
@@ -119,18 +149,18 @@ class PASNet(nn.Module):
         conv1_feat = self.aspp_mhsa1(conv1_feat_x1) # [2, 32, 56, 56]
         conv1_feat = self.conv1_11(torch.cat((conv1_feat, conv1_feat_x1), 1)) # [2, 32, 56, 56]
 
-        conv2_feat_x2 = self.conv1(p2)
+        conv2_feat_x2 = self.conv2(p2)
         # d2 = self.conv1(d2)
         # conv2_feat_x2_d2 = self.conv1_1(torch.cat((conv2_feat_x2,d2),1))
         conv2_feat = self.aspp_mhsa2(conv2_feat_x2)
         conv2_feat = self.conv1_11(torch.cat((conv2_feat, conv2_feat_x2), 1))
 
-        conv3_feat_x3 = self.conv1(p3)
+        conv3_feat_x3 = self.conv3(p3)
         # d3 = self.conv1(d3)
         conv3_feat = self.aspp_mhsa3(conv3_feat_x3)
         conv3_feat = self.conv1_11(torch.cat((conv3_feat, conv3_feat_x3), 1))
         # conv3_feat = self.asppconv3(conv3_feat)
-        conv4_feat_x4 = self.conv1(p4)
+        conv4_feat_x4 = self.conv4(p4)
         # d4 = self.conv1(d4)
         conv4_feat = self.aspp_mhsa4(conv4_feat_x4)
         conv4_feat = self.conv1_1(torch.cat((conv4_feat,d4,conv4_feat_x4),1))
@@ -152,6 +182,7 @@ class PASNet(nn.Module):
         conv4321 = self.conv4321(conv4321)
 
         sal_init = self.layer6(conv4321)
+        # out = self.conv2(out)
 
 
         return self.upsample2(sal_init)
@@ -159,9 +190,9 @@ class PASNet(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-# x = torch.randn((2, 3, 224, 224)).to(device)
-# depth = torch.randn((2, 3, 224, 224)).to(device)
-# # # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = PASNet(32,3).to(device)
-# y = model(x,depth)
-# print (y.shape)
+x = torch.randn((2, 3, 224, 224)).to(device)
+depth = torch.randn((2, 3, 224, 224)).to(device)
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+model = PASNet(32,3).to(device)
+y = model(x,depth)
+print (y.shape)
