@@ -159,9 +159,9 @@ class PASNet(nn.Module):
     def _make_pred_layer(self, block, dilation_series, padding_series, NoLabels, input_channel):
         return block(dilation_series, padding_series, NoLabels, input_channel)
 
-# x = torch.randn((2, 3, 224, 224)).to(device)
-# depth = torch.randn((2, 3, 224, 224)).to(device)
-# # # gt = torch.randn((12, 1, 224, 224)).to(device)
-# model = PASNet(32,3).to(device)
-# y = model(x,depth)
-# print (y.shape)
+x = torch.randn((2, 3, 224, 224)).to(device)
+depth = torch.randn((2, 3, 224, 224)).to(device)
+# # gt = torch.randn((12, 1, 224, 224)).to(device)
+model = PASNet(32,3).to(device)
+y = model(x,depth)
+print (y.shape)
